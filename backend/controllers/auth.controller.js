@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { generateTokenSetCookie } from "../../utils/generateTokenSetCookie.js";
 import { query } from "express";
 
-const promisePool = pool.promise();
+
 export const signup = async (req, res) => {
   const { email, first_name, last_name, user_password } = req.body;
 
@@ -74,11 +74,7 @@ export const login = async (req, res) => {
       if (results.length === 0) {
         return res.status(400).json({success: false, message: "Email or Password is not Valid!"});
       }
-
-
-      if(!email){
-        return res.status(400).json({success: false, message: "Email or Password is not Valid!"});
-      }
+    
       const user = results[0];
       
       console.log(user)
