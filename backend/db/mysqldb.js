@@ -1,4 +1,9 @@
-import { createPool } from "mysql";
+import mysql from 'mysql2';
 
-
-export default pool;
+export const pool = mysql.createPool({
+    host: "localhost",
+    user: "root",
+    password: "nati0975329588@babi",
+    database: "test",
+    port: 3306,
+  });

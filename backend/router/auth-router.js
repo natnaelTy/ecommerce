@@ -1,10 +1,13 @@
 
 import express from "express";
+import { login, signup } from "../controllers/auth.controller.js";
+import { verifyToken } from "../middleware/verifyToken.js";
+
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    res.send("hi im nati");
-});
+router.post("/signup", signup);
+
+router.post("/login", login);
 
 export default router;
