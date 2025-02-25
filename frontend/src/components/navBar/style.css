@@ -1,0 +1,26 @@
+.hoverLink {
+    position: relative;
+    color: #000;
+    text-decoration: none;
+  }
+  
+  .hoverLink:hover {
+    color: #000;
+  }
+  
+  .hoverLink::before {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #ff7300;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .hoverLink:hover::before {
+    transform: scaleX(1);
+  }
