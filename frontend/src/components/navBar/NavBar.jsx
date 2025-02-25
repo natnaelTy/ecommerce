@@ -1,23 +1,99 @@
 import { IoPersonCircleOutline } from "react-icons/io5";
-import { CiSearch } from "react-icons/ci";
+import { IoSearchOutline } from "react-icons/io5";
 import { SlHandbag } from "react-icons/sl";
+import { CiHeart } from "react-icons/ci";
+import { NavLink } from "react-router-dom";
+import { LiaTimesSolid } from "react-icons/lia";
+import { useState } from "react";
+import "./style.css";
 
 const NavBar = () => {
-    return ( 
-        <nav className="flex items-center justify-between px-5 py-3">
-            <h1 className="text-3xl">Furns</h1>
+  const [searchInputIsOn, setSearchInputIsOn] = useState(false);
+  const [value, setValue] = useState("");
 
-            <ul className="flex items-center justify-around gap-6 text-2xl md:text-3xl">
-                <li><div className="flex items-center ">
-                    <input type="text" placeholder="Search.." className="text-sm px-3 py-2 outline-none border-1 border-gray-200 rounded-l-lg w-full"/>
-                       <CiSearch className="bg-orange-500 text-white w-[35px] h-[35px] p-2 rounded-r-lg cursor-pointer"/>
-                    </div>
-                </li>
-                <li><IoPersonCircleOutline/></li>
-                <li><SlHandbag/></li>
-            </ul>
-        </nav>
-     );
-}
- 
+  function toggleSearchButton() {
+    setSearchInputIsOn(!searchInputIsOn);
+  }
+
+  return (
+    <nav className="flex items-center justify-between px-5 py-3">
+      <h1 className="text-3xl">Furns</h1>
+
+      {/* Nav links */}
+      <ul className="flex items-center justify-center gap-8 text-sm uppercase">
+        <li>
+          <NavLink className="hoverLink" to={"/"}>
+            home
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="hoverLink" to={"/shop"}>
+            shop
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="hoverLink" to={"/"}>
+            pages
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="hoverLink" to={"/blog"}>
+            blog
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="hoverLink" to={"/about"}>
+            about
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="hoverLink" to={"/contactus"}>
+            contact us
+          </NavLink>
+        </li>
+      </ul>
+
+      <ul className="flex items-center justify-around gap-6 text-xl md:text-2xl cursor-pointer">
+        <li>
+          <div className="flex items-center ">
+            <div
+              className={
+                searchInputIsOn
+                  ? "flex items-center border-1 border-gray-200 rounded-full w-full px-3 py-1"
+                  : "hidden"
+              }
+            >
+              <input
+                type="search"
+                placeholder="search products.."
+                onChange={(e) => setValue(e.target.value)}
+                value={value}
+                className="text-sm px-3 py-2 outline-none border-none rounded-full w-full"
+              />
+              <IoSearchOutline className="text-xl md:text-2xl hover:text-orange-500"/>
+            </div>
+            
+            <button
+              onClick={toggleSearchButton}
+              className="w-[37px] h-[37px] p-2 rounded-full cursor-pointer hover:text-orange-500"
+            >
+              {!searchInputIsOn ? <IoSearchOutline /> : <LiaTimesSolid />}
+            </button>
+
+          </div>
+        </li>
+        <li className="hover:text-orange-500">
+          <IoPersonCircleOutline />
+        </li>
+        <li className="hover:text-orange-500">
+          <CiHeart />
+        </li>
+        <li className="hover:text-orange-500">
+          <SlHandbag />
+        </li>
+      </ul>
+    </nav>
+  );
+};
+
 export default NavBar;
