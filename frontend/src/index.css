@@ -7,3 +7,19 @@ body{
     padding: 0;
     margin: 0;
 }
+
+.style1::before{
+    content: "";
+    position: absolute;
+    width: 70px;
+    height: 4px;
+    background-color: orange;
+    left: 0;
+    top: 10px;
+}
+@layer utilities {
+    .btn {
+        @apply bg-orange-400 px-6 py-3 text-xl text-white hover:bg-orange-500 cursor-pointer;
+       }
+    
+}

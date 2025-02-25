@@ -4,23 +4,35 @@ import { SlHandbag } from "react-icons/sl";
 import { CiHeart } from "react-icons/ci";
 import { NavLink } from "react-router-dom";
 import { LiaTimesSolid } from "react-icons/lia";
+import { AiOutlineMenu } from "react-icons/ai";
 import { useState } from "react";
 import "./style.css";
 
+
 const NavBar = () => {
+
   const [searchInputIsOn, setSearchInputIsOn] = useState(false);
   const [value, setValue] = useState("");
+  const [showMenu, setShowMenu] = useState(true);
+
 
   function toggleSearchButton() {
     setSearchInputIsOn(!searchInputIsOn);
   }
 
+  function handleShowMenu(){
+    setShowMenu(!showMenu);
+  }
+
+
   return (
     <nav className="flex items-center justify-between px-5 py-3">
-      <h1 className="text-3xl">Furns</h1>
-
+      {/* logo */}
+      <h1 className="text-2xl hidden md:flex">Furns</h1>
+      {/* hamburger menu */}
+      <button onClick={handleShowMenu} className="flex md:hidden cursor-pointer">{showMenu ? <AiOutlineMenu/> : <LiaTimesSolid />}</button>
       {/* Nav links */}
-      <ul className="flex items-center justify-center gap-8 text-sm uppercase">
+      <ul className="flex items-center justify-center gap-8 text-sm uppercase hidden md:flex font-[200px]">
         <li>
           <NavLink className="hoverLink" to={"/"}>
             home
@@ -65,10 +77,10 @@ const NavBar = () => {
             >
               <input
                 type="search"
-                placeholder="search products.."
+                placeholder="Search Products"
                 onChange={(e) => setValue(e.target.value)}
                 value={value}
-                className="text-sm px-3 py-2 outline-none border-none rounded-full w-full"
+                className="text-xs md:text-sm px-2 py-1 md:px-3 md:py-2 outline-none border-none rounded-full w-full"
               />
               <IoSearchOutline className="text-xl md:text-2xl hover:text-orange-500"/>
             </div>
