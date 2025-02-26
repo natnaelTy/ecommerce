@@ -8,18 +8,40 @@ body{
     margin: 0;
 }
 
-.style1::before{
-    content: "";
-    position: absolute;
-    width: 70px;
-    height: 4px;
-    background-color: orange;
-    left: 0;
-    top: 10px;
-}
 @layer utilities {
     .btn {
-        @apply bg-orange-400 px-6 py-3 text-xl text-white hover:bg-orange-500 cursor-pointer;
+        @apply bg-orange-400 px-4 py-2 md:px-6 md:py-3 text-lg md:text-xl text-white hover:bg-orange-500 cursor-pointer;
        }
+    .style1::before{
+        content: "";
+        position: absolute;
+        width: 70px;
+        height: 4px;
+        background-color: orange;
+        left: 5px;
+        top: 12px;
+    } 
+    .style2::before{
+        content: "";
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        background-color: #ebebeb;
+        top: 35%;
+        right: 0;
+        border-radius: 50%;
+        border: 3px solid #fff;
+    } 
+    .style3::before{
+        content: "";
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background-color: #e8e8e892;
+        bottom: 0;
+        right: 0;
+        border-top-left-radius: 80%;
+        z-index: -1;
+    } 
     
 }

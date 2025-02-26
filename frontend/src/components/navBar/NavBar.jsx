@@ -26,13 +26,13 @@ const NavBar = () => {
 
 
   return (
-    <nav className="flex items-center justify-between px-5 py-3">
+    <nav className="flex ietms-center justify-between px-5 py-3 w-full">
       {/* logo */}
-      <h1 className="text-2xl hidden md:flex">Furns</h1>
+      <h1 className="text-2xl hidden md:flex">Mesay Furniture</h1>
       {/* hamburger menu */}
       <button onClick={handleShowMenu} className="flex md:hidden cursor-pointer">{showMenu ? <AiOutlineMenu/> : <LiaTimesSolid />}</button>
       {/* Nav links */}
-      <ul className="flex items-center justify-center gap-8 text-sm uppercase hidden md:flex font-[200px]">
+      <ul className="flex items-center justify-center gap-8 text-sm uppercase hidden md:flex">
         <li>
           <NavLink className="hoverLink" to={"/"}>
             home
@@ -64,8 +64,8 @@ const NavBar = () => {
           </NavLink>
         </li>
       </ul>
-
-      <ul className="flex items-center justify-around gap-6 text-xl md:text-2xl cursor-pointer">
+      {/* icons */}
+      <ul className="flex items-center justify-center gap-6 text-xl md:text-2xl cursor-pointer">
         <li>
           <div className="flex items-center ">
             <div
