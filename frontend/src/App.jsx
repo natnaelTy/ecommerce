@@ -1,25 +1,23 @@
 import "./index.css";
-import NavBar from "./components/navBar/NavBar";
-import HomePage from "./components/homepage/homepage";
-import { Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import ClientLayout from "./Layout/ClientLayout";
 import SignUp from "./components/pages/SignUp";
-
+import HomePage from "./components/homepage/homepage";
 
 function App() {
   return (
-    <>
-      <NavBar />
-      <SignUp/>
+  
       <Routes>
-          <Route path="/" element={<HomePage />}/> 
-          <Route path="/shop" element={<HomePage />}/> 
-          <Route path="/pages" element={<HomePage />}/> 
-          <Route path="/blog" element={<HomePage />}/> 
-          <Route path="/about" element={<HomePage />}/> 
-          <Route path="/contactus" element={<HomePage />}/> 
+        {/* Route for ClientLayout (includes NavBar and Outlet) */}
+        <Route path="/" element={<ClientLayout />}>
+          {/* Default route for / */}
+          <Route index element={<HomePage />} />
+        </Route>
+
+        {/* Standalone route for SignUp (no NavBar) */}
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
-   
-    </>
+
   );
 }
 

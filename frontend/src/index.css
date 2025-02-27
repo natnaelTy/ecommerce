@@ -43,5 +43,23 @@ body{
         border-top-left-radius: 80%;
         z-index: -1;
     } 
+    .signupStyle1::before{
+        content: "";
+        position: absolute;
+        width: 270px;
+        height: 1px;
+        background-color: #e8e8e892;
+        right: 2.5rem;
+        top: 50%;
+    } 
+    .signupStyle2::before{
+        content: "";
+        position: absolute;
+        width: 270px;
+        height: 1px;
+        background-color: #e8e8e892;
+        left: 2.5rem;
+        top: 50%;
+    } 
     
 }
