@@ -1,7 +1,13 @@
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MdKeyboardArrowLeft } from "react-icons/md";
+import { useSelector } from "react-redux";
+
 
 const HomePage = () => {
+  
+  const userSlice = useSelector((state) => state.user);
+
+  console.log(userSlice);
   return (
     <div className="p-6 flex items-center flex-wrap justify-around bg-gray-100 relative z-0">
       <div className="flex items-start flex-col justify-center gap-7 ">
@@ -37,6 +43,7 @@ const HomePage = () => {
       {/* curve */}
       <span className="style3"></span>
     </div>
+    
   );
 };
 
