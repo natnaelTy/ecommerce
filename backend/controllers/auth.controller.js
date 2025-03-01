@@ -5,10 +5,10 @@ import { query } from "express";
 
 
 export const signup = async (req, res) => {
-  const { email, first_name, last_name, user_password } = req.body;
+  const { email, fullName, user_password } = req.body;
 
   try {
-    if (!email || !first_name || !last_name || !user_password) {
+    if (!email || !fullName || !user_password) {
       return res.status(400).json({ error: "fill all fields" });
     }
 
@@ -29,10 +29,10 @@ export const signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(user_password, 10);
 
         const query =
-          "INSERT INTO user ( first_name, last_name, email, user_password) VALUES (?, ?, ?, ?)";
+          "INSERT INTO user (fullName, email, user_password) VALUES (?, ?, ?)";
         pool.query(
           query,
-          [first_name, last_name, email, hashedPassword],
+          [fullName, email, hashedPassword],
           (err, results) => {
             if (err) {
               console.error("Error executing query:", err);

@@ -2,29 +2,37 @@ import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa6";
 import { LiaTimesSolid } from "react-icons/lia";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createUser } from "../../store/user/userSlice";
 import { useState } from "react";
 import { z } from "zod";
+import axios from "axios";
+import { createUserFailure } from "../../store/user/userSlice";
+import {FadeLoader} from "react-spinners";
+
+
+axios.defaults.withCredentials = true;
 
 const SignUp = () => {
+
+  const dispatch = useDispatch();
+  const {error, loading} = useSelector((state) => state.user)
 
   const [user, setUser] = useState({
     fullName: '',
     email: '',
-    password: '',
+    user_password: '',
   });
+
   const [errors, setErrors] = useState({});
-  const dispatch = useDispatch();
-   
+ 
   const userSchema = z.object({
-    fullName: z.string().min(1, { message: "Username is required" }),
+    fullName: z.string().min(1, { message: "fullName is required" }),
     email: z.string().email({ message: "Invalid email address" }),
-    password: z
+    user_password: z
       .string()
       .min(8, { message: "Password must be at least 8 characters long" }),
   });
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,25 +42,26 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmitForm = (e) => {
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
 
     try {
-      // Validate the user object
       const validatedUser = userSchema.parse(user);
-      console.log('User is valid:', validatedUser);
-      setErrors({}); // Clear any previous errors
+      setErrors({}); 
 
-      // Dispatch the createUser action with the validated user object
+      const response = await axios.post("http://localhost:5000/api/auth/signup", validatedUser);
+      
       dispatch(createUser(validatedUser));
     } catch (error) {
       if (error instanceof z.ZodError) {
-        // Convert Zod errors to a more user-friendly format
         const errorMessages = {};
         error.errors.forEach((err) => {
           errorMessages[err.path[0]] = err.message;
         });
         setErrors(errorMessages);
+      }
+      else{
+        dispatch(createUserFailure(error.response?.data?.message || 'Something went wrong'));
       }
     }
   };
@@ -130,24 +139,24 @@ const SignUp = () => {
             onChange={handleChange}
             value={user.email}
           />
-          {errors.email && <span className="text-red-600">{errors.email}</span>}
+          {error && <span className="text-red-600">{error}</span>}
           <br />
 
-          <label htmlFor="password">
+          <label htmlFor="user_password">
             Password <span className="text-red-600">*</span>
           </label>
           <input
             type="password"
-            name="password"
+            name="user_password"
             placeholder="Enter your password"
             className="px-4 text-sm py-3 focus:outline-orange-400 bg-gray-100 w-full"
             onChange={handleChange}
-            value={user.password}
+            value={user.user_password}
           />
-             {errors.password && <span className="text-red-600">{errors.password}</span>}
+            {errors.user_password && <span className="text-red-600">{errors.user_password}</span>}
           <br />
           <button type="submit" className="smallButton">
-            Sign Up
+            {loading ? <FadeLoader color="#ffffff" /> : 'Sign up'}
           </button>
           <p>
             Already have an account? &nbsp;{" "}
