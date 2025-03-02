@@ -3,18 +3,18 @@ import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa6";
 import { LiaTimesSolid } from "react-icons/lia";
 import { useDispatch, useSelector } from "react-redux";
-import { createUser } from "../../store/user/userSlice";
+import { createUser, setEmail, createUserFailure } from "../../store/user/userSlice";
 import { useState } from "react";
 import { z } from "zod";
 import axios from "axios";
-import { createUserFailure } from "../../store/user/userSlice";
 import {FadeLoader} from "react-spinners";
-
+import { useNavigate } from "react-router-dom";
 
 axios.defaults.withCredentials = true;
 
 const SignUp = () => {
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const {error, loading} = useSelector((state) => state.user)
 
@@ -52,6 +52,8 @@ const SignUp = () => {
       const response = await axios.post("http://localhost:5000/api/auth/signup", validatedUser);
       
       dispatch(createUser(validatedUser));
+      dispatch(setEmail(user.email));
+      navigate("/");
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages = {};
@@ -161,8 +163,7 @@ const SignUp = () => {
           <p>
             Already have an account? &nbsp;{" "}
             <span className="text-orange-400 underline cursor-pointer">
-              <Link to={"/login"} />
-              Log in
+              <Link to={"/api/auth/login"} >Log in</Link>
             </span>
           </p>
         </form>

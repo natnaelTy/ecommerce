@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
  users: null, 
+ email: null,
  error: null, 
  loading: false
 }
@@ -26,6 +27,9 @@ export const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    setEmail: (state, action) => {
+      state.email = action.payload;
+    },
     // login
     createLoginStart(state){
       state.loading = true;
@@ -44,5 +48,5 @@ export const userSlice = createSlice({
 });
 
 
-export const { createUser, createLoginStart, createLoginFailure, createLoginUser, createUserFailure, createUserStart } = userSlice.actions;
+export const { createUser, createLoginStart, setEmail, createLoginFailure, createLoginUser, createUserFailure, createUserStart } = userSlice.actions;
 export default userSlice.reducer;

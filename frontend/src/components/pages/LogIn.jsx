@@ -5,18 +5,25 @@ import axios from "axios";
 import {FadeLoader} from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
 import { createLoginUser, createLoginFailure } from "../../store/user/userSlice.js";
-
+import { useNavigate } from "react-router-dom";
 
 
 const LogIn = () => {
 
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {error, loading} = useSelector((state) => state.user);
+  const {error, loading, email} = useSelector((state) => state.user);
 
-  const [loginUser, setLoginUser] = useState({
+  const [user, setUser] = useState({
     email: "",
     user_password: ""
   });
+
+  useState(() => {
+    if (email) {
+      setUser((prevData) => ({ ...prevData, email }));
+    }
+  }, [email]);
 
    const userSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
@@ -27,8 +34,8 @@ const LogIn = () => {
 
    const handleChange = (e) => {
     const { name, value } = e.target;
-    setLoginUser({
-      ...loginUser,
+    setUser({
+      ...user,
       [name]: value,
     });
   };
@@ -36,14 +43,15 @@ const LogIn = () => {
    const handleLoginSubmit = async (e) => {
     e.preventDefalut();
 
-    const validatedUser = userSchema.parse(loginUser);
+    const validatedUser = userSchema.parse(user);
 
     try{
       const response = await axios.post("http://localhost:5000/api/auth/login", validatedUser)
 
-      dispatch(createLoginUser(validatedUser));  
+      dispatch(createLoginUser(response.data));  
       console.log(validatedUser);    
       console.log(response.data);
+      navigate("/");
     }catch(error){
       dispatch(createLoginFailure(error.response?.data?.message || 'Something went wrong'));
     }
@@ -64,7 +72,7 @@ const LogIn = () => {
             placeholder="Enter your email"
             className="px-4 text-sm py-3 focus:outline-orange-400 bg-gray-100 w-full"
             onChange={handleChange}
-            value={loginUser.email}
+            value={user.email}
           />
           {error && <span className="text-red-600">{error}</span>}
           <br />
@@ -78,7 +86,7 @@ const LogIn = () => {
             placeholder="Enter your password"
             className="px-4 text-sm py-3 focus:outline-orange-400 bg-gray-100 w-full"
             onChange={handleChange}
-            value={loginUser.user_password}
+            value={user.user_password}
           />
           {error && <span className="text-red-600">{error}</span>}
           <button className="absolute right-12 bottom-20 text-orange-400 underline text-xs hover:text-orange-300"><Link to={'/forgotpassword'}>Forgot password</Link></button>
