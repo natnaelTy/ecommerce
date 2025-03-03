@@ -6,6 +6,17 @@ import {FadeLoader} from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
 import { createLoginUser, createLoginFailure } from "../../store/user/userSlice.js";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+import { MdErrorOutline } from "react-icons/md";
+
+
+
+const userSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  user_password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" }),
+ });
 
 
 const LogIn = () => {
@@ -25,12 +36,6 @@ const LogIn = () => {
     }
   }, [email]);
 
-   const userSchema = z.object({
-    email: z.string().email({ message: "Invalid email address" }),
-    user_password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters long" }),
-   });
 
    const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,16 +46,16 @@ const LogIn = () => {
   };
 
    const handleLoginSubmit = async (e) => {
-    e.preventDefalut();
+    e.preventDefault();
 
     const validatedUser = userSchema.parse(user);
 
     try{
-      const response = await axios.post("http://localhost:5000/api/auth/login", validatedUser)
+      const response = await axios.post("http://localhost:5000/auth/login", validatedUser)
 
-      dispatch(createLoginUser(response.data));  
+      dispatch(createLoginUser(validatedUser));  
       console.log(validatedUser);    
-      console.log(response.data);
+      toast.success("You successfully logged in!")
       navigate("/");
     }catch(error){
       dispatch(createLoginFailure(error.response?.data?.message || 'Something went wrong'));
@@ -74,7 +79,6 @@ const LogIn = () => {
             onChange={handleChange}
             value={user.email}
           />
-          {error && <span className="text-red-600">{error}</span>}
           <br />
           <br />
           <label htmlFor="user_password">
@@ -88,11 +92,11 @@ const LogIn = () => {
             onChange={handleChange}
             value={user.user_password}
           />
-          {error && <span className="text-red-600">{error}</span>}
           <button className="absolute right-12 bottom-20 text-orange-400 underline text-xs hover:text-orange-300"><Link to={'/forgotpassword'}>Forgot password</Link></button>
+          {error && <span className="text-red-600 text-sm flex items-center gap-1 mt-3"><MdErrorOutline className="text-base"/>{error}</span>}
           <br />
           <br />
-          <button type="submit" className="smallButton">Log in</button>
+          <button type="submit" className="smallButton">{!loading ? 'Log in' : <FadeLoader className="text-xs text-white"/>}</button>
         </form>
       </div>
     </div>

@@ -1,7 +1,8 @@
 import { pool } from "../db/mysqldb.js";
 import bcrypt from "bcryptjs";
 import { generateTokenSetCookie } from "../../utils/generateTokenSetCookie.js";
-import { query } from "express";
+import passport from "passport";
+import {Strategy as GoggleStrategy} from "passport-google-oauth20";
 
 
 export const signup = async (req, res) => {
@@ -98,4 +99,75 @@ export const login = async (req, res) => {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
   }
+};
+
+// google oauth2
+passport.use(new GoggleStrategy({
+  clientID:"754841437945-ffv2uajkvufvdsl9rhp5pb6ie2cftkqu.apps.googleusercontent.com",
+  clientSecret: process.env.CLIENTSECRECT,
+  callbackURL: process.env.CALLBACKURL,
+  },
+  async (accessToken, refreshToken, profile, done) => {
+      try{
+          const email = profile.emails[0].value;
+          const fullName = profile.displayName;
+
+          // check if user already exist
+          const checkIfUserExist = 'SELECT * FROM user WHERE email = ?';
+          pool.query(checkIfUserExist, [email], (err, result) => {
+            if(err){
+              return done(err)
+            }
+            else if(result > 0){
+              const user = result[0];
+              return done(null, user)
+            }
+            else{
+              const query = 'INSERT INTO user (fullName, email, user_password) VALUES (?, ?, ?)';
+              const hashedPassword = bcrypt.hashSync("", 10);
+
+              pool.query(query, [fullName, email, hashedPassword], (err, result) => {
+                if(err) return done(err, null);
+
+                const userId = result.insertId;
+                const newUser = {userId, fullName, email};
+
+                return done(null, newUser);
+              })
+            }
+          })
+      }catch(err){
+         return done(err);
+      }
+  }
+));
+
+passport.serializeUser((user, done) => {
+  done(null, user.userId);
+});
+
+passport.deserializeUser((userId, done) => {
+  const query = "SELECT * FROM user WHERE userId = ?";
+  pool.query(query, [userId], (err, results) => {
+    if (err) return done(err);
+    const user = results[0];
+    done(null, user);
+  });
+});
+
+// Google OAuth2 Login Route
+export const googleLogin = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
+
+// Google OAuth2 Callback Route
+export const googleCallback = (req, res, next) => {
+  passport.authenticate("google", (err, user) => {
+    if (err) return next(err);
+    if (!user) return res.redirect("/login");
+
+    // Generate token and set cookie
+    generateTokenSetCookie(res, user.userId, user.email);
+    res.redirect("/profile");
+  })(req, res, next);
 };

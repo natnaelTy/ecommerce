@@ -24,7 +24,10 @@
     "mailtrap": "^3.4.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.12.0",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

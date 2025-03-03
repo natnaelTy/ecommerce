@@ -9,6 +9,7 @@ import { z } from "zod";
 import axios from "axios";
 import {FadeLoader} from "react-spinners";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 
 axios.defaults.withCredentials = true;
 
@@ -49,7 +50,7 @@ const SignUp = () => {
       const validatedUser = userSchema.parse(user);
       setErrors({}); 
 
-      const response = await axios.post("http://localhost:5000/api/auth/signup", validatedUser);
+      const response = await axios.post("http://localhost:5000/auth/signup", validatedUser);
       
       dispatch(createUser(validatedUser));
       dispatch(setEmail(user.email));
@@ -71,6 +72,7 @@ const SignUp = () => {
 
   return (
     <div className="flex items-center justify-center w-full h-screen flex-col md:flex-row">
+      <Toaster>{errors.fullName}</Toaster>
       {/* close page button */}
       <button
         type="button"
