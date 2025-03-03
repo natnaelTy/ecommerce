@@ -8,8 +8,10 @@ const router = express.Router();
 
 router.use(passport.initialize());
 
-router.get("google", googleLogin);
-router.get("/google/login", googleCallback)
+router.get("/google", googleLogin);
+
+router.get("/google/login", googleCallback);
+
 router.post("/signup", signup);
 
 router.post("/login", login);

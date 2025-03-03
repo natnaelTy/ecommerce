@@ -2,7 +2,7 @@ import { pool } from "../db/mysqldb.js";
 import bcrypt from "bcryptjs";
 import { generateTokenSetCookie } from "../../utils/generateTokenSetCookie.js";
 import passport from "passport";
-import {Strategy as GoggleStrategy} from "passport-google-oauth20";
+import {Strategy as GoogleStrategy} from "passport-google-oauth20";
 
 
 export const signup = async (req, res) => {
@@ -102,10 +102,10 @@ export const login = async (req, res) => {
 };
 
 // google oauth2
-passport.use(new GoggleStrategy({
+passport.use(new GoogleStrategy({
   clientID:"754841437945-ffv2uajkvufvdsl9rhp5pb6ie2cftkqu.apps.googleusercontent.com",
-  clientSecret: process.env.CLIENTSECRECT,
-  callbackURL: process.env.CALLBACKURL,
+  clientSecret: process.env.CLIENTSECRECT || "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",
+  callbackURL: process.env.CALLBACKURL || "http://localhost:5000/auth/google/login",
   },
   async (accessToken, refreshToken, profile, done) => {
       try{
@@ -118,7 +118,7 @@ passport.use(new GoggleStrategy({
             if(err){
               return done(err)
             }
-            else if(result > 0){
+            else if(result.length > 0){
               const user = result[0];
               return done(null, user)
             }
@@ -141,6 +141,7 @@ passport.use(new GoggleStrategy({
       }
   }
 ));
+
 
 passport.serializeUser((user, done) => {
   done(null, user.userId);
