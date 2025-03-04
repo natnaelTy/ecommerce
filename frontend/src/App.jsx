@@ -4,12 +4,13 @@ import ClientLayout from "./Layout/ClientLayout";
 import SignUp from "./components/pages/SignUp";
 import HomePage from "./components/homepage/homepage";
 import LogIn from "./components/pages/LogIn";
+import Shop from "./components/shopPage/shop";
 function App() {
   return (
     <Routes>
       <Route path="/" element={<ClientLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="/shop" element></Route>
+        <Route path="/shop" element={<Shop/>}></Route>
       </Route>
       <Route path="/auth/signup" element={<SignUp />} />
       <Route path="/auth/login" element={<LogIn />} />

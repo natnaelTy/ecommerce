@@ -52,7 +52,7 @@ const SignUp = () => {
 
       const response = await axios.post("http://localhost:5000/auth/signup", validatedUser);
       
-      dispatch(createUser(validatedUser));
+      dispatch(createUser(response.data));
       dispatch(setEmail(user.email));
       navigate("/");
     } catch (error) {
@@ -68,6 +68,10 @@ const SignUp = () => {
       }
     }
   };
+
+  function handleGoogleAuth(){
+    window.location.href = "http://localhost:5000/auth/google";
+  }
 
 
   return (
@@ -94,22 +98,13 @@ const SignUp = () => {
         <h1 className="text-2xl font-medium md:text-3xl">
           Create your account
         </h1>
-        {/* google and facebook signup options*/}
-        <div className="w-full flex items-center justify-center gap-5">
-          <button className="text-sm md:text-base w-full border-1 cursor-pointer border-gray-100 px-4 py-2 flex items-center justify-center gap-4">
+        {/* google signup */}
+          <button onClick={handleGoogleAuth} className="text-sm md:text-base w-full border-1 cursor-pointer border-gray-100 px-4 py-2 flex items-center justify-center gap-4">
             <span>
               <FcGoogle className="text-xl" />
             </span>
             Continue with google
           </button>
-
-          <button className="text-sm md:text-base w-full border-1 cursor-pointer border-gray-100 px-4 py-2 flex items-center justify-center gap-4">
-            <span>
-              <FaFacebook className="text-blue-600 text-xl" />
-            </span>
-            Continue with facebook
-          </button>
-        </div>
         {/* options */}
         <div className="relative">
           <span className="text-lg text-gray-400">or</span>

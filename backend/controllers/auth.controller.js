@@ -41,14 +41,17 @@ export const signup = async (req, res) => {
                 .status(500)
                 .json({ success: false, message: "Database error" });
             }
-
+            const user = {fullName, email, hashedPassword}
             // Get the inserted user's ID
             const userId = results.insertId;
             generateTokenSetCookie(res, userId, email);
-            console.log({ results });
-            return res
+   
+             res
               .status(201)
-              .json({ sucess: true, message: "user created sucessfully" });
+              .json({ sucess: true, message: "user created sucessfully", user: {
+                ...user,
+                hashedPassword: undefined,
+              }});
           }
         );
       }
@@ -168,7 +171,7 @@ export const googleCallback = (req, res, next) => {
     if (!user) return res.redirect("/login");
 
     // Generate token and set cookie
-    generateTokenSetCookie(res, user.userId, user.email);
-    res.redirect("/profile");
+    const token = generateTokenSetCookie(res, user.userId, user.email);
+    res.redirect(`http://localhost:5173?${token}`);
   })(req, res, next);
 };
