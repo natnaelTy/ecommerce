@@ -2,7 +2,7 @@
 import express from "express";
 import { login, signup, googleCallback, googleLogin } from "../controllers/auth.controller.js";
 import passport from "passport";
-
+import { verify } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
@@ -16,6 +16,7 @@ router.post("/signup", signup);
 
 router.post("/login", login);
 
+router.post("/verify", verify);
 
 
 export default router;
