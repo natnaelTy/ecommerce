@@ -41,14 +41,13 @@ export const signup = async (req, res) => {
           const user = { fullName, email };
           // Get the inserted user's ID
           const userId = results.insertId;
-          const token = generateTokenSetCookie(res, userId, email);
-
+          const token = generateTokenSetCookie(res, userId, email, fullName);
+          
           res.status(201).json({
             sucess: true,
             message: "user created sucessfully",
             user: {
               ...user,
-              hashedPassword: undefined,
               token,
             },
           });
@@ -94,11 +93,11 @@ export const login = async (req, res) => {
           .json({ success: false, message: "Email or Password is not Valid!" });
       }
 
-      generateTokenSetCookie(res, user.userId, email);
+      const token = generateTokenSetCookie(res, user.userId, email);
 
       return res
         .status(200)
-        .json({ success: true, message: "You are successfully logged in" });
+        .json({ success: true, message: "You are successfully logged in", token });
     });
   } catch (err) {
     console.error(err);
@@ -181,7 +180,7 @@ export const googleCallback = (req, res, next) => {
     if (!user) return res.redirect("/login");
 
     // Generate token and set cookie
-    const token = generateTokenSetCookie(res, user.userId, user.email);
+    const token = generateTokenSetCookie(res, user.userId, user.email, user.fullName);
     res.redirect(`http://localhost:5173?${token}`);
   })(req, res, next);
 };
@@ -212,12 +211,20 @@ export const getProfile = async (req, res) => {
 // get token from payload, then vaildate with secrate key then return decoded
 export const verify = async (req, res) => {
   try {
-    const { token } = req.body;
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ success: false, message: "No token provided" });
+    }
+
     const decode = jwt.verify(token, process.env.JWT_SECRECT);
-    console.log(decode);
-    res.status(200).json(decode);
+    if(!decode){
+      return res.status(401).json({success: false, message: "Unauthorized - invalid token"})
+    }
+
+    res.status(200).json({ success: true, user: decode });
+
   } catch (error) {
     console.log(error);
-    res.status(500).json("server error");
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

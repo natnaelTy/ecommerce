@@ -7,6 +7,7 @@ import { LiaTimesSolid } from "react-icons/lia";
 import { AiOutlineMenu } from "react-icons/ai";
 import { useState } from "react";
 import "./style.css";
+import GetProfile from "../homepage/GetProfile";
 
 
 const NavBar = () => {
@@ -14,7 +15,7 @@ const NavBar = () => {
   const [searchInputIsOn, setSearchInputIsOn] = useState(false);
   const [value, setValue] = useState("");
   const [showMenu, setShowMenu] = useState(true);
-
+  const [showProfile, setShowProfile] = useState(false);
 
   function toggleSearchButton() {
     setSearchInputIsOn(!searchInputIsOn);
@@ -24,7 +25,9 @@ const NavBar = () => {
     setShowMenu(!showMenu);
   }
 
-
+ function profilePopOut(){
+    setShowProfile(!showProfile);
+ }
   return (
     <nav className="flex ietms-center justify-between px-5 py-3 w-full">
       {/* logo */}
@@ -94,16 +97,20 @@ const NavBar = () => {
 
           </div>
         </li>
-        <li className="hover:text-orange-500">
-          <IoPersonCircleOutline />
-        </li>
+       
         <li className="hover:text-orange-500">
           <CiHeart />
         </li>
         <li className="hover:text-orange-500">
           <SlHandbag />
         </li>
+        <li className="hover:text-orange-500" onClick={profilePopOut}>
+          <IoPersonCircleOutline />
+        </li>
       </ul>
+      <div className={showProfile ? "hidden" : "flex"}>
+         <GetProfile />
+      </div>
     </nav>
   );
 };
