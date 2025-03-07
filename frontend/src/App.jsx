@@ -5,6 +5,8 @@ import SignUp from "./components/pages/SignUp";
 import HomePage from "./components/homepage/homepage";
 import LogIn from "./components/pages/LogIn";
 import Shop from "./components/shopPage/shop";
+
+
 function App() {
   return (
     <Routes>
