@@ -5,6 +5,7 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
 
+// signup
 export const signup = async (req, res) => {
   const { email, fullName, user_password } = req.body;
 
@@ -60,6 +61,7 @@ export const signup = async (req, res) => {
   }
 };
 
+// login
 export const login = async (req, res) => {
   try {
     const { email, user_password } = req.body;
@@ -206,6 +208,12 @@ export const getProfile = async (req, res) => {
       return res.status(200).json({ success: true, user });
     });
   } catch (err) {}
+};
+
+//
+export const logout = (_, res) => {
+  res.clearCookie("token");
+  res.status(200).json({success: true, message: "You are successfully logged out"});
 };
 
 // get token from payload, then vaildate with secrate key then return decoded

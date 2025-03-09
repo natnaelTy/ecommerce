@@ -7,15 +7,15 @@ import { useSelector } from "react-redux";
 const HomePage = () => {
   
   const { users} = useSelector((state) => state.user);
-
+  
   return (
-    <div className="p-6 flex items-center flex-wrap justify-around bg-gray-100 relative z-0">
+    <div className="p-6 flex items-center flex-wrap justify-around bg-gray-100 relative mt-16">
       <div className="flex items-start flex-col justify-center gap-7 ">
         <div className="flex items-center justify-evenly relative w-[250px]">
           <span className="style1"></span>
-          <h4 className="uppercase text-lg">new arrival</h4>
+          <h4 className="uppercase text-xl">new arrival</h4>
         </div>
-        <h1 className="text-2xl md:text-6xl max-w-sm">Summer Collection</h1>
+        <h1 className="text-4xl md:text-6xl max-w-sm">Summer Collection</h1>
         <button className="btn">Shop Now</button>
         <div className="flex text-5xl items-center cursor-pointer">
           <MdKeyboardArrowLeft className="hover:text-orange-500"/>

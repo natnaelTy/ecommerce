@@ -1,6 +1,6 @@
 
 import express from "express";
-import { login, signup, googleCallback, googleLogin, verify } from "../controllers/auth.controller.js";
+import { login, signup, googleCallback, googleLogin, verify, logout } from "../controllers/auth.controller.js";
 import passport from "passport";
 
 
@@ -15,6 +15,8 @@ router.get("/google/login", googleCallback);
 router.post("/signup", signup);
 
 router.post("/login", login);
+
+router.post("/logout", logout);
 
 router.get("/verify", verify);
 

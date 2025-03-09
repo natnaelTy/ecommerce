@@ -1,7 +1,6 @@
-import { IoPersonCircleOutline } from "react-icons/io5";
+import { CgProfile } from "react-icons/cg";
 import { IoSearchOutline } from "react-icons/io5";
 import { SlHandbag } from "react-icons/sl";
-import { CiHeart } from "react-icons/ci";
 import { NavLink } from "react-router-dom";
 import { LiaTimesSolid } from "react-icons/lia";
 import { AiOutlineMenu } from "react-icons/ai";
@@ -28,13 +27,13 @@ const NavBar = () => {
   }
   return (
     <>
-      <nav className="flex ietms-center justify-between px-5 py-3 w-full absolute top-0 z-20">
+      <nav className="flex items-center justify-between px-5 py-3 w-full fixed top-0 z-20">
         {/* logo */}
         <h1 className="text-2xl hidden md:flex">Mesay Furniture</h1>
         {/* hamburger menu */}
         <button
           onClick={handleShowMenu}
-          className="flex md:hidden cursor-pointer"
+          className="flex md:hidden cursor-pointer text-xl"
         >
           {showMenu ? <AiOutlineMenu /> : <LiaTimesSolid />}
         </button>
@@ -78,7 +77,7 @@ const NavBar = () => {
               <div
                 className={
                   searchInputIsOn
-                    ? "flex items-center rounded-full w-full px-3 bg-white py-1"
+                    ? "flex items-center rounded-full w-full px-3 border-1 border-gray-100 py-1"
                     : "hidden"
                 }
               >
@@ -102,13 +101,10 @@ const NavBar = () => {
           </li>
 
           <li className="hover:text-orange-500">
-            <CiHeart />
-          </li>
-          <li className="hover:text-orange-500">
             <SlHandbag />
           </li>
           <li className="hover:text-orange-500" onClick={profilePopOut}>
-            <IoPersonCircleOutline />
+            <CgProfile />
           </li>
         </ul>
       </nav>

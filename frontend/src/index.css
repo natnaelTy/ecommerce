@@ -65,5 +65,11 @@ body{
         left: 2.5rem;
         top: 50%;
     } 
+    .lihover {
+       @apply hover:bg-gray-100 w-full p-1 cursor-pointer;
+    }
+    .liLink {
+        @apply flex items-center gap-2;
+    }
   
 }
