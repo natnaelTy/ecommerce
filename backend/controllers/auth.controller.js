@@ -210,7 +210,7 @@ export const getProfile = async (req, res) => {
   } catch (err) {}
 };
 
-//
+// logout
 export const logout = (_, res) => {
   res.clearCookie("token");
   res.status(200).json({success: true, message: "You are successfully logged out"});

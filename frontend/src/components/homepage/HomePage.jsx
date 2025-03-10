@@ -1,19 +1,27 @@
 
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser } from "../../store/user/userSlice";
+import { useEffect } from "react";
 
 const HomePage = () => {
   
-  const { users} = useSelector((state) => state.user);
-  
+  const { user} = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
+
+  console.log(user?.fullName)
   return (
     <div className="p-6 flex items-center flex-wrap justify-around bg-gray-100 relative mt-16">
+
       <div className="flex items-start flex-col justify-center gap-7 ">
         <div className="flex items-center justify-evenly relative w-[250px]">
           <span className="style1"></span>
-          <h4 className="uppercase text-xl">new arrival</h4>
+          <h4 className="uppercase text-xl">{user}</h4>
         </div>
         <h1 className="text-4xl md:text-6xl max-w-sm">Summer Collection</h1>
         <button className="btn">Shop Now</button>
@@ -40,6 +48,7 @@ const HomePage = () => {
       </div>
       {/* curve */}
       <span className="style3"></span>
+      
     </div>
     
   );

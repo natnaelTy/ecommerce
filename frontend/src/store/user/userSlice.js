@@ -1,24 +1,27 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const initialState = {
- users: null, 
- token: null,
- error: null, 
- loading: false
-}
 
-console.log(initialState);
+export const fetchUser = createAsyncThunk("user/fetchUser", async () => {
+
+  const response = axios.get("http://localhost:5000/auth/verify");
+  return response.data.user;
+})
 
 export const userSlice = createSlice({
   name: "user",
-  initialState,
+  initialState: {
+    user: null, 
+    error: null, 
+    loading: false
+  },
   reducers: {
     createUserStart(state) {
       state.loading = true;
       state.error = null;
     },
     createUser: (state, action) => {
-      state.users = action.payload;
+      state.user = action.payload;
       state.token = action.payload;
       state.error = null;
       state.loading = false;
@@ -38,15 +41,31 @@ export const userSlice = createSlice({
     createLoginUser:(state, action) => {
         state.error = null;
         state.loading = false;
-        state.users = action.payload;
+        state.user = action.payload;
     },
     createLoginFailure: (state, action) => {
         state.error = action.payload;
         state.loading = false;
     }
   },
+
+  extraReducers: (builder) => {
+    builder.addCase(fetchUser.pending, (state) => {
+      state.loading = true,
+      state.error = null
+    })
+  .addCase(fetchUser.fulfilled, (state, action) => {
+    state.loading = false,
+    state.user = action.payload?.data?.user;
+    state.error = null
+    console.log(action.payload?.data?.user)
+  })
+  .addCase(fetchUser.rejected, (state, action) => {
+    state.loading = false,
+    state.error = action.error.message;
+  })
+  }
 });
 
-
-export const { createUser, createLoginStart, setEmail, createLoginFailure, createLoginUser, createUserFailure, createUserStart } = userSlice.actions;
+export const {createLoginFailure, createLoginStart, createLoginUser, createUser, createUserFailure, createUserStart} = userSlice.actions;
 export default userSlice.reducer;

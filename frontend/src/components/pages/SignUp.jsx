@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa6";
 import { LiaTimesSolid } from "react-icons/lia";
 import { useDispatch, useSelector } from "react-redux";
-import { createUser, setEmail, createUserFailure } from "../../store/user/userSlice";
 import { useState } from "react";
 import { z } from "zod";
 import axios from "axios";
 import {FadeLoader} from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { createUserFailure, createUser } from "../../store/user/userSlice";
+
 
 axios.defaults.withCredentials = true;
 
