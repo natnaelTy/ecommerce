@@ -1,30 +1,31 @@
-
+import { useNavigate } from "react-router-dom";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { MdKeyboardArrowLeft } from "react-icons/md";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from "../../store/user/userSlice";
-import { useEffect } from "react";
+import { useSelector } from "react-redux";
+
 
 const HomePage = () => {
   
-  const { user} = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch(fetchUser());
-  }, [dispatch]);
-
-  console.log(user?.fullName)
+  const handleShop = () => {
+    if(isAuthenticated){
+      navigate("/shop")
+    }
+    else{
+      navigate("/auth/signup");
+    }
+  }
   return (
     <div className="p-6 flex items-center flex-wrap justify-around bg-gray-100 relative mt-16">
-
       <div className="flex items-start flex-col justify-center gap-7 ">
         <div className="flex items-center justify-evenly relative w-[250px]">
           <span className="style1"></span>
-          <h4 className="uppercase text-xl">{user}</h4>
+          <h4 className="uppercase text-xl">new arrival</h4>
         </div>
         <h1 className="text-4xl md:text-6xl max-w-sm">Summer Collection</h1>
-        <button className="btn">Shop Now</button>
+        <button onClick={handleShop} className="btn">Shop Now</button>
         <div className="flex text-5xl items-center cursor-pointer">
           <MdKeyboardArrowLeft className="hover:text-orange-500"/>
           <h3 className="text-orange-400 text-3xl">I</h3>
@@ -48,7 +49,6 @@ const HomePage = () => {
       </div>
       {/* curve */}
       <span className="style3"></span>
-      
     </div>
     
   );
