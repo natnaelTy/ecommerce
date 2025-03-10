@@ -82,8 +82,6 @@ export const login = async (req, res) => {
 
       const user = results[0];
 
-      console.log(user);
-
       const isPasswordValid = await bcrypt.compare(
         user_password,
         user.user_password
@@ -95,11 +93,11 @@ export const login = async (req, res) => {
           .json({ success: false, message: "Email or Password is not Valid!" });
       }
 
-      const token = generateTokenSetCookie(res, user.userId, email);
+      const token = generateTokenSetCookie(res, user.userId, email, user.fullName);
 
       return res
         .status(200)
-        .json({ success: true, message: "You are successfully logged in", token });
+        .json({ success: true, message: "You are successfully logged in", user: {...user}, token });
     });
   } catch (err) {
     console.error(err);
