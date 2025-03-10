@@ -20,6 +20,8 @@ const PORT = 5000 || 3000
 
 app.use("/auth", router);
 
+app.use(router);
+
 app.listen(PORT, () => {
     console.log(`Server is is running on ${PORT}`);
 })
