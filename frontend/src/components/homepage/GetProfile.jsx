@@ -7,10 +7,15 @@ import { IoIosLogOut } from "react-icons/io";
 import { MdSupportAgent } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 
  const GetProfile = () => {
 
+      const { isAuthenticated } = useSelector((state) => state.user);
+      const navigate = useNavigate();
       const [user, setUser] = useState(null);
        
       useEffect(() => {
@@ -27,6 +32,21 @@ import { Link } from "react-router-dom";
         }
         fetchUser();
       },[]);
+
+      function handleLogout(){
+        try{
+          const response = axios.post("http://localhost:5000/auth/logout")
+          navigate("/auth/signup");
+          toast.success("You successfully Logged out!");
+          return response.data;
+        }catch(err){
+          console.log(err);
+        }
+       
+      }
+      function handleLogin(){
+        navigate("/auth/signup");
+      }
       return(
         <div className="absolute top-17 right-5 z-1 bg-white shadow-3xl w-48">
              <div className="p-2 flex items-center gap-2 cursor-pointer">
@@ -39,9 +59,9 @@ import { Link } from "react-router-dom";
                 <li className="lihover"> <Link className="liLink" to={"/wishlist"}><CiHeart className="text-lg"/> Wishlist</Link></li>
                 <li className="lihover"> <Link className="liLink" to={"/support"}><MdSupportAgent className="text-lg"/> Support </Link></li>
              </ul>
-             <div className="p-2 flex items-center gap-2 hover:bg-orange-300 cursor-pointer">
-                <h1>Log out </h1>
+             <div onClick={isAuthenticated ? handleLogout : handleLogin} className="p-2 flex items-center gap-2 hover:bg-orange-300 cursor-pointer">
                 <IoIosLogOut className="text-xl"/>
+                <h1>{isAuthenticated ? 'Log out' : 'Log in'}</h1>
              </div>
         </div>
       )
