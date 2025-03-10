@@ -54,8 +54,7 @@ const LogIn = () => {
       const response = await axios.post("http://localhost:5000/auth/login", validatedUser)
 
       dispatch(createLoginUser(validatedUser));  
-      console.log(validatedUser);    
-      toast.success("You successfully logged in!")
+      toast.success("You successfully Logged in!");
       navigate("/");
     }catch(error){
       dispatch(createLoginFailure(error.response?.data?.message || 'Something went wrong'));
