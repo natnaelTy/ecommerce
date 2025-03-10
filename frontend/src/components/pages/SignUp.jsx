@@ -53,7 +53,6 @@ const SignUp = () => {
       const response = await axios.post("http://localhost:5000/auth/signup", validatedUser);
       
       dispatch(createUser(response.data));
-      dispatch(setEmail(user.email));
       navigate("/");
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -73,14 +72,17 @@ const SignUp = () => {
     window.location.href = "http://localhost:5000/auth/google";
   }
 
-
+  function handleCloseSignup(){
+    navigate("/");
+  }
   return (
     <div className="flex items-center justify-center w-full h-screen flex-col md:flex-row">
       <Toaster>{errors.fullName}</Toaster>
       {/* close page button */}
       <button
         type="button"
-        className="absolute top-5 right-6 text-2xl cursor-pointer"
+        className="absolute top-5 right-6 text-2xl cursor-pointer z-30"
+        onClick={handleCloseSignup}
       >
         <LiaTimesSolid />
       </button>
@@ -155,12 +157,12 @@ const SignUp = () => {
             {errors.user_password && <span className="text-red-600">{errors.user_password}</span>}
           <br />
           <button type="submit" className="smallButton">
-            {loading ? <FadeLoader color="#ffffff" /> : 'Sign up'}
+            {loading ? <FadeLoader className="text-white text-sm"/> : 'Sign up'}
           </button>
           <p>
             Already have an account? &nbsp;{" "}
             <span className="text-orange-400 underline cursor-pointer">
-              <Link to={"/api/auth/login"} >Log in</Link>
+              <Link to={"/auth/login"} >Log in</Link>
             </span>
           </p>
         </form>
