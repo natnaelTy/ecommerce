@@ -20,10 +20,12 @@ export default function NewArrival() {
   },[]); 
   console.log(products)
   return (
-    <div className='flex flex-col items-center justify-center'>
+    <div className='flex flex-col items-center justify-center h-full'>
        {products && products.length ? 
        products.map((items) => (
-        <div key={items.id}>{items?.price}</div>
+        <div key={items.id} className='w-48 h-48'>
+          <img src={items.image} alt="" />
+        </div>
        )) : null}
       
     </div>
