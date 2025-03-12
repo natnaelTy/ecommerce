@@ -4,13 +4,21 @@ import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import passport from "passport";
-
+import path from "path";
+import { fileURLToPath } from "url";
 dotenv.config();
 
 const app = express();
 app.use(passport.initialize());
 
 app.use(cors({origin: "http://localhost:5173", credentials: true}));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve the upload folder statically
+app.use("/upload", express.static(path.join(__dirname, "upload")));
+app.use(express.static("public"));
 
 
 app.use(express.json());
