@@ -8,6 +8,7 @@ import { createLoginUser, createLoginFailure } from "../../store/user/userSlice.
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { MdErrorOutline } from "react-icons/md";
+import api from "../../services/api.js";
 
 
 
@@ -51,7 +52,7 @@ const LogIn = () => {
     const validatedUser = userSchema.parse(user);
 
     try{
-      const response = await axios.post("http://localhost:5000/auth/login", validatedUser)
+      const response = await api.post("/auth/login", validatedUser)
 
       dispatch(createLoginUser(validatedUser));  
       toast.success("You successfully Logged in!");
