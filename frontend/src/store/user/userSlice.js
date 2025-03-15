@@ -5,7 +5,7 @@ const initialState = {
   user: null,
   loading: false,
   error: null,
-  isAuthenticated: false
+  isAuthenticated: false,
 }
 
 export const userSlice = createSlice({
@@ -15,36 +15,36 @@ export const userSlice = createSlice({
     createUserStart(state) {
       state.loading = true;
       state.error = null;
-      state.isAuthenticated = false
+      state.isAuthenticated = false;
     },
     createUser: (state, action) => {
       state.user = action.payload;
       state.isAuthenticated = true,
       state.error = null;
-      state.loading = false
+      state.loading = false;
     },
     createUserFailure: (state, action) => {
       state.error = action.payload;
       state.loading = false;
-      state.isAuthenticated = false
+      state.isAuthenticated = false;
     },
     
     // login
     createLoginStart(state){
       state.loading = true;
       state.error = null;
-      state.isAuthenticated = false
+      state.isAuthenticated = false;
     },
     createLoginUser:(state, action) => {
         state.error = null;
         state.loading = false;
         state.user = action.payload;
-        state.isAuthenticated = true
+        state.isAuthenticated = true;
     },
     createLoginFailure: (state, action) => {
         state.error = action.payload;
-        state.loading = false,
-        state.isAuthenticated = false
+        state.loading = false;
+        state.isAuthenticated = false;
     }
   },
 
