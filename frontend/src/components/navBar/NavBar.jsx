@@ -27,7 +27,7 @@ const NavBar = () => {
   }
   return (
     <>
-      <nav className="flex items-center justify-between px-5 py-3 w-full fixed top-0 z-20">
+      <nav className="flex items-center justify-between px-5 bg-white py-3 w-full fixed top-0 z-20">
         {/* logo */}
         <h1 className="text-2xl hidden md:flex">Mesay Furniture</h1>
         {/* hamburger menu */}
