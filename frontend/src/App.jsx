@@ -9,15 +9,17 @@ import NewArrival from "./components/newarrival/NewArrival";
 
 function App() {
   return (
+    <>
     <Routes>
       <Route path="/" element={<ClientLayout />}>
-         <Route path="/products" element={<NewArrival/>}/>
         <Route index element={<HomePage />} />
         <Route path="/shop" element={<Shop/>}></Route>
       </Route>
       <Route path="/auth/signup" element={<SignUp />} />
       <Route path="/auth/login" element={<LogIn />} />
     </Routes>
+    <NewArrival/>
+    </>
   );
 }
 
