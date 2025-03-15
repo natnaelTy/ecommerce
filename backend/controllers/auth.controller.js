@@ -76,7 +76,7 @@ export const login = async (req, res) => {
 
       if (results.length === 0) {
         return res
-          .status(400)
+          .status(404)
           .json({ success: false, message: "Email or Password is not Valid!" });
       }
 
