@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { IoPerson } from "react-icons/io5";
+import { IoHomeSharp } from "react-icons/io5";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { CiHeart } from "react-icons/ci";
 import { IoIosLogOut } from "react-icons/io";
@@ -47,14 +47,15 @@ import toast from "react-hot-toast";
       function handleLogin(){
         navigate("/auth/signup");
       }
+      
       return(
-        <div className="absolute top-17 right-5 z-1 bg-white shadow-3xl w-48">
+        <div className="fixed top-17 right-5 z-30 bg-white shadow-3xl w-48">
              <div className="p-2 flex items-center gap-2 cursor-pointer">
                 <CgProfile className="text-2xl"/>
-                <h1 className="text-gray-900">{user?.fullName ? user?.fullName : "My Account"}</h1>
+                <h1 className="text-gray-900">{user?.fullName ? user?.fullName : "Guest"}</h1>
              </div>
              <ul className="flex text-gray-700 flex-col items-start justify-center gap-2 border-1 border-gray-200">
-               <li className="lihover"><Link className="liLink" to={"/profile"}><IoPerson className="text-lg"/> Profile</Link></li>
+               <li className="lihover"><Link className="liLink" to={"/profile"}><IoHomeSharp className="text-lg"/> Home</Link></li>
                 <li className="lihover"><Link className="liLink" to={'/orders'}><BiSolidPurchaseTag className="text-lg"/>Orders</Link></li>
                 <li className="lihover"> <Link className="liLink" to={"/wishlist"}><CiHeart className="text-lg"/> Wishlist</Link></li>
                 <li className="lihover"> <Link className="liLink" to={"/support"}><MdSupportAgent className="text-lg"/> Support </Link></li>
