@@ -5,30 +5,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { z } from "zod";
 import axios from "axios";
-import {FadeLoader} from "react-spinners";
+import { FadeLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import { createUserFailure, createUser } from "../../store/user/userSlice";
-
+import { createUser } from "../../store/user/userSlice";
 
 axios.defaults.withCredentials = true;
 
 const SignUp = () => {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {error, loading} = useSelector((state) => state.user)
-
+  const { error, loading } = useSelector((state) => state.user);
   const [user, setUser] = useState({
-    fullName: '',
-    email: '',
-    user_password: '',
+    fullName: "",
+    email: "",
+    user_password: "",
   });
-
   const [errors, setErrors] = useState({});
- 
+
   const userSchema = z.object({
-    fullName: z.string().min(1, { message: "fullName is required" }),
+    fullName: z.string().min(1, { message: "full Name is required" }),
     email: z.string().email({ message: "Invalid email address" }),
     user_password: z
       .string()
@@ -43,16 +39,12 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmitForm = async (e) => {
+  const handleSubmitForm = (e) => {
     e.preventDefault();
-
     try {
       const validatedUser = userSchema.parse(user);
       setErrors({}); 
-
-      const response = await axios.post("http://localhost:5000/auth/signup", validatedUser);
-      
-      dispatch(createUser(response.data));
+      dispatch(createUser(validatedUser));
       navigate("/");
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -62,22 +54,19 @@ const SignUp = () => {
         });
         setErrors(errorMessages);
       }
-      else{
-        dispatch(createUserFailure(error.response?.data?.message || 'Something went wrong'));
-      }
     }
   };
 
-  function handleGoogleAuth(){
+  function handleGoogleAuth() {
     window.location.href = "http://localhost:5000/auth/google";
   }
 
-  function handleCloseSignup(){
+  function handleCloseSignup() {
     navigate("/");
   }
   return (
     <div className="flex items-center justify-center w-full h-screen flex-col md:flex-row">
-      <Toaster>{errors.fullName}</Toaster>
+      <Toaster>{error.fullName}</Toaster>
       {/* close page button */}
       <button
         type="button"
@@ -101,12 +90,15 @@ const SignUp = () => {
           Create your account
         </h1>
         {/* google signup */}
-          <button onClick={handleGoogleAuth} className="text-sm md:text-base w-full border-1 cursor-pointer border-gray-100 px-4 py-2 flex items-center justify-center gap-4">
-            <span>
-              <FcGoogle className="text-xl" />
-            </span>
-            Continue with google
-          </button>
+        <button
+          onClick={handleGoogleAuth}
+          className="text-sm md:text-base w-full border-1 cursor-pointer border-gray-100 px-4 py-2 flex items-center justify-center gap-4"
+        >
+          <span>
+            <FcGoogle className="text-xl" />
+          </span>
+          Continue with google
+        </button>
         {/* options */}
         <div className="relative">
           <span className="text-lg text-gray-400">or</span>
@@ -120,13 +112,15 @@ const SignUp = () => {
           </label>
           <input
             type="name"
-             name="fullName"
+            name="fullName"
             placeholder="Enter your full name"
             className="px-4 text-sm py-3 focus:outline-orange-400 bg-gray-100 w-full"
             onChange={handleChange}
             value={user.fullName}
           />
-          {errors.fullName && <span className="text-red-600">{errors.fullName}</span>}
+          {errors.fullName && (
+            <span className="text-red-600">{errors.fullName}</span>
+          )}
           <br />
 
           <label htmlFor="email">
@@ -134,13 +128,13 @@ const SignUp = () => {
           </label>
           <input
             type="email"
-             name="email"
+            name="email"
             placeholder="Enter your email"
             className="px-4 text-sm py-3 focus:outline-orange-400 bg-gray-100 w-full"
             onChange={handleChange}
             value={user.email}
           />
-          {error && <span className="text-red-600">{error}</span>}
+          {errors.email && <span className="text-red-600">{errors.email}</span>}
           <br />
 
           <label htmlFor="user_password">
@@ -154,15 +148,21 @@ const SignUp = () => {
             onChange={handleChange}
             value={user.user_password}
           />
-            {errors.user_password && <span className="text-red-600">{errors.user_password}</span>}
+          {errors.user_password && (
+            <span className="text-red-600">{errors.user_password}</span>
+          )}
           <br />
           <button type="submit" className="smallButton">
-            {loading ? <FadeLoader className="text-white text-sm"/> : 'Sign up'}
+            {loading ? (
+              <FadeLoader className="text-white text-sm" />
+            ) : (
+              "Sign up"
+            )}
           </button>
           <p>
             Already have an account? &nbsp;{" "}
             <span className="text-orange-400 underline cursor-pointer">
-              <Link to={"/auth/login"} >Log in</Link>
+              <Link to={"/auth/login"}>Log in</Link>
             </span>
           </p>
         </form>
