@@ -10,28 +10,18 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import { useDispatch } from "react-redux";
+import { fetchUser } from "../../store/user/userSlice";
 
  const GetProfile = () => {
 
-      const { isAuthenticated } = useSelector((state) => state.user);
+      const { isAuthenticated, user, loading, error } = useSelector((state) => state.user);
       const navigate = useNavigate();
-      const [user, setUser] = useState(null);
-       
+      const dispatch = useDispatch();
+
       useEffect(() => {
-        const fetchUser = async () => {
-          try{
-            const response = await axios.get("http://localhost:5000/auth/verify");
-            const userData = await response.data.user;
-            console.log(userData);
-            setUser(userData);
-            
-          }catch(err){
-            console.log(err);
-          }
-        }
-        fetchUser();
-      },[]);
+        dispatch(fetchUser());
+      },[dispatch]);
 
       function handleLogout(){
         try{
@@ -44,6 +34,7 @@ import toast from "react-hot-toast";
         }
        
       }
+
       function handleLogin(){
         navigate("/auth/signup");
       }
