@@ -43,6 +43,7 @@ export const signup = async (req, res) => {
           // Get the inserted user's ID
           const userId = results.insertId;
           const token = generateTokenSetCookie(res, userId, email, fullName);
+          console.log(token);
           
           res.status(201).json({
             sucess: true,
