@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { fetchUser } from "../../store/user/userSlice";
+import { fetchUser, logoutUser } from "../../store/user/userSlice";
 
  const GetProfile = () => {
 
@@ -25,10 +25,9 @@ import { fetchUser } from "../../store/user/userSlice";
 
       function handleLogout(){
         try{
-          const response = axios.post("http://localhost:5000/auth/logout")
-          navigate("/auth/signup");
+          dispatch(logoutUser());
           toast.success("You successfully Logged out!");
-          return response.data;
+          navigate("/auth/signup");
         }catch(err){
           console.log(err);
         }
