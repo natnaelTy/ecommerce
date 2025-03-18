@@ -1,11 +1,12 @@
 import { useState } from "react";
 import {Link} from "react-router-dom";
 import { z } from "zod";
-import {FadeLoader} from "react-spinners";
+import {ClipLoader} from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { MdErrorOutline } from "react-icons/md";
+import { IoWarningOutline } from "react-icons/io5";
 import { loginUser } from "../../store/user/userSlice";
 
 
@@ -22,21 +23,13 @@ const LogIn = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {error, loading, email, isAuthenticated} = useSelector((state) => state.user);
+  const {error, loading} = useSelector((state) => state.user);
 
   const [user, setUser] = useState({
     email: "",
     user_password: ""
   });
   const [errors, setErrors] = useState({});
-
-
-  useState(() => {
-    if (email) {
-      setUser((prevData) => ({ ...prevData, email }));
-    }
-  }, [email]);
-
 
    const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,10 +44,9 @@ const LogIn = () => {
 
     try{
       const validatedUser = userSchema.parse(user);
+      // Zod error message
       setErrors({}); 
-
       dispatch(loginUser(validatedUser));  
-      toast.success("You successfully Logged in!");
     }catch(error){
       if (error instanceof z.ZodError) {
         const errorMessages = {};
@@ -96,11 +88,17 @@ const LogIn = () => {
             onChange={handleChange}
             value={user.user_password}
           />
+
+          {errors.user_password && <span className="text-xs text-orange-500 flex items-center gap-1 mt-1 mb-1"><IoWarningOutline/>{errors.user_password}</span>}
+
+          {/* forgot password button */}
           <button className="absolute right-12 bottom-20 text-orange-400 underline text-xs hover:text-orange-300"><Link to={'/forgotpassword'}>Forgot password</Link></button>
-          {error?.message && <span className="text-red-600 text-sm flex items-center gap-1 mt-3"><MdErrorOutline className="text-base"/>{error?.message}</span>}
+
+          {/* error display */}
+          {error && <span className="inputError"><MdErrorOutline/>{error}</span>}
           <br />
           <br />
-          <button type="submit" className="smallButton">{loading ? <FadeLoader className="text-xs text-white"/> : 'Log in'}</button>
+          <button type="submit" className="smallButton">{loading ? (<ClipLoader color="#fff" loading size={20}/>) : ('Log in')}</button>
         </form>
       </div>
     </div>
