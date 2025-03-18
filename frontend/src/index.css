@@ -71,5 +71,7 @@ body{
     .liLink {
         @apply flex items-center gap-2;
     }
-  
+    .inputError {
+        @apply text-red-600 flex items-center gap-1 text-xs mt-1;
+    }
 }
