@@ -15,7 +15,7 @@ import { fetchUser, logoutUser } from "../../store/user/userSlice";
 
  const GetProfile = () => {
 
-      const { isAuthenticated, user, loading, error } = useSelector((state) => state.user);
+      const { isAuthenticated, user } = useSelector((state) => state.user);
       const navigate = useNavigate();
       const dispatch = useDispatch();
 
