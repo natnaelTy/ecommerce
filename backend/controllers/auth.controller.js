@@ -24,7 +24,7 @@ export const signup = async (req, res) => {
       } else if (results.length > 0) {
         return res
           .status(400)
-          .json({ success: false, message: "user already exist" });
+          .json({ success: false, message: "User already exist" });
       }
       if (results.length === 0) {
         // hash password
@@ -219,6 +219,7 @@ export const logout = (_, res) => {
 export const verify = async (req, res) => {
   try {
     const token = req.cookies.token;
+
     if (!token) {
       return res.status(401).json({ success: false, message: "No token provided" });
     }
