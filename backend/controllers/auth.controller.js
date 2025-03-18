@@ -78,7 +78,7 @@ export const login = async (req, res) => {
       if (results.length === 0) {
         return res
           .status(404)
-          .json({ success: false, message: "Email or Password is not Valid!" });
+          .json({ success: false, message: "Email or password is not correct" });
       }
 
       const user = results[0];
@@ -91,7 +91,7 @@ export const login = async (req, res) => {
       if (!isPasswordValid) {
         return res
           .status(400)
-          .json({ success: false, message: "Email or Password is not Valid!" });
+          .json({ success: false, message: "Email or password is not correct" });
       }
 
       const token = generateTokenSetCookie(res, user.userId, email, user.fullName);
