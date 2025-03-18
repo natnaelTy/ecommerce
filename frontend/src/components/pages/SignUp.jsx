@@ -25,7 +25,7 @@ const SignUp = () => {
   const [errors, setErrors] = useState({});
 
   const userSchema = z.object({
-    fullName: z.string().min(1, { message: "full Name is required" }),
+    fullName: z.string().min(1, { message: "Full Name is required" }),
     email: z.string().email({ message: "Invalid email address" }),
     user_password: z
       .string()
@@ -120,7 +120,7 @@ const SignUp = () => {
             value={user.fullName}
           />
           {errors.fullName && (
-            <span className="text-red-600">{errors.fullName}</span>
+            <span className="inputError"><MdErrorOutline/>{errors.fullName}</span>
           )}
           <br />
 
@@ -135,8 +135,8 @@ const SignUp = () => {
             onChange={handleChange}
             value={user.email}
           />
-          {errors.email && <span className="text-red-600">{errors.email}</span>}
-          {error && <span className="text-red-600 flex items-center gap-1 text-sm"><MdErrorOutline/>{error}</span>}
+          {errors.email && <span className="inputError"><MdErrorOutline/>{errors.email}</span>}
+          {error && <span className="inputError"><MdErrorOutline/>{error}</span>}
           <br />
 
           <label htmlFor="user_password">
@@ -151,7 +151,7 @@ const SignUp = () => {
             value={user.user_password}
           />
           {errors.user_password && (
-            <span className="text-red-600">{errors.user_password}</span>
+            <span className="inputError"><MdErrorOutline/>{errors.user_password}</span>
           )}
           <br />
           <button type="submit" className="smallButton">
