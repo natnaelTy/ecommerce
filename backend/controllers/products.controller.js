@@ -8,7 +8,6 @@ export const products = (req, res) => {
       console.log(err);
     }
     const products = results;
-    console.log(products);
     res.status(200).json({ success: true, products });
   });
 };
@@ -36,7 +35,6 @@ export const postedProducts = (req, res) => {
           console.error("Error creating product:", err);
           return res.status(500).send("Server Error");
         }
-        console.log("Product inserted:", results);
 
         res.status(201).json({
           message: "Product created successfully",
