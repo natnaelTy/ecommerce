@@ -8,34 +8,53 @@ const initialState = {
   isAuthenticated: false,
 };
 
-// create user
+// create user (signup)
 export const createUser = createAsyncThunk(
   "user/createUser",
-  async ({ email, fullName, user_password }, { rejectWithValue }) => {
+  async (validatedUser, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signup", {
-        email,
-        fullName,
-        user_password,
-      });
+      const response = await api.post("/auth/signup", validatedUser);
+
+      if (response.status === 201) {
+        window.location.href = "/";
+      }
+     
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Signup failed");
+    }
+  }
+);
+
+// login user
+export const loginUser = createAsyncThunk("user/loginUser", async (validatedUser, {rejectWithValue}) => {
+    try{
+      const response = await api.post("/auth/login", validatedUser);
+      if (response.status === 200) {
+        window.location.href = "/";
+      }
+    }catch(error){
+      return rejectWithValue(error.response?.data?.message || "Login failed");
+    }
+});
+
+// get user
+export const fetchUser = createAsyncThunk(
+  "user/fetchUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/verify");
       return response.data.user;
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
-// get user
-export const fetchUser = createAsyncThunk(
-  "user/fetchUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.get("/auth/verify");
-      return response.data.decoded;
-    } catch (error) {
-      return rejectWithValue(error.message);
-    }
-  }
-);
+// logout
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  await api.post("/logout");
+  return null;
+});
+
 
 export const userSlice = createSlice({
   name: "user",
@@ -76,7 +95,17 @@ export const userSlice = createSlice({
         state.error = action.payload;
         state.loading = false;
         state.isAuthenticated = false;
-      });
+      })
+      // logout user
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+        state.user = null;
+        state.isAuthenticated = false;
+      })
   },
 });
 
