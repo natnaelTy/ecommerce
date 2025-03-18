@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import { z } from "zod";
 import axios from "axios";
-import { FadeLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
+import { MdErrorOutline } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { createUser } from "../../store/user/userSlice";
@@ -39,13 +40,13 @@ const SignUp = () => {
     });
   };
 
-  const handleSubmitForm = (e) => {
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
     try {
       const validatedUser = userSchema.parse(user);
       setErrors({}); 
       dispatch(createUser(validatedUser));
-      navigate("/");
+   
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessages = {};
@@ -66,7 +67,7 @@ const SignUp = () => {
   }
   return (
     <div className="flex items-center justify-center w-full h-screen flex-col md:flex-row">
-      <Toaster>{error.fullName}</Toaster>
+      <Toaster>{error?.fullName}</Toaster>
       {/* close page button */}
       <button
         type="button"
@@ -135,6 +136,7 @@ const SignUp = () => {
             value={user.email}
           />
           {errors.email && <span className="text-red-600">{errors.email}</span>}
+          {error && <span className="text-red-600 flex items-center gap-1 text-sm"><MdErrorOutline/>{error}</span>}
           <br />
 
           <label htmlFor="user_password">
@@ -154,7 +156,7 @@ const SignUp = () => {
           <br />
           <button type="submit" className="smallButton">
             {loading ? (
-              <FadeLoader className="text-white text-sm" />
+             <ClipLoader color="#fff" loading size={20}/>
             ) : (
               "Sign up"
             )}
