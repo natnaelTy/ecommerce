@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import api, { nPoint } from "../../services/api";
+import { useSelector } from "react-redux";
 
 export default function NewArrival() {
   const [products, setProducts] = useState([]);
-
+  const {loading} = useSelector((state) => state.products);
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
