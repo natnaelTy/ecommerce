@@ -19,6 +19,7 @@ const HomePage = () => {
   if(loading){
     return <div className="flex items-center justify-center h-screen"><PropagateLoader color="#ffab00" /></div>
   }
+  
   return (
     <div className="p-4 flex items-center flex-wrap justify-around bg-gray-100 relative mt-16 z-10">
       <div className="flex items-start flex-col justify-center gap-7 ">
