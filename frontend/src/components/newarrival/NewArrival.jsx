@@ -1,22 +1,17 @@
 import { useEffect, useState } from "react";
 import api, { nPoint } from "../../services/api";
 import { useSelector } from "react-redux";
+import { fetchProduct } from "../../store/product/productSlice";
+import { useDispatch } from "react-redux";
 
 export default function NewArrival() {
   const [products, setProducts] = useState([]);
-  const {loading} = useSelector((state) => state.products);
-  
+  const dispatch = useDispatch();
+  const { product, loading, error } = useSelector((state) => state.product);
+
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await api.get("/products");
-        const data = await response.data.products;
-        setProducts(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchProducts();
+    dispatch(fetchProduct());
+    setProducts(product);
   }, []);
 
   return (
