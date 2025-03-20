@@ -61,7 +61,7 @@ const LogIn = () => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-screen">
-      <div className="flex flex-col items-center justify-center gap-4 p-4 w-96 shadow-lg relative">
+      <div className="flex flex-col items-center justify-center gap-4 p-4 w-96 shadow-lg relative border-1 border-gray-200">
         <h1 className="text-lg md:text-2xl font-medium mb-5 mt-5 text-center">Welcome back! <br />Log <span className="text-orange-400">in</span></h1>
         <form onSubmit={handleLoginSubmit}>
           <label htmlFor="email">
