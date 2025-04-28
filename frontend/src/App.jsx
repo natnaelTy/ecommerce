@@ -2,7 +2,7 @@ import "./index.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ClientLayout from "./Layout/ClientLayout";
 import SignUp from "./components/pages/SignUp";
-import HomePage from "./components/homepage/homepage";
+import HomePage from "./components/homepage/HomePage";
 import LogIn from "./components/pages/LogIn";
 import Shop from "./components/shopPage/shop";
 import NewArrival from "./components/newarrival/NewArrival";
