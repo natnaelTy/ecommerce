@@ -5,6 +5,10 @@ import { PiOfficeChairLight } from "react-icons/pi";
 import { useState } from "react";
 import "./style.css";
 import GetProfile from "../homepage/GetProfile";
+import { MdTableBar } from "react-icons/md";
+import { FaMattressPillow } from "react-icons/fa6";
+import { NavLink } from "react-router-dom";
+
 
 const NavBar = () => {
   const [searchInputIsOn, setSearchInputIsOn] = useState(false);
@@ -35,45 +39,45 @@ const NavBar = () => {
             </span>
             
              <div className="flex items-center space-x-6 capitalize text-sm">
-                <a href="index.html" className="text-gray-200 hover:text-white transition">Home</a>
-                <a href="pages/shop.html" className="text-gray-200 hover:text-white transition">Shop</a>
-                <a href="#" className="text-gray-200 hover:text-white transition">About us</a>
-                <a href="#" className="text-gray-200 hover:text-white transition">Contact us</a>
+                <NavLink to={"/"} className="text-gray-200 hover:text-white transition">Home</NavLink>
+                <NavLink to={"pages/shop.html"} className="text-gray-200 hover:text-white transition">Shop</NavLink> 
+                <NavLink to={"/"} className="text-gray-200 hover:text-white transition">About us</NavLink>
+                <NavLink to={"/"} className="text-gray-200 hover:text-white transition">Contact us</NavLink>
             </div>
             
             {/* dropdown */}
             <div
                 className="absolute z-20 w-full left-0 top-full bg-white shadow-md py-3 divide-y divide-gray-300 divide-dashed opacity-0 group-hover:opacity-100 transition duration-300 invisible group-hover:visible">
-                <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                    <RiSofaLine/>
-                    <span className="ml-6 text-gray-600 text-sm">Sofa</span>
-                </a>
-                <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-100 transition">
+                <NavLink to={"/"} className="flex  items-center px-6 py-3 hover:bg-gray-100 text-pink-600 transition">
+                    <RiSofaLine />
+                    <span className="ml-2 text-gray-600 text-sm">Sofa</span>
+                </NavLink>
+                <NavLink to={"/"} className="flex items-center px-6 py-3 hover:bg-gray-100 text-pink-600 transition">
                     <IoBedOutline/>
-                    <span className="ml-6 text-gray-600 text-sm">Terarce</span>
-                </a>
-                <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-100 transition">
+                    <span className="ml-2 text-gray-600 text-sm">Terarce</span>
+                </NavLink>
+                <NavLink to={"/"} className="flex items-center px-6 py-3 hover:bg-gray-100 text-pink-600 transition">
                     <IoBedOutline/>
-                    <span className="ml-6 text-gray-600 text-sm">Bed</span>
-                </a>
-                <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-100 transition">
+                    <span className="ml-2 text-gray-600 text-sm">Bed</span>
+                </NavLink>
+                <NavLink to={"/"} className="flex items-center px-6 py-3 hover:bg-gray-100 text-pink-600 transition">
                     <PiOfficeChairLight/>
-                    <span className="ml-6 text-gray-600 text-sm">office</span>
-                </a>
-                <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                    <img src="assets/images/icons/outdoor-cafe.svg" alt="outdoor" className="w-5 h-5 object-contain"/>
-                    <span className="ml-6 text-gray-600 text-sm">Outdoor</span>
-                </a>
-                <a href="#" className="flex items-center px-6 py-3 hover:bg-gray-100 transition">
-                    <img src="assets/images/icons/bed-2.svg" alt="Mattress" className="w-5 h-5 object-contain"/>
-                    <span className="ml-6 text-gray-600 text-sm">Mattress</span>
-                </a>
+                    <span className="ml-2 text-gray-600 text-sm">Office</span>
+                </NavLink>
+                <NavLink to={"/"} className="flex items-center px-6 py-3 hover:bg-gray-100 text-pink-600 transition">
+                    <MdTableBar/>
+                    <span className="ml-2 text-gray-600 text-sm">Table</span>
+                </NavLink>
+                <NavLink to={"/"} className="flex items-center px-6 py-3 hover:bg-gray-100 text-pink-600 transition">
+                    <FaMattressPillow/>
+                    <span className="ml-2 text-gray-600 text-sm">Mattress</span>
+                </NavLink>
             </div>
         </div>
     </div>
    
     <button href="pages/login.html" className="text-gray-200 text-sm hover:text-white transition">Login</button>
-</nav>
+  </nav>
     </>
   );
 };
