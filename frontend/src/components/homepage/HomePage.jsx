@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { PropagateLoader } from "react-spinners";
 import { useSelector } from "react-redux";
+import { CiDeliveryTruck } from "react-icons/ci";
+import { GiTakeMyMoney } from "react-icons/gi";
+import { TbHours24 } from "react-icons/tb";
+
 
 const HomePage = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.user);
@@ -38,6 +42,32 @@ const HomePage = () => {
 
     <div></div>
 </div>
+
+   <div class="container py-10">
+        <div class="w-full flex items-center justify-center gap-6">
+            <div className="border border-pink-600 h-[70px] max-w-[270px] w-full rounded-sm px-3 py-4 flex justify-center items-center gap-5">
+                <CiDeliveryTruck className="text-2xl lg:text-4xl text-pink-600"/>
+                <div>
+                    <h4 className="font-medium capitalize text-sm">Free Shipping</h4>
+                    <p className="text-gray-500 text-xs">Order over 1,000 br</p>
+                </div>
+            </div>
+            <div className="border border-pink-600 h-[70px] max-w-[270px] w-full rounded-sm px-3 py-4 flex justify-center items-center gap-5">
+                <GiTakeMyMoney className="text-2xl lg:text-4xl text-pink-600"/>
+                <div>
+                    <h4 className="font-medium capitalize text-sm">Money Returns</h4>
+                    <p className="text-gray-500 text-xs">30 days money returns</p>
+                </div>
+            </div>
+            <div className="border border-pink-600 h-[70px] max-w-[270px] w-full rounded-sm px-3 py-4 flex justify-center items-center gap-5">
+             <TbHours24 className="text-2xl lg:text-4xl text-pink-600"/>
+                <div>
+                    <h4 className="font-medium capitalize text-sm">24/7 Support</h4>
+                    <p className="text-gray-500 text-xs">Customer support</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </>
   );
 };
