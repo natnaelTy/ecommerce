@@ -8,3 +8,11 @@ body{
     margin: 0;
 }
 
+@layer utility {
+    .categoryContainer {
+        @apply relative overflow-hidden max-w-[300px] h-auto w-full;
+    }
+    .categoryContainerLink {
+        @apply absolute inset-0 bg-[#00000070] hover:bg-[#00000037] flex items-center justify-center text-xl text-white font-medium transition;
+    }
+}
