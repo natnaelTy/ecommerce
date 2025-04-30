@@ -6,7 +6,7 @@ export default function Category() {
   return (
     <div className="py-16">
     <h2 className="text-2xl font-medium text-slate-800 uppercase mb-6 ml-42">shop by category</h2>
-    <div className="flex items-center justify-center flex-wrap flex-1 gap-2 px-10 w-full">
+    <div className="flex items-center justify-center flex-wrap gap-2 px-10 w-full">
         <div className="categoryContainer">
             <img src="./images/category-1.jpg" alt="category 1" className="w-full"/>
            <Link to={"/"}
