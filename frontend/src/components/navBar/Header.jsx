@@ -9,7 +9,7 @@ export default function Header() {
 
   return (
     <header className="py-3 px-18 shadow-sm bg-white">
-    <div className="flex items-center justify-evenly">
+    <div className="flex items-center justify-between lg:justify-evenly">
         <Link to={"/"} className="text-xl uppercase font-medium">
           <span className="text-amber-500">Messay</span>fur.
         </Link>
