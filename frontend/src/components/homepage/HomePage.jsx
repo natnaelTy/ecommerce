@@ -44,7 +44,7 @@ const HomePage = () => {
 </div>
 
    <div class="container py-10">
-        <div class="w-full flex items-center justify-center gap-6">
+        <div class="w-full flex flex-col items-center justify-center lg:flex-row gap-6">
             <div className="border border-pink-600 h-[70px] max-w-[270px] w-full rounded-sm px-3 py-4 flex justify-center items-center gap-5">
                 <CiDeliveryTruck className="text-2xl lg:text-4xl text-pink-600"/>
                 <div>
