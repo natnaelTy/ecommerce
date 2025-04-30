@@ -5,9 +5,9 @@ import SignUp from "./components/pages/SignUp";
 import HomePage from "./components/homepage/HomePage";
 import LogIn from "./components/pages/LogIn";
 import Shop from "./components/shopPage/shop";
-import NewArrival from "./components/newarrival/NewArrival";
 import Category from "./components/homepage/Category";
-
+import NewArrival from "./components/homepage/NewArrival";
+import Recomended from "./components/homepage/Recomended";
 
 function App() {
   return (
@@ -21,6 +21,8 @@ function App() {
       <Route path="/auth/login" element={<LogIn />} />
     </Routes>
     <Category/>
+    <NewArrival/>
+    <Recomended/>
     </>
   );
 }
