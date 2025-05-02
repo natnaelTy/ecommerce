@@ -3,7 +3,7 @@ import api from "../../services/api";
 
 // initializing states
 const initialState = {
-   product: [],
+   productItems: [],
    loading: false,
    error: null,
 }
@@ -11,8 +11,9 @@ const initialState = {
 export const fetchProduct = createAsyncThunk('product/fetchProduct', async (_, {rejectWithValue}) => {
     try{
         const response = await api.get("/products");
-        const data = await response.data.product;
-        return data;
+        const data = await response.data;
+        console.log(data)
+        return data
     }catch(error){
       return rejectWithValue(error.message);
     }
@@ -29,7 +30,7 @@ const productSlice = createSlice({
         .addCase(fetchProduct.fulfilled, (state, action) => {
             state.error = null;
             state.loading = false;
-            state.product = action.payload;
+            state.productItems = action.payload;
         })
         .addCase(fetchProduct.rejected, (state, action) => {
             state.error = action.payload;
