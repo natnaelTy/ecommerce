@@ -15,7 +15,7 @@ export const products = (req, res) => {
     }
     const product = results;
     console.log(product)
-    res.status(200).json(product);
+    res.status(200).json({success: true, product});
   });
 };
 
