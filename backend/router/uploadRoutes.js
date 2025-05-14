@@ -7,11 +7,11 @@ const productRoute = express.Router();
 
 const upload = multer({ dest: 'uploads/' });
 
-// Products routes
+// get Products 
 productRoute.get("/products", products);
 
 
-// Product Upload Route
+// Product Upload 
 productRoute.post("/post-product", upload.single('image'), postedProducts);
 
 
