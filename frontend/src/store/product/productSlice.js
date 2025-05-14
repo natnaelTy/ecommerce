@@ -2,16 +2,12 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../services/api";
 
 // initializing states
-const initialState = {
-   productItems: [],
-   loading: false,
-   error: null,
-}
+
 // fetch products from products route end point
 export const fetchProduct = createAsyncThunk('product/fetchProduct', async (_, {rejectWithValue}) => {
     try{
         const response = await api.get("/products");
-        const data = await response.data;
+        const data = await response.data.product;
         console.log(data)
         return data
     }catch(error){
@@ -20,7 +16,11 @@ export const fetchProduct = createAsyncThunk('product/fetchProduct', async (_, {
 })
 const productSlice = createSlice({
     name: "product",
-    initialState,
+    initialState: {
+    productItems: [],
+    loading: false,
+    error: null,
+    },
     reducers: {},
     extraReducers: (builder) => {
         builder.addCase(fetchProduct.pending, (state) => {
