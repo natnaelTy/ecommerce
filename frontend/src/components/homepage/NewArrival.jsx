@@ -11,27 +11,30 @@ import { Link } from "react-router-dom";
 export default function NewArrival() {
   const [products, setProducts] = useState([]);  
   const dispatch = useDispatch();
-  const { productItem, loading, error } = useSelector((state) => state.product);
+  const { productItems, loading, error } = useSelector((state) => state.product);
 
+
+ 
   useEffect(() => {
-    dispatch(fetchProduct());
-    setProducts(productItem);
-  }, []);
-
+    dispatch(fetchProduct())
+    
+  },[dispatch])
+  
  if(loading) {
     <div>Loading..</div>
  }
- console.log(products);
+ console.log(productItems[0]?.price);
+
  
   return (
     <>
       <div className="pb-16">
         <h2 className="text-2xl font-medium text-gray-800 uppercase mb-6">top new arrival</h2>
         <div className="flex items-center justify-center flex-col md:flex-wrap lg:flex-row gap-4">
-            { products.map((_, item) => (
-                  <div key={item.id} className="newArriveContainer" >
+            {productItems.length > 0 ? productItems.map((item, _) => (
+                  <div key={item?.id} className="newArriveContainer" >
                   <div className="relative">
-                      <img src={item.image} alt={item.name} className="w-full"/>
+                      <img src={item?.image} alt={item?.name} className="w-full"/>
                       {/* hovering icons */}
                       <div className="hoverBgContainer">
                           <Link to={"/"}
@@ -72,11 +75,7 @@ export default function NewArrival() {
                       to cart</button>
                   </Link>
               </div>
-            ))}
-          
-
-          
-          
+            )) : <p>No products found</p>}      
         </div>
     </div>
     </>
