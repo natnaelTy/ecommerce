@@ -5,24 +5,19 @@ import SignUp from "./components/pages/SignUp";
 import HomePage from "./components/homepage/HomePage";
 import LogIn from "./components/pages/LogIn";
 import Shop from "./components/shopPage/shop";
-import Category from "./components/homepage/Category";
-import NewArrival from "./components/homepage/NewArrival";
-import Recomended from "./components/homepage/Recomended";
+
 
 function App() {
   return (
     <>
     <Routes>
+       <Route path="/auth/signup" element={<SignUp />} />
+       <Route path="/auth/login" element={<LogIn />} />
       <Route path="/" element={<ClientLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="/shop" element={<Shop/>}></Route>
+        <Route path="/shop" element={<Shop/>} />
       </Route>
-      <Route path="/auth/signup" element={<SignUp />} />
-      <Route path="/auth/login" element={<LogIn />} />
     </Routes>
-    <Category/>
-    <NewArrival/>
-    <Recomended/>
     </>
   );
 }
