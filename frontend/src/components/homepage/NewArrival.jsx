@@ -1,37 +1,31 @@
-import { useEffect, useState } from "react";
-import api, { nPoint } from "../../services/api";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { fetchProduct } from "../../store/product/productSlice";
+import { fetchNewArrivalProducts } from "../../store/product/productSlice";
 import { useDispatch } from "react-redux";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoIosHeartEmpty } from "react-icons/io";
 import { FaStar } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
-export default function NewArrival() {
-  const [products, setProducts] = useState([]);  
+export default function NewArrival() { 
   const dispatch = useDispatch();
-  const { productItems, loading, error } = useSelector((state) => state.product);
-
-
+  const { newArrivalProducts, loading, error } = useSelector((state) => state.product);
  
   useEffect(() => {
-    dispatch(fetchProduct())
+    dispatch(fetchNewArrivalProducts())
     
   },[dispatch])
   
  if(loading) {
     <div>Loading..</div>
  }
- console.log(productItems[0]?.price);
-
  
   return (
     <>
-      <div className="pb-16">
+      <div className="pb-16 max-w-[1000px] w-full mx-auto text-left p-3">
         <h2 className="text-2xl font-medium text-gray-800 uppercase mb-6">top new arrival</h2>
-        <div className="flex items-center justify-center flex-col md:flex-wrap lg:flex-row gap-4">
-            {productItems.length > 0 ? productItems.map((item, _) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {newArrivalProducts && newArrivalProducts.length > 0 ? newArrivalProducts.map((item, _) => (
                   <div key={item?.id} className="newArriveContainer" >
                   <div className="relative">
                       <img src={item?.image} alt={item?.name} className="w-full"/>
