@@ -6,7 +6,7 @@ import cloudinary from "./cloudinary folder/cloudinary.js";
 dotenv.config();
 
 
-export const products = (req, res) => {
+export const products = (_, res) => {
   const productQuery = "SELECT * FROM products";
 
   pool.query(productQuery, (err, results) => {
@@ -14,10 +14,21 @@ export const products = (req, res) => {
       console.log(err);
     }
     const product = results;
-    console.log(product)
     res.status(200).json({success: true, product});
   });
 };
+
+// send new arrival prodcuts from the database
+export const newArrival = (_, res) => {
+  const newArrivalQuery = "SELECT * FROM newarrival JOIN products ON newarrival.product_id = products.id";
+   pool.query (newArrivalQuery, (err, results) => {
+    if(err) {
+      console.log(err);
+    }
+    const newArrival = results;
+    res.status(200).json({success: true, newArrival});
+   });
+}
 
 export const postedProducts = async (req, res) => {
   const { name, description, price, category, brand, review, quantity} = req.body;
