@@ -31,4 +31,10 @@ body{
     .addToCartBtn {
         @apply block w-full py-1 text-center text-white text-sm bg-amber-500 border border-amber-500 rounded-b hover:bg-transparent hover:text-amber-500 transition;
     }
+    .smallButton {
+        @apply bg-amber-500 py-2 px-4 text-white hover:bg-amber-400;
+    }
+    .inputError{
+        @apply text-red-600 text-sm flex items-center gap-1;
+    }
 }
