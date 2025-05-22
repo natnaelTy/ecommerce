@@ -1,23 +1,18 @@
-import React from 'react'
-import NavBar from '../components/navBar/NavBar';
-import Header from '../components/navBar/Header';
+
 import { Outlet } from 'react-router-dom'
 import Category from "../components/homepage/Category";
 import NewArrival from "../components/homepage/NewArrival";
 import Recomended from "../components/homepage/Recomended";
-import Footer from "../components/homepage/Footer";
-
+import Discount from '../components/homepage/Discount';
 
 function ClientLayout() {
   return (
     <>
-    <Header/>
-    <NavBar/>
     <Outlet/>
     <Category/>
     <NewArrival/>
+    <Discount/>
     <Recomended/>
-    <Footer/>
     </>
   )
 }
