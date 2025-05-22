@@ -42,7 +42,7 @@ export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/verify");
+      const response = await api.get("/auth/verify");
       return response.data.user;
     } catch (error) {
       return rejectWithValue(error.message);
