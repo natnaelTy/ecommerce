@@ -18,7 +18,8 @@ import { fetchUser, logoutUser } from "../../store/user/userSlice";
       const { isAuthenticated, user } = useSelector((state) => state.user);
       const navigate = useNavigate();
       const dispatch = useDispatch();
-
+     
+      console.log(user);
       useEffect(() => {
         dispatch(fetchUser());
       },[dispatch]);
@@ -39,7 +40,7 @@ import { fetchUser, logoutUser } from "../../store/user/userSlice";
       }
       
       return(
-        <div className="fixed top-17 right-5 z-30 bg-white shadow-3xl w-48">
+        <div className="fixed top-17 right-5 z-30 bg-white shadow-xl w-48 text-base rounded-md">
              <div className="p-2 flex items-center gap-2 cursor-pointer">
                 <CgProfile className="text-2xl"/>
                 <h1 className="text-gray-900">{user?.fullName ? user?.fullName : "Guest"}</h1>
@@ -47,10 +48,9 @@ import { fetchUser, logoutUser } from "../../store/user/userSlice";
              <ul className="flex text-gray-700 flex-col items-start justify-center gap-2 border-1 border-gray-200">
                <li className="lihover"><Link className="liLink" to={"/profile"}><IoHomeSharp className="text-lg"/> Home</Link></li>
                 <li className="lihover"><Link className="liLink" to={'/orders'}><BiSolidPurchaseTag className="text-lg"/>Orders</Link></li>
-                <li className="lihover"> <Link className="liLink" to={"/wishlist"}><CiHeart className="text-lg"/> Wishlist</Link></li>
                 <li className="lihover"> <Link className="liLink" to={"/support"}><MdSupportAgent className="text-lg"/> Support </Link></li>
              </ul>
-             <div onClick={isAuthenticated ? handleLogout : handleLogin} className="p-2 flex items-center gap-2 hover:bg-orange-300 cursor-pointer">
+             <div onClick={isAuthenticated ? handleLogout : handleLogin} className="p-2 flex items-center gap-2 hover:bg-amber-500 cursor-pointer">
                 <IoIosLogOut className="text-xl"/>
                 <h1>{isAuthenticated ? 'Log out' : 'Log in'}</h1>
              </div>
