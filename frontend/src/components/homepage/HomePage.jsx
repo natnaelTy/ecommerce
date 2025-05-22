@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { CiDeliveryTruck } from "react-icons/ci";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { TbHours24 } from "react-icons/tb";
-
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.user);
@@ -35,8 +35,8 @@ const HomePage = () => {
             accusantium perspiciatis, sapiente
             magni eos dolorum ex quos dolores odio</p>
         <div>
-            <a href="#" className="bg-amber-500 border text-sm border-amber-500 text-white px-5 py-2 font-medium 
-                rounded-md hover:bg-transparent hover:text-amber-500">Shop Now</a>
+            <Link to={"/shop"} className="bg-amber-500 border text-sm border-amber-500 text-white px-5 py-2 font-medium 
+                rounded-md hover:bg-transparent hover:text-amber-500">Shop Now</Link>
         </div>
     </div>
 
