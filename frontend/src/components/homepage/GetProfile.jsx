@@ -1,8 +1,7 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+
+import { useMemo } from "react";
 import { IoHomeSharp } from "react-icons/io5";
 import { BiSolidPurchaseTag } from "react-icons/bi";
-import { CiHeart } from "react-icons/ci";
 import { IoIosLogOut } from "react-icons/io";
 import { MdSupportAgent } from "react-icons/md";
 import { CgProfile } from "react-icons/cg";
@@ -19,8 +18,7 @@ import { fetchUser, logoutUser } from "../../store/user/userSlice";
       const navigate = useNavigate();
       const dispatch = useDispatch();
      
-      console.log(user);
-      useEffect(() => {
+      useMemo(() => {
         dispatch(fetchUser());
       },[dispatch]);
 
