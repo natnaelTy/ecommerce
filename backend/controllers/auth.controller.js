@@ -4,6 +4,10 @@ import { generateTokenSetCookie } from "../../utils/generateTokenSetCookie.js";
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 // signup
 export const signup = async (req, res) => {
@@ -110,12 +114,11 @@ export const login = async (req, res) => {
 passport.use(
   new GoogleStrategy(
     {
-      clientID:
-        "754841437945-ffv2uajkvufvdsl9rhp5pb6ie2cftkqu.apps.googleusercontent.com",
+      clientID: process.env.CLIENTID,
       clientSecret:
-        process.env.CLIENTSECRECT || "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",
+        process.env.CLIENTSECRECT,
       callbackURL:
-        process.env.CALLBACKURL || "http://localhost:5000/auth/google/login",
+        process.env.CALLBACKURL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
