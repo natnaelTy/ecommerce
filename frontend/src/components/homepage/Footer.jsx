@@ -6,7 +6,7 @@ const Footer = () => {
       <footer className="bg-slate-950 pt-16 pb-12 border-t border-gray-100 px-4">
         <div className="grid grid-cols-1 gap-4 mx-auto max-w-[1000px]">
             <div className="col-span-1 space-y-4">
-                <h1 className="text-amber-500 font-medium text-2xl">Messay<span className="text-slate-600">Fur.</span></h1>
+                <h1 className="text-amber-500 font-medium text-2xl">Teddy Abera<span className="text-slate-600">Fur.</span></h1>
                 <div className="mr-2">
                     <p className="text-gray-500">
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia, hic?
