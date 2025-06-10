@@ -145,7 +145,7 @@ export default function Shop() {
             {/* shop card */}
             {filteredAndSorted.length > 0 ? (
               filteredAndSorted.map((item, _) => (
-                <div key={item.id} className={selectedLayout.includes("grid-1") ? "bg-white border-b-1 border-gray-300 overflow-hidden max-w-[750px] w-full flex items-center gap-6" :"newArriveContainer"}>
+                <div key={item.id} className={selectedLayout.includes("grid-1") ? "bg-white border-b-1 border-gray-300 overflow-hidden max-w-[750px] w-full flex items-center gap-6" : "newArriveContainer"}>
                   {/* image container */}
                   <div className="relative max-w-[200px] md:max-w-[350px] w-full">
                     <img
@@ -156,7 +156,7 @@ export default function Shop() {
                     {/* hovering icons */}
                     <div className="hoverBgContainer">
                       <Link
-                        to={"/"}
+                        to={`/product/${item.id}`}
                         className="iconsWhenHovering"
                         title="view product"
                       >
