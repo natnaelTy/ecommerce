@@ -8,6 +8,8 @@ import Shop from "./components/pages/shopPage/Shop";
 import Header from "./components/navBar/Header";
 import NavBar from "./components/navBar/NavBar";
 import Footer from "./components/homepage/Footer";
+import ProductDetail from "./components/pages/productdetail/ProductDetail";
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
         <Route index element={<HomePage />} />
       </Route>
        <Route path="/shop" element={<Shop/>} />
+       <Route path="/product/:id" element={<ProductDetail/>} />
     </Routes>
     <Footer/>
     </>
