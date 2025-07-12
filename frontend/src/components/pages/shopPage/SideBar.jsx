@@ -39,26 +39,26 @@ export default function SideBar({handleCheckboxChange, selectedCategory, minPric
             <h1 className="uppercase text-sm md:text-lg font-medium text-slate-950">category</h1>
             <div className="flex w-full items-center justify-between text-xs md:text-sm">
             <label htmlFor="bed" className="flex gap-1 items-center" >
-              <input type="checkbox" value={"bed"} checked={selectedCategory.includes("bed")} onChange={() => handleCheckboxChange('bed')}/>
+              <input type="checkbox" value={"Bed"} checked={selectedCategory.includes("Bed")} onChange={() => handleCheckboxChange('Bed')}/>
               Bed
             </label>
-            <p>({categoryLength["bed"]})</p>
+            <p>({categoryLength["Bed"]})</p>
             </div>
 
             <div className="flex w-full items-center justify-between text-xs md:text-sm">
             <label htmlFor="table" className="flex gap-1 items-center">
-              <input type="checkbox" value={"table"} checked={selectedCategory.includes("table")} onChange={() => handleCheckboxChange('table')}/>
+              <input type="checkbox" value={"Table"} checked={selectedCategory.includes("Table")} onChange={() => handleCheckboxChange('Table')}/>
               Table
             </label>
-            <p>({categoryLength["table"]})</p>
+            <p>({categoryLength["Table"]})</p>
             </div>
 
             <div className="flex w-full items-center justify-between text-xs md:text-sm">
             <label htmlFor="sofa" className="flex gap-1 items-center">
-              <input type="checkbox" value={"sofa"} checked={selectedCategory.includes("sofa")} onChange={() => handleCheckboxChange('sofa')}/>
+              <input type="checkbox" value={"Sofa"} checked={selectedCategory.includes("Sofa")} onChange={() => handleCheckboxChange('Sofa')}/>
               <p>Sofa</p>
             </label>
-            <p>({categoryLength["sofa"]})</p>
+            <p>({categoryLength["Sofa"]})</p>
             </div>
         </div>
 
