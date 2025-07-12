@@ -7,7 +7,6 @@ import { TbHours24 } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import Category from "./Category";
 import NewArrival from "./NewArrival";
-import { Disc } from "lucide-react";
 import Discount from "./Discount";
 
 
