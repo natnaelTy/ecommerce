@@ -5,6 +5,11 @@ import { CiDeliveryTruck } from "react-icons/ci";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { TbHours24 } from "react-icons/tb";
 import { Link } from "react-router-dom";
+import Category from "./Category";
+import NewArrival from "./NewArrival";
+import { Disc } from "lucide-react";
+import Discount from "./Discount";
+
 
 const HomePage = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.user);
@@ -68,6 +73,9 @@ const HomePage = () => {
             </div>
         </div>
     </div>
+    <Category/>
+    <NewArrival/>
+    <Discount/>
 </>
   );
 };
