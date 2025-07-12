@@ -150,7 +150,7 @@ export default function Shop() {
                   <div className="relative max-w-[200px] md:max-w-[350px] w-full">
                     <img
                       src={item.image}
-                      alt={item.name}
+                      alt={item.productName}
                       className="w-full"
                     />
                     {/* hovering icons */}
@@ -175,14 +175,14 @@ export default function Shop() {
                   <div className={selectedLayout.includes("grid-1") ? " flex flex-col items-start gap-0 md:gap-4 justify-center" : "flex gap-1 flex-col"}>
                     <div className={selectedLayout.includes("grid-1") ? "flex flex-col gap-1 md:gap-4 mb-3" : "p-1 md:p-2"}>
                     <Link to={"/"}>
-                      <h4 className="itemName">{item.name}</h4>
+                      <h4 className="itemName">{item.productName}</h4>
                     </Link>
                     <div className="flex items-baseline mb-1 space-x-2">
                       <p className="text-sm text-primary font-semibold">
                         {item.price} birr
                       </p>
                       <p className="text-xs text-gray-400 line-through">
-                        55,900 birr
+                        75,900 birr
                       </p>
                     </div>
                     <div className="flex items-center">
@@ -193,7 +193,7 @@ export default function Shop() {
                         <FaStar />
                         <FaStar />
                       </div>
-                      <div className="text-xs text-gray-500 ml-3">(150)</div>
+                      <div className="text-xs text-gray-500 ml-3">({item.review})</div>
                     </div>
                     </div>
                       {/* add to cart button */}
