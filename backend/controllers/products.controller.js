@@ -1,69 +1,72 @@
-import { pool } from "../db/mysqldb.js";
+import prisma from "../prisma/prismaClient.js";
 import dotenv from "dotenv";
 import cloudinary from "./cloudinary folder/cloudinary.js";
 
-
 dotenv.config();
 
-
-export const products = (_, res) => {
-  const productQuery = "SELECT * FROM products";
-
-  pool.query(productQuery, (err, results) => {
-    if (err) {
-      console.log(err);
-    }
-    const product = results;
-    res.status(200).json({success: true, product});
-  });
+// Get all products
+export const products = async (_, res) => {
+  try {
+    const productList = await prisma.products.findMany();
+    res.status(200).json({ success: true, products: productList });
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
 };
 
-// send new arrival prodcuts from the database
-export const newArrival = (_, res) => {
-  const newArrivalQuery = "SELECT * FROM newarrival JOIN products ON newarrival.product_id = products.id";
-   pool.query (newArrivalQuery, (err, results) => {
-    if(err) {
-      console.log(err);
-    }
-    const newArrival = results;
-    res.status(200).json({success: true, newArrival});
-   });
-}
+// Get new arrivals with JOIN
+export const newArrival = async (_, res) => {
+  try {
+    const newArrivals = await prisma.newarrival.findMany({
+      include: {
+        product: true,
+      },
+    });
 
+    res.status(200).json({ success: true, newarrival: newArrivals });
+  } catch (err) {
+    console.error("Error fetching new arrivals:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Post new product
 export const postedProducts = async (req, res) => {
-  const { name, description, price, category, brand, review, quantity} = req.body;
+  const { productName, description, price, category, brand, review, quantity, createdAt } = req.body;
   const image = req.file ? req.file.path : null;
 
   try {
-    if (!image || !name || !description || !price || !category || !brand || !review || !quantity) {
-      return res.status(400).send("all fields are required");
+    if (!image || !productName || !description || !price || !category || !brand || !quantity) {
+      return res.status(400).send("All fields are required");
     }
 
     const result = await cloudinary.uploader.upload(image, {
-          folder: 'ecommerce-products',
-        });
-    
-      // image url that sent to cloudinary  
-     const imageUrl =  result.secure_url;
+      folder: "ecommerce-products",
+    });
 
-     const insertQuery = `INSERT INTO products (description, image, name, price, category, brand, review, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-    pool.query(
-      insertQuery,
-      [description, imageUrl, name, price, category, brand, review, quantity],
-      (err, results) => {
-        if (err) {
-          console.error("Error creating product:", err);
-          return res.status(500).send("Server Error");
-        }
+    const imageUrl = result.secure_url;
 
-        res.status(201).json({
-          message: "Product created successfully",
-          product: { id: results.insertId, name, description, imageUrl, category, price, brand, review, quantity},
-        });
-      }
-    );
-  } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json("Server error");
+    const newProduct = await prisma.products.create({
+      data: {
+        productName,
+        description,
+        image: imageUrl,
+        price: parseFloat(price),
+        category,
+        brand,
+        review: 0,
+        createdAt,
+        quantity: parseInt(quantity),
+      },
+    });
+
+    res.status(201).json({
+      message: "Product created successfully",
+      product: newProduct,
+    });
+  } catch (err) {
+    console.error("Server error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
