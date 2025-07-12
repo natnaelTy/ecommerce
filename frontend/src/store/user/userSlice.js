@@ -18,7 +18,6 @@ export const createUser = createAsyncThunk(
       if (response.status === 201) {
         window.location.href = "/";
       }
-     
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Signup failed");
     }
@@ -51,7 +50,7 @@ export const fetchUser = createAsyncThunk(
 );
 // logout
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  await api.post("/logout");
+  await api.post("/auth/logout");
   return null;
 });
 
