@@ -42,7 +42,7 @@ export default function ProductDetail() {
         </div>
       
         <div>
-            <h2 class="text-3xl font-medium uppercase mb-2">{product.name}</h2>
+            <h2 class="text-3xl font-medium uppercase mb-2">{product.productName}</h2>
             <div class="flex items-center mb-4">
                 <div class="flex gap-1 text-sm text-yellow-400">
                    <FaStar/>
