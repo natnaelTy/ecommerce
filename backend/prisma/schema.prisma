@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id       Int    @id @default(autoincrement())
+  fullName     String
+  email    String @unique
+  phoneNumber String @unique
+  password String
+  createdAt DateTime @default(now())
+  isEmailVerified Boolean @default(false)
+
+  resetPasswordCode       String?  
+  resetPasswordCodeExpiresAt DateTime? 
+  verificationCode        String?  
+  verificationCodeExpiresAt DateTime? 
+}
+
+model Products {
+  id          Int          @id @default(autoincrement())
+  productName String
+  description String
+  image       String
+  price       Float
+  category    String
+  brand       String
+  review      Int
+  quantity    Int
+  createdAt   DateTime @default(now())
+  newarrival  Newarrival? @relation(fields: [newarrivalId], references: [id])
+}
+
+model Newarrival {
+  id         Int       @id @default(autoincrement())
+  productId  Int       @unique
+  products    Products[]
+}
+
