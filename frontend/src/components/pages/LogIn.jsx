@@ -1,37 +1,37 @@
 import { useState } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { z } from "zod";
-import {ClipLoader} from "react-spinners";
+import { ClipLoader } from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { FcGoogle } from "react-icons/fc";
 import { MdErrorOutline } from "react-icons/md";
-import { IoWarningOutline } from "react-icons/io5";
 import { loginUser } from "../../store/user/userSlice";
+import { Eye, EyeOff } from "lucide-react";
+import { LiaTimesSolid } from "react-icons/lia";
 
 
 
 const userSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
-  user_password: z
+  password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters long" }),
- });
-
+});
 
 const LogIn = () => {
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {error, loading} = useSelector((state) => state.user);
-
+  const { error, loading } = useSelector((state) => state.user);
+  const [isVisible, setIsVisible] = useState(false);
   const [user, setUser] = useState({
     email: "",
-    user_password: ""
+    password: "",
   });
   const [errors, setErrors] = useState({});
 
-   const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setUser({
       ...user,
@@ -39,67 +39,147 @@ const LogIn = () => {
     });
   };
 
-   const handleLoginSubmit = async (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    try{
+    try {
       const validatedUser = userSchema.parse(user);
       // Zod error message
-      setErrors({}); 
-      dispatch(loginUser(validatedUser));  
-    }catch(error){
-      if (error instanceof z.ZodError) {
+      setErrors({});
+      await dispatch(loginUser(validatedUser)).unwrap();
+      toast.success("You successfully logged to your account");
+    } catch (err) {
+      // Zod error message
+      if (err instanceof z.ZodError) {
         const errorMessages = {};
-        error.errors.forEach((err) => {
+        err.errors.forEach((err) => {
           errorMessages[err.path[0]] = err.message;
         });
         setErrors(errorMessages);
+      } else {
+        toast.error(error);
       }
     }
-   }
+  };
 
+  function handleGoogleAuth() {
+    window.location.href = "http://localhost:5000/auth/google";
+  }
 
+  function handleClose() {
+    navigate("/");
+  }
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen">
-      <div className="flex flex-col items-center justify-center gap-4 p-4 w-96 shadow-lg relative border-1 border-gray-200">
-        <h1 className="text-lg md:text-2xl font-medium mb-5 mt-5 text-center">Welcome back! <br />Log <span className="text-orange-400">in</span></h1>
-        <form onSubmit={handleLoginSubmit}>
-          <label htmlFor="email">
-            Email <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
-            className="px-4 text-sm py-3 focus:outline-orange-400 bg-gray-100 w-full"
-            onChange={handleChange}
-            value={user.email}
-          />
-          <br />
-          <br />
-          <label htmlFor="user_password">
-            Password <span className="text-red-600">*</span>
-          </label>
-          <input
-            type="password"
-            name="user_password"
-            placeholder="Enter your password"
-            className="px-4 text-sm py-3 focus:outline-orange-400 bg-gray-100 w-full"
-            onChange={handleChange}
-            value={user.user_password}
-          />
+    <div className="flex flex-col items-center justify-center w-full h-screen bg-gray-50">
+      {/* close page button */}
+      <button
+        type="button"
+        className="absolute top-5 right-6 text-2xl cursor-pointer z-30 bg-transparent hover:bg-red-500 p-1 hover:text-white"
+        onClick={handleClose}
+      >
+        <LiaTimesSolid />
+      </button>
+      {/* main container */}
+      <div className="flex items-center justify-between max-w-[800px] h-[500px] w-full shadow-xl rounded-md">
+        <div className="bg-gradient-to-br from-yellow-300 to-amber-500 w-full h-full rounded-l-md flex items-center justify-center h-full flex-col text-center px-4 gap-2 hidden lg:flex">
+          <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-white">
+            Hey Welcome back!
+          </h1>
+          <p className="text-gray-50 text-base">
+            Enter your personal details and continue your journey with us
+          </p>
+        </div>
+        <div className="flex flex-col items-center justify-center gap-4 px-4 w-full h-full">
+          <h1 className="text-2xl md:text-3xl font-bold text-amber-500 text-center mb-3 mt-3">
+            Login
+            <p className="text-gray-400 text-xs font-light">to your account</p>
+          </h1>
 
-          {errors.user_password && <span className="text-xs text-orange-500 flex items-center gap-1 mt-1 mb-1"><IoWarningOutline/>{errors.user_password}</span>}
+          {/* google signup */}
+          <button
+            onClick={handleGoogleAuth}
+            className="text-sm text-gray-800 w-full border-1 cursor-pointer border-gray-200 px-4 py-2 flex items-center justify-center gap-4 rounded-lg shadow-xs"
+          >
+            <span>
+              <FcGoogle className="text-xl" />
+            </span>
+            Continue with google
+          </button>
 
-          {/* forgot password button */}
-          <button className="absolute right-12 bottom-20 text-orange-400 underline text-xs hover:text-orange-300"><Link to={'/forgotpassword'}>Forgot password</Link></button>
+          {/* options */}
+          <div className="relative">
+            <span className="text-sm text-gray-500">
+              or use your email to login
+            </span>
+            <div className="signupStyle1"></div>
+            <div className="signupStyle2"></div>
+          </div>
+          {/* form */}
+          <form
+            onSubmit={handleLoginSubmit}
+            className="flex items-center justify-center flex-col gap-6 w-full"
+          >
+            <label htmlFor="email" className="text-sm font-medium w-full">
+              Email <span className="text-red-600">*</span>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter Email"
+                className="px-4 text-sm py-3 focus:outline-orange-400 rounded-md bg-gray-100 w-full"
+                onChange={handleChange}
+                value={user.email}
+              />
+              {errors.email && (
+                <span className="inputError">
+                  <MdErrorOutline />
+                  {errors.email}
+                </span>
+              )}
+            </label>
 
-          {/* error display */}
-          {error && <span className="inputError"><MdErrorOutline/>{error}</span>}
-          <br />
-          <br />
-          <button type="submit" className="smallButton">{loading ? (<ClipLoader color="#fff" loading size={20}/>) : ('Log in')}</button>
-        </form>
+            <label htmlFor="password" className="text-sm font-medium w-full">
+              Password <span className="text-red-600">*</span>
+              <div className="flex items-center justify-between rounded-md gap-2 bg-gray-100 w-full">
+                <input
+                  type={isVisible ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter Password"
+                  className="focus:outline-orange-400 px-4 text-sm py-3 w-full rounded-l-md"
+                  onChange={handleChange}
+                  value={user.password}
+                />
+                <span
+                  className="text-gray-600 hover:text-gray-800 pr-3"
+                  onClick={() => setIsVisible(!isVisible)}
+                >
+                  {isVisible ? <Eye /> : <EyeOff />}
+                </span>
+              </div>
+              {errors.password && (
+                <span className="inputError">
+                  <MdErrorOutline />
+                  {errors.password}
+                </span>
+              )}
+            </label>
+
+            {/* submit */}
+            <button type="submit" disabled={loading} className="smallButton">
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <ClipLoader color="#fff" loading size={20} />
+                  <span>Loging..</span>{" "}
+                </div>
+              ) : (
+                "Login"
+              )}
+            </button>
+              {/* forgot password button */}
+            <button className="text-amber-500 underline text-xs hover:text-amber-300">
+              <Link to={"/forgotpassword"}>Forgot your password?</Link>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
