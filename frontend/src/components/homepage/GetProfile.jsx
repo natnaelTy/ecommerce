@@ -1,5 +1,4 @@
 
-import { useMemo } from "react";
 import { IoHomeSharp } from "react-icons/io5";
 import { BiSolidPurchaseTag } from "react-icons/bi";
 import { IoIosLogOut } from "react-icons/io";
@@ -11,14 +10,15 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { fetchUser, logoutUser } from "../../store/user/userSlice";
+import { useEffect } from "react";
 
  const GetProfile = () => {
 
       const { isAuthenticated, user } = useSelector((state) => state.user);
       const navigate = useNavigate();
       const dispatch = useDispatch();
-     
-      useMemo(() => {
+    
+      useEffect(() => {
         dispatch(fetchUser());
       },[dispatch]);
 
@@ -26,15 +26,17 @@ import { fetchUser, logoutUser } from "../../store/user/userSlice";
         try{
           dispatch(logoutUser());
           toast.success("You successfully Logged out!");
-          navigate("/auth/signup");
+          navigate("/login");
         }catch(err){
           console.log(err);
         }
        
       }
 
+       console.log(user)
+
       function handleLogin(){
-        navigate("/auth/signup");
+        navigate("/login");
       }
       
       return(
