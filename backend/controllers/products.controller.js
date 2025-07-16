@@ -20,7 +20,7 @@ export const newArrival = async (_, res) => {
   try {
     const newArrivals = await prisma.newarrival.findMany({
       include: {
-        product: true,
+        products: true,
       },
     });
 
