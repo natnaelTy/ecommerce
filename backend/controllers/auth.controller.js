@@ -5,7 +5,11 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { generateVerificationCode, sendEmail, sendVerificationCode } from "../utils/sendEmail.js";
+import {
+  generateVerificationCode,
+  sendEmail,
+  sendVerificationCode,
+} from "../utils/sendEmail.js";
 
 dotenv.config();
 
@@ -15,7 +19,7 @@ export const signup = async (req, res) => {
 
   try {
     if (!email || !fullName || !password || !phoneNumber) {
-      return res.status(400).json({ error: "Fill all fields" });
+      return res.status(400).json({ error: "All fields are required" });
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -24,6 +28,7 @@ export const signup = async (req, res) => {
     const existPhoneNumber = await prisma.user.findUnique({
       where: { phoneNumber },
     });
+    // check if user already
     if (existingUser || existPhoneNumber) {
       return res
         .status(400)
@@ -42,12 +47,14 @@ export const signup = async (req, res) => {
         password: hashedPassword,
         phoneNumber,
         createdAt,
+        verificationCode,
+        verificationCodeExpiresAt: new Date(Date.now() + 3600000), // 1 hour
       },
     });
 
     const token = generateTokenSetCookie(res, newUser.id, email, fullName);
 
-    await sendVerificationCode(email, verificationCode)
+    await sendVerificationCode(email, verificationCode);
 
     res.status(201).json({
       success: true,
@@ -59,37 +66,95 @@ export const signup = async (req, res) => {
         token,
       },
     });
-
-    await sendEmail(
-      newUser.email,
-      "Welcome to Dvora Hub!",
-      `<h1>Hello ${newUser.fullName}!</h1><p>Thanks for signing up 🥳</p>`
-    );
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
-// verify email 
-const verifyEmail = async (req, res) => {
+// Verify Email
+export const verifyEmailToReset = async (req, res) => {
   const { code } = req.body;
-  const { token } = req.cookies.token;
-  try{
-    if(!token) {
-      return res.status(401).json({success: false, message: "Please login or signup to verify your email"});
+  try {
+    // Find user by verification code
+    const user = await prisma.user.findFirst({
+      where: { verificationCode: code },
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
     }
-    const user = await prisma.user.findUnique({
-        where: {verificationCode: code}
-    })
-    if(!user) {
-      return res.status(401).json({success: false, message: "Invalid or Expired verification code"});
-    }
-  }catch(err) {
-    console.log(err)
+
+    // Mark user as verified and clear the code
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verificationCode: null,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Email verified successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
-}
+};
+
+// verify email
+export const verifyEmail = async (req, res) => {
+  const { code } = req.body;
+  const { token } = req.cookies;
+
+  try {
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login or signup to verify your email",
+      });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { verificationCode: code },
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or Expired verification code",
+      });
+    }
+
+    // Mark user as verified and clear the code
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isEmailVerified: true,
+        verificationCode: null,
+      },
+    });
+
+    await sendEmail(
+      user.email,
+      "Welcome to Dvora Hub!",
+      `<h1>Hello ${user.fullName}!</h1><p>Thanks for signing up 🥳</p>`
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Email verified successfully",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // login
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -124,6 +189,113 @@ export const login = async (req, res) => {
       .json({ success: true, message: "Login successful", user, token });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Forgot Password
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        resetPasswordCode: resetToken,
+        resetPasswordCodeExpiresAt: resetTokenExpiry,
+      },
+    });
+
+    // Send reset email (implement sendEmail as needed)
+    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+    await sendEmail(
+      email,
+      "Password Reset Request",
+      `<p>Click <a href="${resetUrl}">here</a> to reset your password. This link expires in 1 hour.</p>`
+    );
+
+    res
+      .status(200)
+      .json({ success: true, message: "Reset link sent to email" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// reset password
+export const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+  try {
+    // Find user by reset token
+    const user = await prisma.user.findFirst({
+      where: {
+        resetPasswordCode: token,
+        resetPasswordCodeExpiresAt: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid or expired reset token" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordCode: null,
+        resetPasswordCodeExpiresAt: null,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset successful" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Logout
+export const logout = (_, res) => {
+  res.clearCookie("token");
+  res.status(200).json({ success: true, message: "Logged out successfully" });
+};
+
+// Token verification
+export const verify = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: "No token provided" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded) {
+      return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+
+    res.status(200).json({ success: true, user: decoded });
+  } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -219,32 +391,5 @@ export const getProfile = async (req, res) => {
     res.status(200).json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: "Database error" });
-  }
-};
-
-// Logout
-export const logout = (_, res) => {
-  res.clearCookie("token");
-  res.status(200).json({ success: true, message: "Logged out successfully" });
-};
-
-// Token verification
-export const verify = async (req, res) => {
-  try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "No token provided" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded) {
-      return res.status(401).json({ success: false, message: "Invalid token" });
-    }
-
-    res.status(200).json({ success: true, user: decoded });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Server error" });
   }
 };
