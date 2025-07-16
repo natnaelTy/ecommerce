@@ -39,11 +39,6 @@ const SignUp = () => {
       .refine((val) => /^\d+$/.test(val), {
         message: "Phone Number must contain only digits",
       })
-      .transform(Number)
-      .refine((val) => !isNaN(val), { message: "Invalid phone number format" })
-      .refine((val) => val.toString().length < 10, {
-        message: "Phone number must be at least 10 digits",
-      }),
   });
 
   const handleChange = (e) => {
