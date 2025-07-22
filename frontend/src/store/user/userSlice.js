@@ -14,12 +14,22 @@ export const createUser = createAsyncThunk(
   async (validatedUser, { rejectWithValue }) => {
     try {
       const response = await api.post("/auth/signup", validatedUser);
-
-      if (response.status === 201) {
-        window.location.href = "/";
-      }
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Signup failed");
+    }
+  }
+);
+
+// verify email
+export const verifyEmail = createAsyncThunk(
+  "user/verifyEmail",
+  async (code, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/auth/verifyEmail", { code });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Email verification failed");
     }
   }
 );
@@ -36,13 +46,43 @@ export const loginUser = createAsyncThunk("user/loginUser", async (validatedUser
     }
 });
 
+// forgot password
+export const forgotPassword = createAsyncThunk(
+  "user/forgotPassword",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/auth/forgotPassword",  email );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to send reset code");
+    }
+  }
+);
+
+// reset password
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/auth/resetPassword/:${token}`, { token, newPassword });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Password reset failed");
+    }
+  }
+);
+
+
+
 // get user
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/auth/verify");
+      const response = await api.get("/auth/me");
+      console.log(response.data);
       return response.data.user;
+
     } catch (error) {
       return rejectWithValue(error.message);
     }
