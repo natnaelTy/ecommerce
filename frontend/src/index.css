@@ -42,6 +42,6 @@ body{
        @apply hover:bg-gray-100 w-full p-1 cursor-pointer;
     }
     .liLink {
-        @apply flex text-base items-center gap-2;
+        @apply flex text-sm items-center gap-2;
     }
 }
