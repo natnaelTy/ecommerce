@@ -1,19 +1,17 @@
-
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import GetProfile from "../homepage/GetProfile";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import fetchWishlist from "../../store/product/productSlice";
-import { ShoppingCart, User, Heart, Search  } from 'lucide-react';
-
-
+import { ShoppingCart, User, Heart, Search, Menu } from "lucide-react";
 
 export default function Header() {
   const dispatch = useDispatch();
   const [showProfile, setShowProfile] = useState(false);
   const { wishlistItems } = useSelector((state) => state.product);
   const { user } = useSelector((state) => state.user);
+  const [showSearchInput, setShowSearchInput] = useState(false);
 
   const wishListedProduct = wishlistItems.map((item) => item.product);
 
@@ -21,10 +19,10 @@ export default function Header() {
     setShowProfile(!showProfile);
   }
 
-
+  console.log(showSearchInput);
   return (
-    <header className="p-2 bg-white">
-      <div className="flex items-center justify-between w-full gap-4 max-w-[1000px] w-full mx-auto">
+    <header className="p-2 bg-white border-1 border-gray-300  w-full">
+      <div className="flex items-center justify-between w-full gap-4 max-w-[1000px] w-full mx-auto h-12">
         <Link
           to={"/"}
           className="text-base lg:text-xl font-medium hidden md:block"
@@ -32,26 +30,61 @@ export default function Header() {
           <span className="text-amber-500 ">Messay </span>Fur.
         </Link>
 
-        <div className="w-full max-w-[400px] relative flex border-1 border-amber-500 rounded-md ">
+       <Menu className="block md:hidden"/>
+        <div
+          className={
+            showSearchInput
+              ? "w-full max-w-[400px] relative flex border-1 border-amber-500 rounded-md "
+              : "hidden"
+          }
+        >
           <span className="absolute left-4 top-2 text-gray-400 hidden md:block">
-            <Search  />
+            <Search />
           </span>
           <input
             type="search"
             name="search"
             id="search"
-            className="w-full  border-r-0 pl-4 md:pl-12 py-2  pr-1 md:pr-2 focus:outline-none text-sm lg:text-base"
+            className="w-full border-r-0 pl-4 md:pl-12 py-2  pr-1 md:pr-2 focus:outline-none text-xs lg:text-base"
             placeholder="Search"
           />
-          <button className="bg-amber-400  text-white px-5 px-3 rounded-r-md hover:bg-transparent hover:text-amber-400 transition text-sm lg:text-base">
+          <button className="bg-amber-500  text-white md:px-5 px-3 rounded-r-md hover:bg-transparent hover:text-amber-400 transition text-sm lg:text-base">
             <span className="block md:hidden">
-              <Search  />{" "}
+              <Search className="size-4"/>{" "}
             </span>{" "}
             <span className="hidden md:block">Search</span>{" "}
           </button>
         </div>
 
+        <div className={showSearchInput ? "hidden" : "flex items-center space-x-6 capitalize text-xs md:text-sm hidden md:flex"}>
+          <NavLink
+            to={"/"}
+            className=""
+          >
+            Home
+          </NavLink>
+          <NavLink
+            to={"/"}
+            className=""
+          >
+            Shop
+          </NavLink>
+          <NavLink
+            to={"/"}
+            className=""
+          >
+            About us
+          </NavLink>
+          <NavLink
+            to={"/"}
+            className=""
+          >
+            Contact us
+          </NavLink>
+        </div>
+
         <div className="flex items-center space-x-4">
+           <Search onClick={() => setShowSearchInput(!showSearchInput)} />
           <div className="text-center text-gray-700 hover:text-primary transition relative">
             <Link to="/wishlist">
               <div className="text-2xl">
@@ -63,19 +96,21 @@ export default function Header() {
             </Link>
           </div>
           <div className="text-center text-gray-700 hover:text-primary transition relative">
-            <div className="text-2xl">
-              <ShoppingCart />
-            </div>
-            <div className="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-primary text-white text-xs">
-              2
-            </div>
+            <Link to="/cart">
+              <div className="text-2xl">
+                <ShoppingCart />
+              </div>
+              <div className="absolute -right-3 -top-1 w-5 h-5 rounded-full flex items-center justify-center bg-primary text-white text-xs">
+                2
+              </div>
+            </Link>
           </div>
           <div
             onClick={profilePopOut}
             className="text-center text-gray-700 hover:text-primary transition relative"
           >
             <div className="text-2xl">
-              <User  />
+              <User />
               {showProfile && <GetProfile />}
             </div>
           </div>
