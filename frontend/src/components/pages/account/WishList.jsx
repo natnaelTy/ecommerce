@@ -6,19 +6,32 @@ import {
 } from "../../../store/product/productSlice";
 import { Trash } from "lucide-react";
 import { PuffLoader } from "react-spinners";
+import { Link } from "react-router-dom";
+
 
 function WishList() {
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const { wishlistItems, loading, error } = useSelector(
     (state) => state.product
   );
 
   useEffect(() => {
-    if (user) {
+    if (user?.id && isAuthenticated) {
       dispatch(fetchWishlist(user.id));
     }
-  }, [dispatch, user]);
+  }, [dispatch, user?.id, isAuthenticated]);
+
+  if(!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Please log in to view your wish list.</p>
+        <Link to="/login" className="text-blue-500 ml-2">
+          Log In
+        </Link>
+      </div>
+    );
+  }
 
   const wishListedProduct = wishlistItems.map((item) => item.product);
 
