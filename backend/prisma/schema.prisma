@@ -27,6 +27,14 @@ model User {
   resetPasswordCodeExpiresAt DateTime? 
   verificationCode        String?  
   verificationCodeExpiresAt DateTime? 
+
+  wishlists   WishList[]
+  carts       Cart[]
+  address   String?
+  city      String?
+  country   String?
+  zip       String?
+  orders    Order[]
 }
 
 model Products {
@@ -40,13 +48,68 @@ model Products {
   review      Int
   quantity    Int
   createdAt   DateTime @default(now())
-  newarrivalId  Int?  
-  newarrival  Newarrival? @relation(fields: [newarrivalId], references: [id])
+
+  newarrival  Newarrival[]
+  wishlists   WishList[]
+  carts       Cart[]
+  orderItems  OrderItem[]
 }
 
 model Newarrival {
   id         Int       @id @default(autoincrement())
   productId  Int       @unique
-  products    Products[]
+  products   Products @relation(fields: [productId], references: [id])
 }
 
+model WishList {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Products @relation(fields: [productId], references: [id])
+  productId Int
+
+  @@unique([userId, productId]) // Prevent duplicate wishlist items for a user
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Products @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int      @default(1)
+
+  @@unique([userId, productId]) // Prevent duplicate cart items for a user
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  userId    Int
+  user      User        @relation(fields: [userId], references: [id])
+  orderItems OrderItem[]
+  total     Float
+  status    String      @default("PENDING") // PENDING, PAID, SHIPPED, DELIVERED, CANCELLED
+  payment   Payment?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  price     Float
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id        Int      @id @default(autoincrement())
+  orderId   Int      @unique
+  order     Order    @relation(fields: [orderId], references: [id])
+  method    String   // "Bank transfer"
+  status    String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  amount    Float
+  createdAt DateTime @default(now())
+}
