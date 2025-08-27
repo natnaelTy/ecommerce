@@ -10,6 +10,7 @@ import {
   sendEmail,
   sendVerificationCode,
 } from "../utils/sendEmail.js";
+import crypto from "crypto";
 
 dotenv.config();
 
@@ -216,12 +217,15 @@ export const forgotPassword = async (req, res) => {
       },
     });
 
-    // Send reset email (implement sendEmail as needed)
-    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+    // Send reset email
+    const resetUrl = `http://localhost:5173/resetpassword?token=${resetToken}`;
     await sendEmail(
       email,
       "Password Reset Request",
-      `<p>Click <a href="${resetUrl}">here</a> to reset your password. This link expires in 1 hour.</p>`
+      `<h1>Password Reset</h1>
+       <p>We received a request to reset your password.</p>
+       <p>If you did not make this request, please ignore this email.</p>
+      <p>Click <a href="${resetUrl}">here</a> to reset your password. This link expires in 1 hour.</p>`
     );
 
     res
@@ -279,23 +283,33 @@ export const logout = (_, res) => {
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
-// Token verification
-export const verify = async (req, res) => {
+// Token verification and get user details
+export const getMe = async (req, res) => {
+  const token = req.cookies.token;
   try {
-    const token = req.cookies.token;
     if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "No token provided" });
+      return res.status(401).json({ success: false, message: "Not authenticated" });
     }
-
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded) {
+    if (!decoded.id) {
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
-
-    res.status(200).json({ success: true, user: decoded });
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        phoneNumber: true,
+        isEmailVerified: true
+      },
+    });
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" });
+    }
+    res.status(200).json({ success: true, user });
   } catch (error) {
+    console.error("Error in getMe:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
