@@ -24,7 +24,7 @@ export default function SideBar({handleCheckboxChange, selectedCategory, minPric
 
   return (
     <> 
-    <FiMenu onClick={handleShowBox} className="flex md:hidden absolute top-16 text-amber-500 left-3"/>
+    <FiMenu onClick={handleShowBox} className="flex md:hidden absolute z-10 top-17 text-amber-500 left-3"/>
     <div className={showModel ? "flex flex-col items-start gap-5 mt-2 max-w-[250px] w-full p-3 border-1 border-gray-200 rounded-md shadow-xs bg-white ml-2" : "hidden md:flex flex-col items-start gap-5 mt-2 max-w-[250px] w-full p-3 border-1 border-gray-200 rounded-md shadow-xs bg-white"}>
         <div className="flex items-center gap-2 text-base">
             <Link to={"/"}>
