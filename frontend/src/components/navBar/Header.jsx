@@ -1,10 +1,12 @@
 import { Link, NavLink } from "react-router-dom";
-import GetProfile from "../homepage/GetProfile";
+import GetProfile from "./GetProfile";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import fetchWishlist from "../../store/product/productSlice";
 import { ShoppingCart, User, Heart, Search, Menu } from "lucide-react";
+import { TbUserFilled } from "react-icons/tb";
+
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -15,13 +17,11 @@ export default function Header() {
 
   const wishListedProduct = wishlistItems.map((item) => item.product);
 
-  function profilePopOut() {
-    setShowProfile(!showProfile);
-  }
 
-  console.log(showSearchInput);
+
+  console.log(showProfile);
   return (
-    <header className="p-2 bg-white border-1 border-gray-300  w-full">
+    <header className="p-3 bg-white border-1 border-gray-200 w-full sticky top-0 z-10 right-0">
       <div className="flex items-center justify-between w-full gap-4 max-w-[1000px] w-full mx-auto h-12">
         <Link
           to={"/"}
@@ -64,7 +64,7 @@ export default function Header() {
             Home
           </NavLink>
           <NavLink
-            to={"/"}
+            to={"/shop"}
             className=""
           >
             Shop
@@ -106,11 +106,11 @@ export default function Header() {
             </Link>
           </div>
           <div
-            onClick={profilePopOut}
+            onClick={() => setShowProfile(!showProfile)}
             className="text-center text-gray-700 hover:text-primary transition relative"
           >
             <div className="text-2xl">
-              <User />
+              {showProfile ? <TbUserFilled /> : <User />}
               {showProfile && <GetProfile />}
             </div>
           </div>
