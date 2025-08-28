@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { LockKeyhole } from 'lucide-react';
 import { ClipLoader } from "react-spinners";
-
+import { forgotPassword } from "../../store/user/userSlice";
 
 const userSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -17,13 +17,26 @@ export default function ForgotPassword() {
   const [userEmail, setUserEmail] = useState("");
   const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserEmail({
-      ...userEmail,
-      [name]: value,
-    });
-  };
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      const validatedForm = userSchema.parse(userEmail);
+      setErrors({});
+      dispatch(forgotPassword(validatedForm)).unwrap();
+      toast.success("Verification code sent to your email");
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const fieldErrors = {};
+        err.errors.forEach((error) => {
+          fieldErrors[error.path[0]] = error.message;
+        });
+        setErrors(fieldErrors);
+      } else {
+        setErrors({ general: "An unexpected error occurred" });
+      }
+    };
+  }
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -34,15 +47,13 @@ export default function ForgotPassword() {
         <LockKeyhole className="size-12 text-amber-500" />
         <p className="text-gray-900 text-sm max-w-sm font-medium text-center">Please Enter Your Email Addres To Recive a Verification Code.</p>
 
-        <form className="w-full flex flex-col items-center justify-center gap-8">
-          <label htmlFor="email" className="text-sm font-medium w-full">
-            Email <span className="text-red-600">*</span>
+        <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center gap-8">
             <input
               type="email"
               name="email"
               placeholder="Enter Email"
               className="px-4 text-sm py-3 focus:outline-orange-400 rounded-md bg-gray-100 w-full"
-              onChange={handleChange}
+              onChange={(e) => setUserEmail({ email: e.target.value })}
               value={userEmail.email}
             />
             {errors.email && (
@@ -51,7 +62,7 @@ export default function ForgotPassword() {
                 {errors.email}
               </span>
             )}
-          </label>
+
           {/* submit */}
           <button type="submit" disabled={loading} className="smallButton">
             {loading ? (
