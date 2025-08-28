@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { FaStar } from "react-icons/fa6";
 import { House, ChevronRight, ShoppingCart, Heart  } from 'lucide-react';
 import { Link } from "react-router-dom";
-
+import { formatCurrency } from "../../../utils/formatCurrency";
 
 
 export default function ProductDetail() {
@@ -68,8 +68,8 @@ export default function ProductDetail() {
                 </p>
             </div>
             <div class="flex items-baseline mb-1 space-x-2 font-roboto mt-4">
-                <p class="text-xl text-pink-500 font-semibold">{product.price} birr</p>
-                <p class="text-base text-gray-400 line-through">90,000 birr</p>
+                <p class="text-xl text-pink-500 font-semibold">{formatCurrency(product.price, "ETB", "en-ET")}</p>
+                <p class="text-base text-gray-400 line-through">{formatCurrency(90000, "ETB", "en-ET")}</p>
             </div>
 
             <p class="mt-4 text-gray-500 text-sm">{product.description}</p>
