@@ -25,6 +25,7 @@ const SignUp = () => {
     password: "",
     phoneNumber: "",
   });
+
   const [errors, setErrors] = useState({});
 
   const userSchema = z.object({
@@ -38,7 +39,7 @@ const SignUp = () => {
       .min(1, { message: "Phone Number is required" })
       .refine((val) => /^\d+$/.test(val), {
         message: "Phone Number must contain only digits",
-      })
+      }),
   });
 
   const handleChange = (e) => {
@@ -49,13 +50,13 @@ const SignUp = () => {
     });
   };
 
-
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     try {
       const validatedUser = userSchema.parse(user);
       setErrors({});
       await dispatch(createUser(validatedUser)).unwrap();
+      navigate("/verifyemail");
       toast.success("You successfully created an account");
     } catch (err) {
       if (err instanceof z.ZodError) {
