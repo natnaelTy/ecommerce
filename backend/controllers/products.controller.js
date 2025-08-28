@@ -271,9 +271,8 @@ export const newArrival = async (_, res) => {
 };
 
 
-/**
- * Checkout (create order + order items)
- */
+// Checkout (create order + order items)
+
 export const checkout = async (req, res) => {
   try {
     const { userId, items, method } = req.body;
@@ -285,7 +284,7 @@ export const checkout = async (req, res) => {
 
     for (const item of items) {
       const product = await prisma.products.findUnique({ where: { id: item.productId } });
-      if (!product || product.stock < item.quantity) {
+      if (!product) {
         return res.status(400).json({ message: `Product ${item.productId} not available` });
       }
 
@@ -299,7 +298,7 @@ export const checkout = async (req, res) => {
       // Decrease stock
       await prisma.products.update({
         where: { id: product.id },
-        data: { stock: { decrement: item.quantity } }
+        data: { quantity: { decrement: item.quantity } },
       });
     }
 
