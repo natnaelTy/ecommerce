@@ -29,7 +29,7 @@ model User {
   verificationCodeExpiresAt DateTime? 
 
   wishlists   WishList[]
-  carts       Cart[]
+  cart      Cart[]
   address   String?
   city      String?
   country   String?
@@ -109,7 +109,7 @@ model Payment {
   orderId   Int      @unique
   order     Order    @relation(fields: [orderId], references: [id])
   method    String   // "Bank transfer"
-  status    String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  status    String   @default("PENDING") // PENDING, PAID, FAILED
   amount    Float
   createdAt DateTime @default(now())
 }
