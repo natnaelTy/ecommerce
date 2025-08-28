@@ -4,9 +4,8 @@ import {
   signup,
   googleCallback,
   googleLogin,
-  verify,
+  getMe,
   logout,
-  verifyEmailToReset, 
   verifyEmail,
   forgotPassword,
   resetPassword
@@ -29,14 +28,12 @@ router.post("/login", login);
 
 router.post("/verifyEmail", verifyEmail);
 
-router.post("/verifyEmail", verifyEmailToReset);
-
 router.post("/forgotPassword", forgotPassword);
 
 router.post("/resetPassword/:token", resetPassword);
 
 router.post("/logout", logout);
 
-router.get("/verify", verify);
+router.get("/me", getMe);
 
 export default router;
