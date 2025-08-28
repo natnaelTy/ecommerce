@@ -3,6 +3,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchUser } from "../../../store/user/userSlice";
 import { UserPen, Package2, CreditCard, Heart } from 'lucide-react';
+import WishList from "./WishList";
+
+
 
 export default function Profile() {
   const { user } = useSelector((state) => state.user);
@@ -97,7 +100,7 @@ export default function Profile() {
               </Link>
             </div>
 
-            <div className="space-y-1 pl-8 pt-4">
+            <div className="space-y-1 pl-8 pt-4" onClick={() => setActiveTab("wishlist")}>
               <Link to="#" className="relative hover:text-primary block font-medium capitalize transition">
                 <span className="absolute -left-8 top-0 text-base">
                   <Heart/>
@@ -217,6 +220,12 @@ export default function Profile() {
               </div>
             </>
           )}
+             {activeTab === "wishlist" && (
+              <>
+                <WishList/>
+                {/* Wish list items go here */}
+              </>
+            )}
         </div>
       </div>
     </>
