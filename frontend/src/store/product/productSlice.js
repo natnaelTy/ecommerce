@@ -119,8 +119,8 @@ export const updateCart = createAsyncThunk(
 );
 
 // send checkout data to backend
-export const createCheckout = createAsyncThunk(
-  "checkout/createCheckout",
+export const checkoutOrder = createAsyncThunk(
+  "orders/checkoutOrder",
   async (checkoutData, { rejectWithValue }) => {
     try {
       const response = await api.post("/checkout", checkoutData);
@@ -132,8 +132,8 @@ export const createCheckout = createAsyncThunk(
 );
 
 // Checkout → create order
-export const checkoutOrder = createAsyncThunk(
-  "orders/checkoutOrder",
+export const createCheckout = createAsyncThunk(
+  "checkout/createCheckout",
   async ({ userId, items, method }, thunkAPI) => {
     try {
       const res = await api.post(`/checkout`, {
@@ -147,6 +147,7 @@ export const checkoutOrder = createAsyncThunk(
     }
   }
 );
+
 
 // Get user orders
 export const fetchOrders = createAsyncThunk(
@@ -186,25 +187,7 @@ const productSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {
-    // local changes (not saved to backend yet)
-    increaseQuantity: (state, action) => {
-      const item = state.cart.find((i) => i.id === action.payload);
-      if (item) {
-        item.quantity++;
-        item.totalPrice = item.quantity * item.price;
-      }
-    },
-    decreaseQuantity: (state, action) => {
-      const item = state.cart.find((i) => i.id === action.payload);
-      if (item && item.quantity > 1) {
-        console.log(item.quantity--);
-        item.quantity--;
-        item.totalPrice = item.quantity * item.price;
-      }
-      console.log(item);
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchProduct.pending, (state) => {
