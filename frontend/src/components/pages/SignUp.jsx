@@ -131,7 +131,7 @@ const SignUp = () => {
               <label htmlFor="fullname" className="text-sm font-medium w-full">
                 Full name <span className="text-red-600">*</span>
                 <input
-                  type="name"
+                  type="text"
                   name="fullName"
                   placeholder="Enter Full name"
                   className="px-4 text-sm py-3 focus:outline-orange-400 rounded-md bg-gray-100 w-full"
