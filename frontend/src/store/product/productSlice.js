@@ -90,6 +90,22 @@ export const addToCart = createAsyncThunk(
   }
 );
 
+export const removeFromCart = createAsyncThunk(
+  "product/removeFromCart",
+  async ({ userId, productId }, { rejectWithValue }) => {
+    try {
+      const response = await api.delete("/cart", {
+        data: { userId, productId },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to remove from cart"
+      );
+    }
+  }
+);
+
 // Fetch cart
 export const fetchCart = createAsyncThunk(
   "product/fetchCart",
