@@ -1,27 +1,28 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState, useCallback } from "react";
-import { fetchCart, updateCart } from "../../../store/product/productSlice";
+import { fetchCart, removeFromCart, updateCart } from "../../../store/product/productSlice";
 import { Trash, Minus, Plus, X } from "lucide-react";
 import { PuffLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
+import { ShoppingCart, MoveLeft  } from "lucide-react";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { cart, loading, error } = useSelector((state) => state.product);
 
-  // ✅ Map quantities: { [productId]: quantity }
+  // Map quantities: { [productId]: quantity }
   const [quantities, setQuantities] = useState({});
 
-  // ✅ Fetch cart when user is logged in
+  // Fetch cart when user is logged in
   useEffect(() => {
     if (user?.id && isAuthenticated) {
       dispatch(fetchCart(user.id));
     }
   }, [dispatch, user?.id, isAuthenticated]);
 
-  // ✅ Initialize quantities when cart loads
+  // Initialize quantities when cart loads
   useEffect(() => {
     if (cart && cart.length > 0) {
       const initialQuantities = {};
@@ -32,7 +33,7 @@ const Cart = () => {
     }
   }, [cart]);
 
-  // ✅ Quantity handlers
+  // Quantity handlers
   const increase = useCallback((productId) => {
     setQuantities((q) => ({
       ...q,
@@ -50,7 +51,7 @@ const Cart = () => {
     });
   }, []);
 
-  // ✅ Totals
+  // Totals
   const totalItems = Object.values(quantities).reduce((sum, v) => sum + v, 0);
   const totalPrice = cart.reduce((acc, wi) => {
     const product = wi.product || {};
@@ -58,7 +59,7 @@ const Cart = () => {
     return acc + (product.price || 0) * qty;
   }, 0);
 
-  // ✅ Cart product list
+  // Cart product list
   const cartList = cart.map((item) => item.product);
 
   // Loading state
@@ -78,7 +79,7 @@ const Cart = () => {
 
           <table className="w-full mt-4 table-auto border-collapse">
             <thead>
-              <tr className="border-b-2 border-gray-300">
+              <tr className={cartList.length <= 0 ? "hidden" : "border-b-2 border-gray-300"}>
                 <th className="py-2 text-left w-1/3">Product</th>
                 <th className="py-2 text-center w-1/6">Price</th>
                 <th className="py-2 text-center w-1/6">Quantity</th>
@@ -130,7 +131,7 @@ const Cart = () => {
                       <button
                         onClick={() =>
                           dispatch(
-                            removeWishlist({
+                            removeFromCart({
                               userId: user.id,
                               productId: item?.id,
                             })
@@ -146,7 +147,15 @@ const Cart = () => {
               ) : (
                 <tr>
                   <td colSpan="4" className="text-center py-4">
-                    Your cart is empty.
+                    <div className="flex flex-col mx-auto items-center justify-center gap-8 py-8 text-center">
+                      <p className="text-xl md:text-2xl font-medium">
+                        Your cart is empty.
+                      </p>
+                      <ShoppingCart className="size-14 lg:size-25 text-gray-400" />
+                      <Link to={"/shop"}>
+                      <button className="py-2 px-4 mt-2 bg-black text-white py-2 rounded-md hover:bg-orange-500 transition duration-200 flex items-center gap-3"><span><MoveLeft/></span>Continue shopping</button>
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -154,7 +163,7 @@ const Cart = () => {
           </table>
 
           {/* Order Summary */}
-          <div className="mt-8">
+          <div className={cartList.length <= 0 ? "hidden" : "block mt-8"}>
             <h1 className="text-xl font-semibold mb-4">Order Summary</h1>
             <div className="bg-white p-4 rounded-md shadow-md">
               <p className="text-gray-600 mb-2">Total Items: {totalItems}</p>
