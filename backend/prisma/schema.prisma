@@ -29,7 +29,7 @@ model User {
   verificationCodeExpiresAt DateTime? 
 
   wishlists   WishList[]
-  cart      Cart[]
+  carts     Cart[]
   address   String?
   city      String?
   country   String?
@@ -53,6 +53,7 @@ model Products {
   wishlists   WishList[]
   carts       Cart[]
   orderItems  OrderItem[]
+  categories  ProductCategory[]
 }
 
 model Newarrival {
@@ -80,6 +81,25 @@ model Cart {
   quantity  Int      @default(1)
 
   @@unique([userId, productId]) // Prevent duplicate cart items for a user
+}
+
+model Category {
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  slug        String            @unique
+  products    ProductCategory[]
+}
+
+model ProductCategory {
+  productId  Int
+  categoryId Int
+
+  product    Products  @relation(fields: [productId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([productId, categoryId])
+  @@index([categoryId])
+  @@index([productId])
 }
 
 model Order {
