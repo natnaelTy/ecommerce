@@ -8,14 +8,14 @@ import { fetchUser, logoutUser } from "../../store/user/userSlice";
 import { useEffect } from "react";
 import { Settings, User, ClockArrowDown, Headset, LogOut  } from "lucide-react";
 
-export default function GetProfile () {
+export default function GetProfile ({userId}) {
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchUser());
-  }, []);
+      dispatch(fetchUser(userId));
+  }, [userId, dispatch]);
 
   function handleLogout() {
     try {
@@ -32,7 +32,7 @@ export default function GetProfile () {
   }
 
   return (
-    <div className="fixed top-19 right-2 md:right-3 lg:right-65 z-10 bg-white shadow-xl w-62 text-base rounded-lg">
+    <div className="fixed top-19 right-2 md:right-3 lg:right-65 z-10 bg-white shadow-md border-1 border-gray-100 w-62 text-base rounded-lg">
       <div className="p-2 flex items-center gap-3 cursor-pointer">
         <div className="w-10 h-10 rounded-full overflow-hidden">
           <img
