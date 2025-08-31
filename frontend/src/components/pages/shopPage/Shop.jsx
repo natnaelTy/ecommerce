@@ -12,7 +12,7 @@ import { PuffLoader } from "react-spinners";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { addToCart } from "../../../store/product/productSlice";
 import { formatCurrency } from "../../../utils/formatCurrency";
-
+import { handleAddToWishlist } from "../../../store/product/productSlice";
 
 
 export default function Shop() {
@@ -86,7 +86,7 @@ export default function Shop() {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row items-start max-w-[1000px] mx-auto w-full">
+      <div className="flex flex-col md:flex-row items-start max-w-[1000px] mx-auto w-full pt-3">
         {/* side bar */}
         <SideBar
           handleCheckboxChange={handleCheckboxChange}
@@ -94,7 +94,7 @@ export default function Shop() {
         />
 
         {/* shop container */}
-        <div className="pb-16 max-w-[1000px] w-full mx-auto text-left p-3">
+        <div className="pb-16 lg:pt-2 pt-10 max-w-[1000px] w-full mx-auto text-left p-3">
           {/* layout buttons and sorting container */}
           <div className="w-full flex items-center justify-between mb-3">
             {/* sorting box */}
@@ -175,12 +175,6 @@ export default function Shop() {
                       </Link>
                       <span
                         onClick={() => {
-                          if (!user) {
-                            // Optionally show a login prompt or toast
-                            alert("Please log in to add to wishlist.");
-                            console.error("User is not logged in");
-                            return;
-                          }
                           dispatch(
                             handleAddToWishlist({
                               productId: item.id,
