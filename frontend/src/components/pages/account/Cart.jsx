@@ -1,11 +1,14 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState, useCallback } from "react";
-import { fetchCart, removeFromCart, updateCart } from "../../../store/product/productSlice";
-import { Trash, Minus, Plus, X } from "lucide-react";
+import {
+  fetchCart,
+  removeFromCart,
+  updateCart,
+} from "../../../store/product/productSlice";
 import { PuffLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { ShoppingCart, MoveLeft  } from "lucide-react";
+import { ShoppingCart, MoveLeft, Trash, Minus, Plus,  Store, ChevronRight } from "lucide-react";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -75,11 +78,23 @@ const Cart = () => {
     <div className="mx-auto py-8 px-2 min-h-screen">
       <div className="max-w-[1000px] mx-auto w-full mb-8 flex h-full flex-col md:flex-row items-start justify-between py-2 gap-3 rounded-md">
         <div className="w-full">
-          <h1 className="font-semibold text-xl mb-10">Shopping Cart</h1>
+          <div className="flex items-center justify-start gap-2 mb-6">
+            <Link to="/shop" title="Go to shop">
+              <Store  className="hover:text-orange-500 transition duration-200"/>
+            </Link>
+
+            <ChevronRight />
+
+            <h1 className="text-lg md:text-xl font-semibold">Shopping Cart</h1>
+          </div>
 
           <table className="w-full mt-4 table-auto border-collapse">
             <thead>
-              <tr className={cartList.length <= 0 ? "hidden" : "border-b-2 border-gray-300"}>
+              <tr
+                className={
+                  cartList.length <= 0 ? "hidden" : "border-b-2 border-gray-300"
+                }
+              >
                 <th className="py-2 text-left w-1/3">Product</th>
                 <th className="py-2 text-center w-1/6">Price</th>
                 <th className="py-2 text-center w-1/6">Quantity</th>
@@ -139,7 +154,7 @@ const Cart = () => {
                         }
                         className="text-gray-400 hover:text-red-500"
                       >
-                        {loading ? <PuffLoader size={16} /> : <X />}
+                        {loading ? <PuffLoader size={16} /> : <Trash />}
                       </button>
                     </td>
                   </tr>
@@ -153,7 +168,12 @@ const Cart = () => {
                       </p>
                       <ShoppingCart className="size-14 lg:size-25 text-gray-400" />
                       <Link to={"/shop"}>
-                      <button className="py-2 px-4 mt-2 bg-black text-white py-2 rounded-md hover:bg-orange-500 transition duration-200 flex items-center gap-3"><span><MoveLeft/></span>Continue shopping</button>
+                        <button className="py-2 px-4 mt-2 bg-black text-white py-2 rounded-md hover:bg-orange-500 transition duration-200 flex items-center gap-3">
+                          <span>
+                            <MoveLeft />
+                          </span>
+                          Back to shopping
+                        </button>
                       </Link>
                     </div>
                   </td>
