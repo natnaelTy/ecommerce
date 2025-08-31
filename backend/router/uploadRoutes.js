@@ -12,7 +12,9 @@ import {
   checkout,
   getOrdersByUser,
   simulatePayment,
-  updateCart
+  updateCart,
+  getRecommendedProducts,
+  getRelatedProducts
 } from "../controllers/products.controller.js";
 import multer from "multer";
 import express from "express";
@@ -50,6 +52,12 @@ productRoute.patch("/cart/:userId", updateCart);
 
 // Get new arrival products
 productRoute.get("/newarrival", newArrival);
+
+// get related products based on category
+productRoute.get("/:id/related", getRelatedProducts); // /products/:id/related?limit=8
+
+// get recomended for user
+productRoute.get("/recommended/:userId", getRecommendedProducts);
 
 // Product Upload
 productRoute.post("/post-product", upload.single("image"), postedProducts);
