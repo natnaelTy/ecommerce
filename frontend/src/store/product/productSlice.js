@@ -29,12 +29,44 @@ export const fetchNewArrivalProducts = createAsyncThunk(
   }
 );
 
+// get related products based on category 
+export const fetchRelatedProducts = createAsyncThunk(
+  "products/fetchRelated",
+  async ({ productId, limit = 8 }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/products/${productId}/related`, {
+        params: { limit },
+      });
+      return { productId, items: data.items };
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Failed to fetch related products");
+    }
+  }
+);
+
+// get recomended for user 
+export const fetchRecommendedProducts = createAsyncThunk(
+  "recommended/fetchRecommendedProducts",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/products/recommended/${userId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch recommended products"
+      );
+    }
+  }
+);
+
+// Add to wishlist
 export const handleAddToWishlist = createAsyncThunk(
   "product/handleAddToWishlist",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
       const response = await api.post("/wishlist", { userId, productId });
-      return response.data;
+      console.log(response.data.wishlist);
+      return response.data.wishlist;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to add to wishlist"
@@ -199,6 +231,8 @@ const productSlice = createSlice({
     wishlistItems: [],
     cart: [],
     orders: [],
+    related: [],
+    recommended: [],
     currentOrder: null,
     loading: false,
     error: null,
@@ -232,6 +266,32 @@ const productSlice = createSlice({
       .addCase(fetchNewArrivalProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // related products
+       .addCase(fetchRelatedProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRelatedProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.related = action.payload;
+      })
+      .addCase(fetchRelatedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // recommended products
+       .addCase(fetchRecommendedProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchRecommendedProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.recommended = action.payload;
+      })
+      .addCase(fetchRecommendedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;s
       })
       // add to wishlist
       .addCase(handleAddToWishlist.pending, (state) => {
