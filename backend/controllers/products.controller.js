@@ -5,13 +5,32 @@ import cloudinary from "./cloudinary folder/cloudinary.js";
 dotenv.config();
 
 // Get all products
-export const products = async (_, res) => {
+export const getAllProducts = async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 9;
+  const skip = (page - 1) * limit;
+
   try {
-    const productList = await prisma.products.findMany();
-    res.status(200).json({ success: true, products: productList });
-  } catch (err) {
-    console.error("Error fetching products:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    const [products, total] = await Promise.all([
+      prisma.products.findMany({
+        skip,
+        take: limit,
+      }),
+      prisma.products.count(),
+    ]);
+
+    console.log("Fetched products:", products);
+    res.json({
+       products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
+
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch products" });
   }
 };
 
@@ -83,7 +102,6 @@ export const addToWishlist = async (req, res) => {
         productId: parseInt(productId),
       },
     });
-    console.log("Wishlist item added:", wishlist);
     res.status(201).json({ success: true, wishlist});
   } catch (err) {
     console.error("Error adding to wishlist:", err);
@@ -99,7 +117,6 @@ export const getWishlist = async (req, res) => {
       where: { userId: parseInt(userId) },
       include: { product: true },
     });
-    console.log("Wishlist fetched:", getWishlist);
     res.status(200).json({ success: true, wishlist : getWishlist });
   } catch (err) {
     console.error("Error fetching wishlist:", err);
@@ -281,7 +298,7 @@ export const getRelatedProducts = async (req, res) => {
 
   try {
     // 1) Get the product with its categories
-    const base = await prisma.product.findUnique({
+    const base = await prisma.products.findUnique({
       where: { id },
       include: {
         categories: { include: { category: true } },
