@@ -39,26 +39,34 @@ export default function SideBar({handleCheckboxChange, selectedCategory, minPric
             <h1 className="uppercase text-sm md:text-lg font-medium text-slate-950">category</h1>
             <div className="flex w-full items-center justify-between text-xs md:text-sm">
             <label htmlFor="bed" className="flex gap-1 items-center" >
-              <input type="checkbox" value={"Bed"} checked={selectedCategory.includes("Bed")} onChange={() => handleCheckboxChange('Bed')}/>
+              <input type="checkbox" value={"bed"} checked={selectedCategory.includes("bed")} onChange={() => handleCheckboxChange('bed')}/>
               Bed
             </label>
-            <p>({categoryLength["Bed"]})</p>
+            <p>({categoryLength["bed"]})</p>
             </div>
 
             <div className="flex w-full items-center justify-between text-xs md:text-sm">
             <label htmlFor="table" className="flex gap-1 items-center">
-              <input type="checkbox" value={"Table"} checked={selectedCategory.includes("Table")} onChange={() => handleCheckboxChange('Table')}/>
+              <input type="checkbox" value={"table"} checked={selectedCategory.includes("table")} onChange={() => handleCheckboxChange('table')}/>
               Table
             </label>
-            <p>({categoryLength["Table"]})</p>
+            <p>({categoryLength["table"]})</p>
             </div>
 
             <div className="flex w-full items-center justify-between text-xs md:text-sm">
             <label htmlFor="sofa" className="flex gap-1 items-center">
-              <input type="checkbox" value={"Sofa"} checked={selectedCategory.includes("Sofa")} onChange={() => handleCheckboxChange('Sofa')}/>
+              <input type="checkbox" value={"sofa"} checked={selectedCategory.includes("sofa")} onChange={() => handleCheckboxChange('sofa')}/>
               <p>Sofa</p>
             </label>
-            <p>({categoryLength["Sofa"]})</p>
+            <p>({categoryLength["sofa"]})</p>
+            </div>
+
+            <div className="flex w-full items-center justify-between text-xs md:text-sm">
+            <label htmlFor="chair" className="flex gap-1 items-center">
+              <input type="checkbox" value={"chair"} checked={selectedCategory.includes("chair")} onChange={() => handleCheckboxChange('chair')}/>
+              <p>Chair</p>
+            </label>
+            <p>({categoryLength["chair"]})</p>
             </div>
         </div>
 
