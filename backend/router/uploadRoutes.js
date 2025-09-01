@@ -1,6 +1,6 @@
 import {
   postedProducts,
-  products,
+  getAllProducts,
   newArrival,
   addNewArrival,
   addToWishlist,
@@ -24,7 +24,7 @@ const productRoute = express.Router();
 const upload = multer({ dest: "uploads/" });
 
 // Get all products
-productRoute.get("/products", products);
+productRoute.get("/products", getAllProducts);
 
 // Add product to new arrival
 productRoute.post("/newarrival", addNewArrival);
