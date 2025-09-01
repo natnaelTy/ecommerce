@@ -14,14 +14,13 @@ import { addToCart } from "../../../store/product/productSlice";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { handleAddToWishlist } from "../../../store/product/productSlice";
 
-
 export default function Shop() {
   const dispatch = useDispatch();
-  const { productItems, loading, error } = useSelector(
+  const { productItems, page, totalPages, loading, error } = useSelector(
     (state) => state.product
   );
   const { user } = useSelector((state) => state.user);
-
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedSorting, setSelectedSorting] = useState("default");
   const [filteredAndSorted, setFilteredAndSorted] = useState([]);
@@ -29,8 +28,8 @@ export default function Shop() {
 
   // fetch products from api
   useEffect(() => {
-    dispatch(fetchProduct());
-  }, [dispatch]);
+    dispatch(fetchProduct({ page: currentPage, limit: 9 }));
+  }, [dispatch, currentPage]);
 
   // filter by category
   const filteredProduct =
@@ -59,7 +58,6 @@ export default function Shop() {
     );
   }
 
-  console.log(selectedLayout);
   // sorting
   useEffect(() => {
     let sorted = [...filteredProduct];
@@ -229,7 +227,16 @@ export default function Shop() {
                       </div>
                     </div>
                     {/* add to cart button */}
-                      <button onClick={() => dispatch(addToCart({productId: item.id, userId: user.id}))} className="addToCartBtn">Add to cart</button>
+                    <button
+                      onClick={() =>
+                        dispatch(
+                          addToCart({ productId: item.id, userId: user.id })
+                        )
+                      }
+                      className="addToCartBtn"
+                    >
+                      Add to cart
+                    </button>
                   </div>
                 </div>
               ))
@@ -237,6 +244,39 @@ export default function Shop() {
               <p>No products found</p>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Pagination */}
+      <div className="p-4">
+        <div className="flex justify-center mt-6 space-x-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+            className="px-3 py-1 border-1 border-gray-300 bg-black hover:bg-gray-700 text-white rounded-md disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          {[...Array(totalPages)].map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`px-3 py-1 border-1 border-gray-300 rounded ${
+                i + 1 === currentPage ? "bg-orange-400 text-white border-1 border-orange-400" : "border-1 border-orange-400"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+            className="px-3 py-1 border-1 border-gray-300 bg-black hover:bg-gray-700 text-white rounded-md disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </>
