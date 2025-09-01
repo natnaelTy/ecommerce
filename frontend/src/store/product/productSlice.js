@@ -4,9 +4,9 @@ import api from "../../services/api";
 // fetch all products from products route end point
 export const fetchProduct = createAsyncThunk(
   "product/fetchProduct",
-  async (_, { rejectWithValue }) => {
+  async ({ page, limit }, { rejectWithValue }) => {
     try {
-      const response = await api.get("/products");
+      const response = await api.get(`/products?page=${page}&limit=${limit}`);
       const data = await response.data.products;
       return data;
     } catch (error) {
@@ -29,7 +29,7 @@ export const fetchNewArrivalProducts = createAsyncThunk(
   }
 );
 
-// get related products based on category 
+// get related products based on category
 export const fetchRelatedProducts = createAsyncThunk(
   "products/fetchRelated",
   async ({ productId, limit = 8 }, { rejectWithValue }) => {
@@ -39,12 +39,14 @@ export const fetchRelatedProducts = createAsyncThunk(
       });
       return { productId, items: data.items };
     } catch (err) {
-      return rejectWithValue(err.response?.data || "Failed to fetch related products");
+      return rejectWithValue(
+        err.response?.data || "Failed to fetch related products"
+      );
     }
   }
 );
 
-// get recomended for user 
+// get recomended for user
 export const fetchRecommendedProducts = createAsyncThunk(
   "recommended/fetchRecommendedProducts",
   async (userId, { rejectWithValue }) => {
@@ -97,7 +99,6 @@ export const fetchWishlist = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/wishlist/${userId}`);
-      console.log(response.data.wishlist);
       return response.data.wishlist;
     } catch (error) {
       return rejectWithValue(
@@ -158,7 +159,7 @@ export const updateCart = createAsyncThunk(
   async ({ userId, items }, { rejectWithValue }) => {
     try {
       const response = await api.patch(`/cart/${userId}`, { userId, items });
-      console.log(response.data)
+      console.log(response.data);
       return response.data; // return updated cart from backend
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -196,7 +197,6 @@ export const createCheckout = createAsyncThunk(
   }
 );
 
-
 // Get user orders
 export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
@@ -227,6 +227,8 @@ const productSlice = createSlice({
   name: "product",
   initialState: {
     productItems: [],
+    page: 1,
+    totalPages: 0,
     newArrivalProducts: [],
     wishlistItems: [],
     cart: [],
@@ -240,18 +242,20 @@ const productSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // fetch all products
       .addCase(fetchProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchProduct.fulfilled, (state, action) => {
-        state.error = null;
         state.loading = false;
         state.productItems = action.payload;
+        state.page = action.payload;
+        state.totalPages = action.payload;
       })
       .addCase(fetchProduct.rejected, (state, action) => {
-        state.error = action.payload;
         state.loading = false;
+        state.error = action.payload;
       })
       // new arrival products
       .addCase(fetchNewArrivalProducts.pending, (state, _) => {
@@ -268,7 +272,7 @@ const productSlice = createSlice({
         state.error = action.payload;
       })
       // related products
-       .addCase(fetchRelatedProducts.pending, (state) => {
+      .addCase(fetchRelatedProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -281,7 +285,7 @@ const productSlice = createSlice({
         state.error = action.payload;
       })
       // recommended products
-       .addCase(fetchRecommendedProducts.pending, (state) => {
+      .addCase(fetchRecommendedProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -291,7 +295,8 @@ const productSlice = createSlice({
       })
       .addCase(fetchRecommendedProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;s
+        state.error = action.payload;
+        s;
       })
       // add to wishlist
       .addCase(handleAddToWishlist.pending, (state) => {
@@ -415,6 +420,7 @@ const productSlice = createSlice({
       });
   },
 });
+
 
 export const { increaseQuantity, decreaseQuantity } = productSlice.actions;
 export default productSlice.reducer;
