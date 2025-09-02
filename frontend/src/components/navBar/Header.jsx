@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import { fetchCart, fetchWishlist } from "../../store/product/productSlice";
 import { ShoppingCart, User, Heart, Search, Menu } from "lucide-react";
 import { TbUserFilled } from "react-icons/tb";
+import "./style.css";
+import SearchProduct from "./SearchProduct";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -23,6 +25,7 @@ export default function Header() {
 
   const wishListedProduct = wishlistItems.map((item) => item.product);
   const cartItems = cart.map((item) => item.product);
+
   return (
     <header className="p-3 bg-white border-1 border-gray-200 w-full sticky top-0 z-10 right-0">
       <div className="flex items-center justify-between w-full gap-4 max-w-[1000px] w-full mx-auto h-10">
@@ -37,26 +40,11 @@ export default function Header() {
         <div
           className={
             showSearchInput
-              ? "w-full max-w-[400px] relative flex border-1 border-amber-500 rounded-md "
+              ? "w-full max-w-[400px]"
               : "hidden"
           }
         >
-          <span className="absolute left-4 top-2 text-gray-400 hidden md:block">
-            <Search />
-          </span>
-          <input
-            type="search"
-            name="search"
-            id="search"
-            className="w-full border-r-0 pl-4 md:pl-12 py-2  pr-1 md:pr-2 focus:outline-none text-xs lg:text-base"
-            placeholder="Search"
-          />
-          <button className="bg-amber-500  text-white md:px-5 px-3 rounded-r-md hover:bg-transparent hover:text-amber-400 transition text-sm lg:text-base">
-            <span className="block md:hidden">
-              <Search className="size-4" />{" "}
-            </span>{" "}
-            <span className="hidden md:block">Search</span>{" "}
-          </button>
+          <SearchProduct />
         </div>
 
         <div
@@ -66,16 +54,16 @@ export default function Header() {
               : "flex items-center space-x-6 capitalize text-xs md:text-sm hidden md:flex"
           }
         >
-          <NavLink to={"/"} className="">
+          <NavLink to={"/"} className="hoverLink">
             Home
           </NavLink>
-          <NavLink to={"/shop"} className="">
+          <NavLink to={"/shop"} className="hoverLink">
             Shop
           </NavLink>
-          <NavLink to={"/"} className="">
+          <NavLink to={"/about"} className="hoverLink">
             About us
           </NavLink>
-          <NavLink to={"/"} className="">
+          <NavLink to={"/contact"} className="hoverLink">
             Contact us
           </NavLink>
         </div>
