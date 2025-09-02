@@ -10,16 +10,33 @@ import { FaStar } from "react-icons/fa6";
 import SideBar from "./SideBar";
 import { PuffLoader } from "react-spinners";
 import { TfiMenuAlt } from "react-icons/tfi";
-import { addToCart } from "../../../store/product/productSlice";
+import {
+  addToCart,
+  handleAddToWishlist,
+  removeFromCart,
+} from "../../../store/product/productSlice";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { handleAddToWishlist } from "../../../store/product/productSlice";
+import { useLocation } from "react-router-dom";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 export default function Shop() {
   const dispatch = useDispatch();
-  const { productItems, page, totalPages, loading, error } = useSelector(
-    (state) => state.product
-  );
+  const {
+    productItems,
+    page,
+    totalPages,
+    loading,
+    error,
+    wishlistItems,
+    cart,
+  } = useSelector((state) => state.product);
   const { user } = useSelector((state) => state.user);
+  const query = useQuery();
+  const search = query.get("search") || "";
+
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedSorting, setSelectedSorting] = useState("default");
@@ -28,8 +45,8 @@ export default function Shop() {
 
   // fetch products from api
   useEffect(() => {
-    dispatch(fetchProduct({ page: currentPage, limit: 9 }));
-  }, [dispatch, currentPage]);
+    dispatch(fetchProduct({ page: currentPage, limit: 9, search }));
+  }, [dispatch, currentPage, search]);
 
   // filter by category
   const filteredProduct =
@@ -228,14 +245,32 @@ export default function Shop() {
                     </div>
                     {/* add to cart button */}
                     <button
-                      onClick={() =>
-                        dispatch(
-                          addToCart({ productId: item.id, userId: user.id })
-                        )
+                      onClick={
+                        cart.some((cartItem) => cartItem.productId === item.id)
+                          ? () =>
+                              dispatch(
+                                removeFromCart({
+                                  productId: item.id,
+                                  userId: user.id,
+                                })
+                              )
+                          : () =>
+                              dispatch(
+                                addToCart({
+                                  productId: item.id,
+                                  userId: user.id,
+                                })
+                              )
                       }
                       className="addToCartBtn"
                     >
-                      Add to cart
+                      {loading
+                        ? "Adding..."
+                        : cart.some(
+                            (cartItem) => cartItem.productId === item.id
+                          )
+                        ? "Remove from Cart"
+                        : "Add to cart"}
                     </button>
                   </div>
                 </div>
@@ -263,10 +298,12 @@ export default function Shop() {
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 border-1 border-gray-300 rounded ${
-                i + 1 === currentPage ? "bg-orange-400 text-white border-1 border-orange-400" : "border-1 border-orange-400"
+                i + 1 === currentPage
+                  ? "bg-orange-400 text-white border-1 border-orange-400"
+                  : "border-1 border-orange-400"
               }`}
             >
-              {i + 1}
+              {currentPage}
             </button>
           ))}
 
