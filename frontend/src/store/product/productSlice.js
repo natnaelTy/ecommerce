@@ -4,9 +4,9 @@ import api from "../../services/api";
 // fetch all products from products route end point
 export const fetchProduct = createAsyncThunk(
   "product/fetchProduct",
-  async ({ page, limit }, { rejectWithValue }) => {
+  async ({ page, limit, search }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/products?page=${page}&limit=${limit}`);
+      const response = await api.get(`/products?page=${page}&limit=${limit}&search=${search}`);
       const data = await response.data.products;
       return data;
     } catch (error) {
@@ -66,8 +66,7 @@ export const handleAddToWishlist = createAsyncThunk(
   "product/handleAddToWishlist",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/wishlist", { userId, productId });
-      console.log(response.data.wishlist);
+      const response = await api.post("/wishlist", { userId, productId });;
       return response.data.wishlist;
     } catch (error) {
       return rejectWithValue(
@@ -114,7 +113,7 @@ export const addToCart = createAsyncThunk(
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
     try {
       const response = await api.post("/cart", { userId, productId, quantity });
-      return response.data;
+      return response.data.cart;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to add to cart"
@@ -334,7 +333,7 @@ const productSlice = createSlice({
       .addCase(addToCart.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.cart.push(action.payload.cartItem);
+        state.cart.push(action.payload);
       })
       .addCase(addToCart.rejected, (state, action) => {
         state.loading = false;
@@ -422,5 +421,6 @@ const productSlice = createSlice({
 });
 
 
-export const { increaseQuantity, decreaseQuantity } = productSlice.actions;
+
+export const { increaseQuantity, decreaseQuantity, setSearchTerm, searchTerm } = productSlice.actions;
 export default productSlice.reducer;
