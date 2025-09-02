@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {House} from "lucide-react"
 import { RiArrowRightSLine } from "react-icons/ri";
-import {CircleEllipsis} from "lucide-react"
+import {SlidersHorizontal} from "lucide-react"
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -24,7 +24,7 @@ export default function SideBar({handleCheckboxChange, selectedCategory, minPric
 
   return (
     <> 
-    <CircleEllipsis onClick={handleShowBox} className="flex md:hidden absolute z-10 top-20 text-amber-500 left-2"/>
+    <SlidersHorizontal onClick={handleShowBox} className="flex md:hidden absolute z-10 top-20 text-amber-500 left-2"/>
     <div className={showModel ? "flex flex-col items-start gap-5 mt-10 max-w-[250px] w-full p-3 border-1 border-gray-200 rounded-md shadow-xs bg-white ml-2" : "hidden md:flex flex-col items-start gap-5 mt-2 max-w-[250px] w-full p-3 border-1 border-gray-200 rounded-md shadow-xs bg-white"}>
         <div className="flex items-center gap-2 text-base">
             <Link to={"/"} title="Go to home">
