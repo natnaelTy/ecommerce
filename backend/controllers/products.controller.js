@@ -9,25 +9,36 @@ export const getAllProducts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 9;
   const skip = (page - 1) * limit;
+  const search = req.query.search || "";
 
   try {
     const [products, total] = await Promise.all([
       prisma.products.findMany({
+        where: {
+          productName: {
+            contains: search,
+          },
+        },
         skip,
         take: limit,
+        orderBy: { createdAt: "desc" },
       }),
-      prisma.products.count(),
+      prisma.products.count({
+        where: {
+          productName: {
+            contains: search,
+          },
+        },
+      }),
     ]);
 
     console.log("Fetched products:", products);
     res.json({
-       products,
+      products,
       total,
       page,
       totalPages: Math.ceil(total / limit),
     });
-
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch products" });
@@ -81,7 +92,6 @@ export const postedProducts = async (req, res) => {
       },
     });
 
-
     res.status(201).json({
       message: "Product created successfully",
       product: newProduct,
@@ -102,7 +112,7 @@ export const addToWishlist = async (req, res) => {
         productId: parseInt(productId),
       },
     });
-    res.status(201).json({ success: true, wishlist});
+    res.status(201).json({ success: true, wishlist });
   } catch (err) {
     console.error("Error adding to wishlist:", err);
     res.status(500).json({ success: false, message: "Server error" });
@@ -117,7 +127,7 @@ export const getWishlist = async (req, res) => {
       where: { userId: parseInt(userId) },
       include: { product: true },
     });
-    res.status(200).json({ success: true, wishlist : getWishlist });
+    res.status(200).json({ success: true, wishlist: getWishlist });
   } catch (err) {
     console.error("Error fetching wishlist:", err);
     res.status(500).json({ success: false, message: "Server error" });
@@ -147,7 +157,7 @@ export const removeFromWishlist = async (req, res) => {
 export const addToCart = async (req, res) => {
   const { userId, productId, quantity } = req.body;
   try {
-    const cartItem = await prisma.cart.upsert({
+    const cart = await prisma.cart.upsert({
       where: {
         userId_productId: {
           userId: parseInt(userId),
@@ -163,8 +173,7 @@ export const addToCart = async (req, res) => {
         quantity: quantity ? parseInt(quantity) : 1,
       },
     });
-    console.log("Cart item added/updated:", cartItem);
-    res.status(201).json({ success: true, cart: cartItem });
+    res.status(201).json({ success: true, cart });
   } catch (err) {
     console.error("Error adding to cart:", err);
     res.status(500).json({ success: false, message: "Server error" });
@@ -175,11 +184,11 @@ export const addToCart = async (req, res) => {
 export const getCart = async (req, res) => {
   const { userId } = req.params;
   try {
-    const cart = await prisma.cart.findMany({
+    const cartItem = await prisma.cart.findMany({
       where: { userId: parseInt(userId) },
       include: { product: true },
     });
-    res.status(200).json({ success: true, cart });
+    res.status(200).json({ success: true, cart: cartItem });
   } catch (err) {
     console.error("Error fetching cart:", err);
     res.status(500).json({ success: false, message: "Server error" });
@@ -190,10 +199,10 @@ export const updateCart = async (req, res) => {
   const { userId, items } = req.body;
   // items = [{ productId, quantity }, ...]
 
-   if (!Array.isArray(items)) {
+  if (!Array.isArray(items)) {
     return res.status(400).json({ error: "items must be an array" });
   }
-  
+
   try {
     for (let item of items) {
       await prisma.cart.update({
@@ -215,14 +224,13 @@ export const updateCart = async (req, res) => {
       include: { product: true },
     });
 
-    console.log("Cart updated:", updatedCart)
+    console.log("Cart updated:", updatedCart);
     res.json(updatedCart);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to update cart" });
   }
 };
-
 
 // Remove from cart
 export const removeFromCart = async (req, res) => {
@@ -323,11 +331,12 @@ export const getRelatedProducts = async (req, res) => {
     const related = await prisma.product.findMany({
       where: {
         id: { not: id },
-      AND: {
-        categories: {
-          some: { categoryId: { in: categoryIds } },
+        AND: {
+          categories: {
+            some: { categoryId: { in: categoryIds } },
+          },
         },
-      }},
+      },
       take: limit,
       orderBy: { createdAt: "desc" }, // tweak: sales/popularity if you track it
       include: {
@@ -339,7 +348,7 @@ export const getRelatedProducts = async (req, res) => {
     if (related.length < limit) {
       const topUp = await prisma.products.findMany({
         where: {
-          id: { notIn: [id, ...related.map(r => r.id)] },
+          id: { notIn: [id, ...related.map((r) => r.id)] },
         },
         orderBy: { createdAt: "desc" },
         take: limit - related.length,
@@ -354,7 +363,7 @@ export const getRelatedProducts = async (req, res) => {
   }
 };
 
-// get recomended for user 
+// get recomended for user
 export const getRecommendedProducts = async (req, res) => {
   const { userId } = req.params;
 
@@ -417,9 +426,13 @@ export const checkout = async (req, res) => {
     const orderItemsData = [];
 
     for (const item of items) {
-      const product = await prisma.products.findUnique({ where: { id: item.productId } });
+      const product = await prisma.products.findUnique({
+        where: { id: item.productId },
+      });
       if (!product) {
-        return res.status(400).json({ message: `Product ${item.productId} not available` });
+        return res
+          .status(400)
+          .json({ message: `Product ${item.productId} not available` });
       }
 
       total += product.price * item.quantity;
@@ -447,10 +460,10 @@ export const checkout = async (req, res) => {
             amount: total,
             method,
             status: "unpaid",
-          }
-        }
+          },
+        },
       },
-      include: { orderItems: true, payment: true }
+      include: { orderItems: true, payment: true },
     });
 
     res.status(201).json({ message: "Order created", order });
@@ -467,7 +480,7 @@ export const getOrdersByUser = async (req, res) => {
   try {
     const orders = await prisma.order.findMany({
       where: { userId: parseInt(req.params.userId) },
-      include: { orderItems: true, payment: true }
+      include: { orderItems: true, payment: true },
     });
     res.json(orders);
   } catch (err) {
@@ -485,14 +498,14 @@ export const simulatePayment = async (req, res) => {
 
     const payment = await prisma.payment.update({
       where: { orderId: parseInt(orderId) },
-      data: { status }
+      data: { status },
     });
 
     // Update order status if paid
     if (status === "paid") {
       await prisma.order.update({
         where: { id: parseInt(orderId) },
-        data: { status: "paid" }
+        data: { status: "paid" },
       });
     }
 
