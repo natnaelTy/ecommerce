@@ -43,7 +43,7 @@ model Products {
   description String
   image       String
   price       Float
-  category    String
+  category    String?
   brand       String
   review      Int
   quantity    Int
