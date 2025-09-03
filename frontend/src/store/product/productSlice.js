@@ -32,7 +32,7 @@ export const fetchNewArrivalProducts = createAsyncThunk(
 // get related products based on category
 export const fetchRelatedProducts = createAsyncThunk(
   "products/fetchRelated",
-  async ({ productId, limit = 8 }, { rejectWithValue }) => {
+  async ({ productId, limit}, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/products/${productId}/related`, {
         params: { limit },
@@ -77,7 +77,7 @@ export const handleAddToWishlist = createAsyncThunk(
 );
 
 // remove from wishlist
-export const removeWishlist = createAsyncThunk(
+export const removeFromWishlist = createAsyncThunk(
   "product/removeFromWishlist",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
