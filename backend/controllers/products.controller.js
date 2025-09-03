@@ -32,7 +32,6 @@ export const getAllProducts = async (req, res) => {
       }),
     ]);
 
-    console.log("Fetched products:", products);
     res.json({
       products,
       total,
@@ -297,69 +296,44 @@ export const newArrival = async (_, res) => {
 
 // Get related products based on category
 export const getRelatedProducts = async (req, res) => {
-  const { id } = req.params;
-  const { limit } = Number(req.query.limit ?? 8);
+  const { productId } = req.params;
+  const limit = parseInt(req.query.limit) || 8;
 
-  if (Number.isNaN(id)) {
-    return res.status(400).json({ error: "Invalid product id" });
+  if (!productId || isNaN(parseInt(productId))) {
+    return res.status(400).json({
+      error: "Invalid product ID",
+      details: `Product ID must be a valid integer, received: ${productId}`,
+    });
   }
 
   try {
-    // 1) Get the product with its categories
-    const base = await prisma.products.findUnique({
-      where: { id },
-      include: {
-        categories: { include: { category: true } },
-      },
+    const product = await prisma.products.findUnique({
+      where: { id: parseInt(productId) },
     });
 
-    if (!base) return res.status(404).json({ error: "Product not found" });
-
-    const categoryIds = base.categories.map((pc) => pc.categoryId);
-
-    // No categories? return latest products (excluding itself)
-    if (categoryIds.length === 0) {
-      const fallback = await prisma.products.findMany({
-        where: { id: { not: id } },
-        orderBy: { createdAt: "desc" },
-        take: limit,
-      });
-      return res.json({ items: fallback });
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
     }
 
-    // 2) Find products that share at least one category, exclude self
-    const related = await prisma.product.findMany({
+    if (!product.category) {
+      return res.status(400).json({ error: "Product category is missing" });
+    }
+
+    const related = await prisma.products.findMany({
       where: {
-        id: { not: id },
-        AND: {
-          categories: {
-            some: { categoryId: { in: categoryIds } },
-          },
-        },
+        category: product.category,
+        id: { not: parseInt(productId) },
       },
       take: limit,
-      orderBy: { createdAt: "desc" }, // tweak: sales/popularity if you track it
-      include: {
-        categories: { include: { category: true } },
-      },
     });
-
-    // If too few, top up with newest products (deduped)
-    if (related.length < limit) {
-      const topUp = await prisma.products.findMany({
-        where: {
-          id: { notIn: [id, ...related.map((r) => r.id)] },
-        },
-        orderBy: { createdAt: "desc" },
-        take: limit - related.length,
-      });
-      return res.json({ items: [...related, ...topUp] });
-    }
 
     res.json({ items: related });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to load related products" });
+    console.error("Error in getRelatedProducts:", err);
+    res.status(500).json({
+      error: "Failed to fetch related products",
+      details: err.message,
+    });
   }
 };
 
