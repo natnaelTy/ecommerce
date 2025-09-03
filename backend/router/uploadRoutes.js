@@ -54,7 +54,7 @@ productRoute.patch("/cart/:userId", updateCart);
 productRoute.get("/newarrival", newArrival);
 
 // get related products based on category
-productRoute.get("/:id/related", getRelatedProducts); // /products/:id/related?limit=8
+productRoute.get("/products/:id/related", getRelatedProducts); 
 
 // get recomended for user
 productRoute.get("/recommended/:userId", getRecommendedProducts);
