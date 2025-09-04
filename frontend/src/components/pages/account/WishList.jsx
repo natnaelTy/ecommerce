@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import {
   fetchWishlist,
-  removeWishlist,
+  removeFromWishlist,
 } from "../../../store/product/productSlice";
 import { Trash, ShoppingCart, Store, ChevronRight, MoveLeft, FileHeart  } from "lucide-react";
 import { PuffLoader } from "react-spinners";
@@ -90,7 +90,7 @@ function WishList() {
               <span
                 onClick={() =>
                   dispatch(
-                    removeWishlist({ userId: user.id, productId: item?.id })
+                    removeFromWishlist({ userId: user.id, productId: item?.id })
                   )
                 }
               >
