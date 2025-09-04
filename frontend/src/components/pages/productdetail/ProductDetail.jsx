@@ -13,15 +13,17 @@ import {
   handleAddToWishlist,
   removeFromCart,
   removeFromWishlist,
-  removeWishlist,
 } from "../../../store/product/productSlice";
 import { useDispatch } from "react-redux";
+import { PuffLoader } from "react-spinners";
+
+
 
 export default function ProductDetail() {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  const { productItems, loading, newArrivalProducts, cart } = useSelector(
+  const { productItems, loading, newArrivalProducts, cart, wishlistItems } = useSelector(
     (state) => state.product
   );
   const { user } = useSelector((state) => state.user);
@@ -31,6 +33,14 @@ export default function ProductDetail() {
 
   if (!product) return <p>Product not found</p>;
 
+    // loading
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <PuffLoader color="#ffab00" />
+      </div>
+    );
+  }
   return (
     <>
       <div className="max-w-[1000px] mx-auto w-full py-4 flex items-center gap-3 p-3">
@@ -44,7 +54,7 @@ export default function ProductDetail() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[1000px] mx-auto w-full p-3">
-        <div>
+        <div key={product.id}>
           <img src={product.image} alt="product" className="w-full" />
           <div className="grid grid-cols-5 gap-4 mt-4">
             <img
@@ -203,15 +213,18 @@ export default function ProductDetail() {
                       )
                   : () =>
                       dispatch(
-                        addToWishlist({
+                        ({
                           productId: product.id,
                           userId: user.id,
                         })
                       )
               }
-              className="border border-gray-300 text-gray-600 px-8 py-2 font-medium rounded uppercase flex items-center gap-2 hover:text-pink-500 transition"
+              className="border border-gray-300 text-gray-600 px-5 py-2 w-full text-sm rounded flex items-center gap-2 hover:text-pink-500 transition"
             >
-              <Heart className="size-4" /> WISHLIST
+               <Heart className="size-4" />{" "}
+              {wishlistItems.some((cartItem) => cartItem.productId === product.id)
+                ? "Remove from wishlist"
+                : "Add to wishlist"}
             </button>
           </div>
 
@@ -280,7 +293,7 @@ export default function ProductDetail() {
           Related products
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <RelatedProducts productId={product.id} />
+          {product?.id && <RelatedProducts productId={product.id} />}
         </div>
       </div>
     </>
