@@ -23,7 +23,6 @@ export default function SearchProduct() {
     dispatch(fetchProduct({ page: currentPage, limit: 9, search: searchTerm }));
   }, [dispatch, currentPage, searchTerm]);
 
-  console.log(productItems);
 
   return (
     <div className="w-full max-w-[400px] relative flex border-1 border-orange-400 rounded-md ">
@@ -38,6 +37,11 @@ export default function SearchProduct() {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full border-r-0 pl-4 md:pl-12 py-2  pr-1 md:pr-2 focus:outline-none text-xs lg:text-base"
         placeholder="Search"
+        onKeyDown={(e) => {
+          if(e.key === "Enter") {
+            handleSearch();
+          }
+        }}
       />
       <button
         onClick={handleSearch}
