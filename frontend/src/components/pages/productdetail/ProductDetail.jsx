@@ -212,8 +212,7 @@ export default function ProductDetail() {
                         })
                       )
                   : () =>
-                      dispatch(
-                        ({
+                      dispatch(handleAddToWishlist({
                           productId: product.id,
                           userId: user.id,
                         })
