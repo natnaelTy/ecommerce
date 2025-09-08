@@ -6,7 +6,9 @@ export const fetchProduct = createAsyncThunk(
   "product/fetchProduct",
   async ({ page, limit, search }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/products?page=${page}&limit=${limit}&search=${search}`);
+      const response = await api.get(
+        `/products?page=${page}&limit=${limit}&search=${search}`
+      );
       const data = await response.data.products;
       return data;
     } catch (error) {
@@ -32,11 +34,12 @@ export const fetchNewArrivalProducts = createAsyncThunk(
 // get related products based on category
 export const fetchRelatedProducts = createAsyncThunk(
   "products/fetchRelated",
-  async ({ productId, limit}, { rejectWithValue }) => {
+  async ({ productId, limit }, { rejectWithValue }) => {
     try {
       const { data } = await api.get(`/products/${productId}/related`, {
         params: { limit },
       });
+      console.log(data.items);
       return { productId, items: data.items };
     } catch (err) {
       return rejectWithValue(
@@ -52,7 +55,8 @@ export const fetchRecommendedProducts = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await api.get(`/products/recommended/${userId}`);
-      return response.data;
+      console.log("Recommended products:", response.data.recommendedProducts);
+      return response.data.recommendedProducts;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch recommended products"
@@ -66,7 +70,7 @@ export const handleAddToWishlist = createAsyncThunk(
   "product/handleAddToWishlist",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/wishlist", { userId, productId });;
+      const response = await api.post("/wishlist", { userId, productId });
       return response.data.wishlist;
     } catch (error) {
       return rejectWithValue(
@@ -277,7 +281,8 @@ const productSlice = createSlice({
       })
       .addCase(fetchRelatedProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.related = action.payload;
+        const { productId, items } = action.payload;
+        state.related[productId] = items;
       })
       .addCase(fetchRelatedProducts.rejected, (state, action) => {
         state.loading = false;
@@ -295,7 +300,6 @@ const productSlice = createSlice({
       .addCase(fetchRecommendedProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        s;
       })
       // add to wishlist
       .addCase(handleAddToWishlist.pending, (state) => {
@@ -420,7 +424,6 @@ const productSlice = createSlice({
   },
 });
 
-
-
-export const { increaseQuantity, decreaseQuantity, setSearchTerm, searchTerm } = productSlice.actions;
+export const { increaseQuantity, decreaseQuantity, setSearchTerm, searchTerm } =
+  productSlice.actions;
 export default productSlice.reducer;
