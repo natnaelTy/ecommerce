@@ -54,10 +54,10 @@ productRoute.patch("/cart/:userId", updateCart);
 productRoute.get("/newarrival", newArrival);
 
 // get related products based on category
-productRoute.get("/products/:id/related", getRelatedProducts); 
+productRoute.get("/products/:productId/related", getRelatedProducts);
 
 // get recomended for user
-productRoute.get("/recommended/:userId", getRecommendedProducts);
+productRoute.get("/products/recommended/:userId", getRecommendedProducts);
 
 // Product Upload
 productRoute.post("/post-product", upload.single("image"), postedProducts);
