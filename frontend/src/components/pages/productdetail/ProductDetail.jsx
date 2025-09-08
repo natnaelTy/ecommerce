@@ -291,7 +291,7 @@ export default function ProductDetail() {
         <h2 className="text-2xl font-medium text-gray-800 uppercase mb-6">
           Related products
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div>
           {product?.id && <RelatedProducts productId={product.id} />}
         </div>
       </div>
