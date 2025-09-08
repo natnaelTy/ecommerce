@@ -298,7 +298,7 @@ export const newArrival = async (_, res) => {
 export const getRelatedProducts = async (req, res) => {
   const { productId } = req.params;
   const limit = parseInt(req.query.limit) || 8;
-
+  
   if (!productId || isNaN(parseInt(productId))) {
     return res.status(400).json({
       error: "Invalid product ID",
@@ -342,47 +342,48 @@ export const getRecommendedProducts = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    // get last 5 purchased products by the user
+    // get last 4 purchased products by the user
     const userOrders = await prisma.order.findMany({
       where: { userId: Number(userId) },
-      include: { items: true },
-      orderBy: { createdAt: "desc" },
-      take: 5,
+      include: { orderItems: true },
+      take: 4,
     });
 
-    let productIds = [];
+    let productId = [];
     userOrders.forEach((order) => {
-      order.items.forEach((item) => {
-        productIds.push(item.productId);
+      order.orderItems.forEach((item) => {
+        productId.push(item.productId);
       });
     });
 
-    // If user has order history → recommend based on categories of purchased products
+    //  recommend based on categories of purchased products
     let recommended;
-    if (productIds.length > 0) {
-      recommended = await prisma.product.findMany({
+    if (productId.length > 0) {
+      recommended = await prisma.products.findMany({
         where: {
           category: {
             in: await prisma.products
               .findMany({
-                where: { id: { in: productIds } },
+                where: { id: { in: productId } },
                 select: { category: true },
               })
               .then((cats) => cats.map((c) => c.category)),
           },
-          NOT: { id: { in: productIds } }, // exclude already purchased
+          NOT: { id: { in: productId } },
         },
         take: 6,
       });
     } else {
-      // If no history, recommend random/popular products
+      // If no history, recommend popular products
       recommended = await prisma.products.findMany({
-        take: 6,
-        orderBy: { createdAt: "desc" },
+        include: { orderItems: true },
+        take: 4,
       });
     }
 
-    res.json(recommended);
+    console.log("Recommended products for user", userId, ":", recommended);
+
+    res.status(200).json({ message: "Recommended products fetched", recommendedProducts: recommended });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch recommended products" });
