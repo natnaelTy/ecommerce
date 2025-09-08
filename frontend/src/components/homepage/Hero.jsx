@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import Category from "./Category";
 import NewArrival from "./NewArrival";
 import Discount from "./Discount";
-
+import RecommendedForYou from "./Recommended";
 
 const Hero = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.user);
@@ -75,6 +75,7 @@ const Hero = () => {
     <Category/>
     <NewArrival/>
     <Discount/>
+    <RecommendedForYou/>
 </>
   );
 };
