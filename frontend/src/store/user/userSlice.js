@@ -72,7 +72,18 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
-
+// update user profile
+export const updateUserProfile = createAsyncThunk(
+  "user/updateUserProfile",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await api.put("/auth/me", userData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to update profile");
+    }
+  }
+);
 
 // get user
 export const fetchUser = createAsyncThunk(
@@ -163,6 +174,20 @@ export const userSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
       })
+      // update user profile
+      .addCase(updateUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.user = { ...state.user, ...action.payload };
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
