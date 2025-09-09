@@ -10,10 +10,13 @@ import ProductDetail from "./components/pages/productdetail/ProductDetail";
 import AuthRoute from "./Layout/AuthRoute";
 import ResetPassword from "./components/pages/ResetPassword";
 import VerifyEmail from "./components/pages/VerifyEmail";
-import Profile from "./components/pages/account/Profile";
+import Account from "./components/pages/account/Account";
 import WishList from "./components/pages/account/WishList";
 import Cart from "./components/pages/account/Cart";
 import CheckOut from "./components/pages/account/CheckOut";
+
+
+
 
 function App() {
 
@@ -25,7 +28,7 @@ function App() {
           <Route index element={<Hero />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/account" element={<Account />} />
           <Route path="/wishlist" element={<WishList />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
