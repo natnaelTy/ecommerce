@@ -8,7 +8,8 @@ import {
   logout,
   verifyEmail,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  updateUserProfile
 } from "../controllers/auth.controller.js";
 import passport from "passport";
 
@@ -35,5 +36,7 @@ router.post("/resetPassword/:token", resetPassword);
 router.post("/logout", logout);
 
 router.get("/me", getMe);
+
+router.put("/me", updateUserProfile);
 
 export default router;

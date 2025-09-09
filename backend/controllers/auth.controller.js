@@ -277,6 +277,31 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+// update user profile
+export const updateUserProfile = async (req, res) => {
+  const userId = req.user.id;
+  const { fullName, email, phoneNumber, gender, birthday, profileImage } = req.body;
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        fullName,
+        email,
+        phoneNumber,
+        gender,
+        birthday,
+        profileImage,
+      },
+    });
+
+    res.status(200).json({ success: true, updatedUser: user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // Logout
 export const logout = (_, res) => {
   res.clearCookie("token");
