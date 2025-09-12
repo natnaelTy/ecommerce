@@ -390,11 +390,10 @@ export const getRecommendedProducts = async (req, res) => {
   }
 };
 
-// Checkout (create order + order items)
+// Checkout
 export const checkout = async (req, res) => {
   try {
     const { userId, items, method } = req.body;
-    // items = [{ productId, quantity }]
 
     // Calculate total
     let total = 0;
@@ -438,34 +437,43 @@ export const checkout = async (req, res) => {
           },
         },
       },
-      include: { orderItems: true, payment: true },
+      include: { orderItems: { include: { product: true } }, payment: true },
     });
 
-    res.status(201).json({ message: "Order created", order });
+    const products = order.orderItems.map(item => item.product);
+    res.status(201).json({ success: true, message: "Order created", order, products });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Checkout failed" });
   }
 };
 
-/**
- * Get all orders by user
- */
+// validate coupon
+export const validateCoupon = async (req, res) => {
+  const { code } = req.body;
+  const coupon = await prisma.coupon.findUnique({ where: { code } });
+  if (!coupon || !coupon.active || (coupon.expiresAt && new Date() > coupon.expiresAt)) {
+    return res.status(400).json({ valid: false, message: "Invalid or expired coupon" });
+  }
+  res.json({ valid: true, coupon });
+};
+
+// Get orders by user
 export const getOrdersByUser = async (req, res) => {
+  const { userId } = req.params;
   try {
     const orders = await prisma.order.findMany({
-      where: { userId: parseInt(req.params.userId) },
-      include: { orderItems: true, payment: true },
+      where: { userId: parseInt(userId) },
+      include: { orderItems: { include: { product: true } }, payment: true },
     });
-    res.json(orders);
+    console.log("Orders fetched for user", userId, ":", orders);
+    res.json({ success: true, orders });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
 
-/**
- * Simulate payment (mark order as paid)
- */
+// Simulate payment 
 export const simulatePayment = async (req, res) => {
   try {
     const { orderId } = req.params;
