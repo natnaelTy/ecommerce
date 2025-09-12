@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUser, updateUserProfile } from "../../../store/user/userSlice";
-import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+
 
 export default function EditProfile() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { user, loading, error } = useSelector((state) => state.user);
 
   const [form, setForm] = useState({
@@ -14,7 +14,7 @@ export default function EditProfile() {
     phoneNumber: "",
     gender: "",
     birthday: "",
-    profileImage: null
+    profileImage: null || "",
   });
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function EditProfile() {
         phoneNumber: user.phoneNumber || "",
         gender: user.gender || "",
         birthday: user.birthday || "",
-        profileImage: user.image || null
+        profileImage: user.image || null || "",
       });
     } else {
       dispatch(fetchUser());
@@ -39,7 +39,7 @@ export default function EditProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await dispatch(updateUserProfile(form)).unwrap();
-    navigate("/account");
+    toast.success("Profile updated successfully");
   };
 
   return (
