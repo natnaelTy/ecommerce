@@ -200,13 +200,26 @@ export const createCheckout = createAsyncThunk(
   }
 );
 
+// Validate coupon
+export const validateCoupon = createAsyncThunk(
+  "coupon/validateCoupon",
+  async (code, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/coupon/validate", { code });
+      return response.data.coupon;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Invalid coupon");
+    }
+  }
+);
+
 // Get user orders
 export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
   async (userId, thunkAPI) => {
     try {
       const res = await api.get(`/orders/${userId}`);
-      return res.data;
+      return res.data.orders;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || err.message);
     }
@@ -238,6 +251,8 @@ const productSlice = createSlice({
     orders: [],
     related: [],
     recommended: [],
+    coupon: null,
+    couponError: null,
     currentOrder: null,
     loading: false,
     error: null,
@@ -382,7 +397,14 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
+      .addCase(validateCoupon.fulfilled, (state, action) => {
+        state.coupon = action.payload;
+        state.couponError = null;
+      })
+      .addCase(validateCoupon.rejected, (state, action) => {
+        state.coupon = null;
+        state.couponError = action.payload;
+      })
       // Fetch Orders
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
