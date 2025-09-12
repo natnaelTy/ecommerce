@@ -19,7 +19,7 @@ model User {
   fullName     String
   email    String @unique
   gender   String?
-  profileImage String
+  profileImage String?
   birthday DateTime?
   phoneNumber String @unique
   password String
@@ -103,6 +103,15 @@ model ProductCategory {
   @@id([productId, categoryId])
   @@index([categoryId])
   @@index([productId])
+}
+
+model Coupon {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique
+  discount  Float    
+  type      String   
+  expiresAt DateTime?
+  active    Boolean  @default(true)
 }
 
 model Order {
