@@ -279,7 +279,18 @@ export const resetPassword = async (req, res) => {
 
 // update user profile
 export const updateUserProfile = async (req, res) => {
-  const userId = req.user.id;
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ success: false, message: "Not authenticated" });
+  }
+  let userId;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    userId = decoded.id;
+  } catch (err) {
+    return res.status(401).json({ success: false, message: "Invalid token" });
+  }
+
   const { fullName, email, phoneNumber, gender, birthday, profileImage } = req.body;
 
   try {
@@ -290,7 +301,7 @@ export const updateUserProfile = async (req, res) => {
         email,
         phoneNumber,
         gender,
-        birthday,
+        birthday: birthday ? new Date(birthday) : null,
         profileImage,
       },
     });
