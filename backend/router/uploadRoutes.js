@@ -14,7 +14,8 @@ import {
   simulatePayment,
   updateCart,
   getRecommendedProducts,
-  getRelatedProducts
+  getRelatedProducts,
+  validateCoupon
 } from "../controllers/products.controller.js";
 import multer from "multer";
 import express from "express";
@@ -62,7 +63,10 @@ productRoute.get("/products/recommended/:userId", getRecommendedProducts);
 // Product Upload
 productRoute.post("/post-product", upload.single("image"), postedProducts);
 
-// checkout
+// Validate coupon
+productRoute.post("/coupon/validate", validateCoupon);
+
+// Checkout
 productRoute.post("/checkout", checkout);
 
 // Get orders by user
