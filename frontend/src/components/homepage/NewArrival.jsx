@@ -23,7 +23,7 @@ export default function NewArrival() {
     dispatch(fetchNewArrivalProducts());
   }, [dispatch]);
 
-  const getOnly8Products = newArrivalProducts.slice(-8).reverse();
+  const getOnly4Products = newArrivalProducts.slice(-4).reverse();
 
   if (loading) {
     <div>Loading..</div>;
@@ -36,8 +36,8 @@ export default function NewArrival() {
           top new arrival
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {getOnly8Products && getOnly8Products.length > 0 ? (
-            getOnly8Products.map((item, _) => (
+          {getOnly4Products && getOnly4Products.length > 0 ? (
+            getOnly4Products.map((item, _) => (
               <div key={item?.id} className="newArriveContainer">
                 <div className="relative">
                   <img src={item?.image} alt={item?.name} className="w-full" />
