@@ -440,6 +440,9 @@ export const checkout = async (req, res) => {
       include: { orderItems: { include: { product: true } }, payment: true },
     });
 
+    // after purchase clear user's cart
+    await prisma.cart.deleteMany({ where: { userId } });
+
     const products = order.orderItems.map(item => item.product);
     res.status(201).json({ success: true, message: "Order created", order, products });
   } catch (err) {
