@@ -1,13 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../services/api";
+import productApi from "../../services/productApi";
 
 // fetch all products from products route end point
 export const fetchProduct = createAsyncThunk(
   "product/fetchProduct",
   async ({ page, limit, search }, { rejectWithValue }) => {
     try {
-      const response = await api.get(
-        `/products?page=${page}&limit=${limit}&search=${search}`
+      const response = await productApi.get(
+        `/allProducts?page=${page}&limit=${limit}&search=${search}`
       );
       const data = await response.data.products;
       return data;
@@ -22,7 +22,7 @@ export const fetchNewArrivalProducts = createAsyncThunk(
   "/newarrival/fetchNewArrivalProducts",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/newarrival");
+      const response = await productApi.get("/newarrival");
       const data = await response.data.newarrival;
       return data;
     } catch (error) {
@@ -36,7 +36,7 @@ export const fetchRelatedProducts = createAsyncThunk(
   "products/fetchRelated",
   async ({ productId, limit }, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/products/${productId}/related`, {
+      const { data } = await productApi.get(`/${productId}/related`, {
         params: { limit },
       });
       console.log(data.items);
@@ -54,7 +54,7 @@ export const fetchRecommendedProducts = createAsyncThunk(
   "recommended/fetchRecommendedProducts",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/products/recommended/${userId}`);
+      const response = await productApi.get(`/recommended/${userId}`);
       console.log("Recommended products:", response.data.recommendedProducts);
       return response.data.recommendedProducts;
     } catch (error) {
@@ -70,7 +70,7 @@ export const handleAddToWishlist = createAsyncThunk(
   "product/handleAddToWishlist",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/wishlist", { userId, productId });
+      const response = await productApi.post("/wishlist", { userId, productId });
       return response.data.wishlist;
     } catch (error) {
       return rejectWithValue(
@@ -85,7 +85,7 @@ export const removeFromWishlist = createAsyncThunk(
   "product/removeFromWishlist",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      const response = await api.delete("/wishlist", {
+      const response = await productApi.delete("/wishlist", {
         data: { userId, productId },
       });
       return response.data;
@@ -101,7 +101,7 @@ export const fetchWishlist = createAsyncThunk(
   "product/fetchWishlist",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/wishlist/${userId}`);
+      const response = await productApi.get(`/wishlist/${userId}`);
       return response.data.wishlist;
     } catch (error) {
       return rejectWithValue(
@@ -116,7 +116,7 @@ export const addToCart = createAsyncThunk(
   "product/addToCart",
   async ({ userId, productId, quantity }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/cart", { userId, productId, quantity });
+      const response = await productApi.post("/cart", { userId, productId, quantity });
       return response.data.cart;
     } catch (error) {
       return rejectWithValue(
@@ -130,7 +130,7 @@ export const removeFromCart = createAsyncThunk(
   "product/removeFromCart",
   async ({ userId, productId }, { rejectWithValue }) => {
     try {
-      const response = await api.delete("/cart", {
+      const response = await productApi.delete("/cart", {
         data: { userId, productId },
       });
       return response.data;
@@ -147,7 +147,7 @@ export const fetchCart = createAsyncThunk(
   "product/fetchCart",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/cart/${userId}`);
+      const response = await productApi.get(`/cart/${userId}`);
       return response.data.cart;
     } catch (error) {
       return rejectWithValue(
@@ -161,7 +161,7 @@ export const updateCart = createAsyncThunk(
   "cart/updateCart",
   async ({ userId, items }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/cart/${userId}`, { userId, items });
+      const response = await productApi.patch(`/cart/${userId}`, { userId, items });
       console.log(response.data);
       return response.data; // return updated cart from backend
     } catch (err) {
@@ -175,7 +175,7 @@ export const checkoutOrder = createAsyncThunk(
   "orders/checkoutOrder",
   async (checkoutData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/checkout", checkoutData);
+      const response = await productApi.post("/checkout", checkoutData);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "Something went wrong");
@@ -188,7 +188,7 @@ export const createCheckout = createAsyncThunk(
   "checkout/createCheckout",
   async ({ userId, items, method }, thunkAPI) => {
     try {
-      const res = await api.post(`/checkout`, {
+      const res = await productApi.post(`/checkout`, {
         userId,
         items,
         method,
@@ -205,7 +205,7 @@ export const validateCoupon = createAsyncThunk(
   "coupon/validateCoupon",
   async (code, { rejectWithValue }) => {
     try {
-      const response = await api.post("/coupon/validate", { code });
+      const response = await productApi.post("/coupon/validate", { code });
       return response.data.coupon;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Invalid coupon");
@@ -218,7 +218,7 @@ export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
   async (userId, thunkAPI) => {
     try {
-      const res = await api.get(`/orders/${userId}`);
+      const res = await productApi.get(`/orders/${userId}`);
       return res.data.orders;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || err.message);
@@ -231,7 +231,7 @@ export const updatePayment = createAsyncThunk(
   "orders/updatePayment",
   async ({ orderId, status }, thunkAPI) => {
     try {
-      const res = await api.post(`/payment/${orderId}`, { status });
+      const res = await productApi.post(`/payment/${orderId}`, { status });
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || err.message);
