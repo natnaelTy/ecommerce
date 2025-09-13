@@ -6,6 +6,8 @@ import cors from "cors";
 import passport from "passport";
 import uploadRoutes from "./router/uploadRoutes.js";
 import prisma  from "./prisma/prismaClient.js";
+import notificationRouter from "./router/notificationRoutes.js";
+
 
 dotenv.config();
 
@@ -29,12 +31,12 @@ prisma
   .catch((err) => {
     console.error("❌ Database connection failed:", err.message);
   });
-
-app.use("/auth", router);
-
-app.use(uploadRoutes);
-
-
+// user routes
+app.use("/api/auth", router);
+// product routes
+app.use("/api/products", uploadRoutes);
+// notification routes
+app.use("/api/auth/notifications", notificationRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is is running on ${PORT}`);
