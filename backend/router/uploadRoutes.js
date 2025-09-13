@@ -25,7 +25,7 @@ const productRoute = express.Router();
 const upload = multer({ dest: "uploads/" });
 
 // Get all products
-productRoute.get("/products", getAllProducts);
+productRoute.get("/allProducts", getAllProducts);
 
 // Add product to new arrival
 productRoute.post("/newarrival", addNewArrival);
@@ -55,10 +55,10 @@ productRoute.patch("/cart/:userId", updateCart);
 productRoute.get("/newarrival", newArrival);
 
 // get related products based on category
-productRoute.get("/products/:productId/related", getRelatedProducts);
+productRoute.get("/:productId/related", getRelatedProducts);
 
 // get recomended for user
-productRoute.get("/products/recommended/:userId", getRecommendedProducts);
+productRoute.get("/recommended/:userId", getRecommendedProducts);
 
 // Product Upload
 productRoute.post("/post-product", upload.single("image"), postedProducts);
