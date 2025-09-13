@@ -41,7 +41,7 @@ export default function GetProfile ({userId}) {
             className="w-full h-full object-cover"
           />
         </div>
-        <Link className="liLink" to={"/profile"}>
+        <Link className="liLink" to={"/account"}>
         <div className="flex flex-col items-start justify-center">
           <h1 className="text-gray-900">
             {user?.fullName ? user?.fullName : "Guest"}
