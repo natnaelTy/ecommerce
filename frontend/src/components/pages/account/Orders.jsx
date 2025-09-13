@@ -37,14 +37,14 @@ export default function Orders() {
               </div>
               <div className="mb-2">
                 <span className="font-medium">Status:</span>{" "}
-                <span className="capitalize">{order.status}</span>
+                <span className="capitalize px-4 py-1 rounded-full bg-yellow-100">{order.status}</span>
               </div>
               <div>
                 <span className="font-medium">Items:</span>
-                <ul className="ml-4 list-disc">
+                <ul className="mt-1 list-disc space-y-4">
                   {order.orderItems &&
                     order.orderItems.map((item) => (
-                      <li key={item.id} className="flex items-center gap-2">
+                      <li key={item.id} className="flex items-center gap-3">
                         <img
                           src={item.product?.image}
                           alt={item.product?.productName}
@@ -52,7 +52,7 @@ export default function Orders() {
                         />
                         <span>{item.product?.productName}</span>
                         <span className="text-gray-500 text-sm">
-                          x{item.quantity}
+                          x {item.quantity}
                         </span>
                         <span className="ml-auto font-semibold">
                           {formatCurrency(item.product?.price, "ETB", "en-ET")}
