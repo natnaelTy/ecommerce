@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../services/api";
+import userApi from "../../services/userApi";
 
 const initialState = {
   user: null,
   loading: false,
   error: null,
   isAuthenticated: false,
+  notifications: [],
 };
 
 // create user (signup)
@@ -13,7 +14,7 @@ export const createUser = createAsyncThunk(
   "user/createUser",
   async (validatedUser, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/signup", validatedUser);
+      const response = await userApi.post("/signup", validatedUser);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Signup failed");
@@ -26,35 +27,42 @@ export const verifyEmail = createAsyncThunk(
   "user/verifyEmail",
   async (code, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/verifyEmail", { code });
+      const response = await userApi.post("/verifyEmail", { code });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Email verification failed");
+      return rejectWithValue(
+        error.response?.data?.message || "Email verification failed"
+      );
     }
   }
 );
 
 // login user
-export const loginUser = createAsyncThunk("user/loginUser", async (validatedUser, {rejectWithValue}) => {
-    try{
-      const response = await api.post("/auth/login", validatedUser);
+export const loginUser = createAsyncThunk(
+  "user/loginUser",
+  async (validatedUser, { rejectWithValue }) => {
+    try {
+      const response = await userApi.post("/login", validatedUser);
       if (response.status === 200) {
         window.location.href = "/";
       }
-    }catch(error){
+    } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
-});
+  }
+);
 
 // forgot password
 export const forgotPassword = createAsyncThunk(
   "user/forgotPassword",
   async (email, { rejectWithValue }) => {
     try {
-      const response = await api.post("/auth/forgotPassword",  email );
+      const response = await userApi.post("/forgotPassword", email);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to send reset code");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to send reset code"
+      );
     }
   }
 );
@@ -64,10 +72,15 @@ export const resetPassword = createAsyncThunk(
   "user/resetPassword",
   async ({ token, newPassword }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/auth/resetPassword/:${token}`, { token, newPassword });
+      const response = await userApi.post(`/resetPassword/:${token}`, {
+        token,
+        newPassword,
+      });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Password reset failed");
+      return rejectWithValue(
+        error.response?.data?.message || "Password reset failed"
+      );
     }
   }
 );
@@ -77,10 +90,12 @@ export const updateUserProfile = createAsyncThunk(
   "user/updateUserProfile",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.put("/auth/me", userData);
+      const response = await userApi.put("/me", userData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update profile");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update profile"
+      );
     }
   }
 );
@@ -90,21 +105,50 @@ export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/auth/me");
+      const response = await userApi.get("/me");
       console.log(response.data);
       return response.data.user;
-
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
+
 // logout
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  await api.post("/auth/logout");
+  await userApi.post("/logout");
   return null;
 });
 
+// Fetch notifications
+export const fetchNotifications = createAsyncThunk(
+  "user/fetchNotifications",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await userApi.get(`/notifications/${userId}`);
+      return res.data.notifications;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to fetch notifications"
+      );
+    }
+  }
+);
+
+// Mark as read
+export const markNotificationAsRead = createAsyncThunk(
+  "user/markNotificationAsRead",
+  async (id, { rejectWithValue }) => {
+    try {
+      await userApi.patch(`/notifications/${id}/read`);
+      return id;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to update notification"
+      );
+    }
+  }
+);
 
 export const userSlice = createSlice({
   name: "user",
@@ -187,6 +231,22 @@ export const userSlice = createSlice({
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchNotifications.fulfilled, (state, action) => {
+        state.loading = false;
+        state.notifications = action.payload;
+      })
+      .addCase(fetchNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(markNotificationAsRead.fulfilled, (state, action) => {
+        const notif = state.notifications.find((n) => n.id === action.payload);
+        if (notif) notif.read = true;
       });
   },
 });
