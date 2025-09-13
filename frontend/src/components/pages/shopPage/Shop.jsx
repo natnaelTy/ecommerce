@@ -90,14 +90,7 @@ export default function Shop() {
     setFilteredAndSorted(sorted);
   }, [productItems, selectedSorting, selectedCategory]);
 
-  // loading
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <PuffLoader color="#ffab00" />
-      </div>
-    );
-  }
+
 
   return (
     <>
