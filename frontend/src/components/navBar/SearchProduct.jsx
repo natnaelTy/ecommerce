@@ -25,18 +25,15 @@ export default function SearchProduct() {
 
 
   return (
-    <div className="w-full max-w-[400px] relative flex border-1 border-orange-400 rounded-md ">
-      <span className="absolute left-4 top-2 text-gray-400 hidden md:block">
-        <Search />
-      </span>
+    <div className="w-full max-w-[350px] relative flex border-1 border-gray-100 rounded-md ">
       <input
         type="search"
         name="search"
         id="search"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full border-r-0 pl-4 md:pl-12 py-2  pr-1 md:pr-2 focus:outline-none text-xs lg:text-base"
-        placeholder="Search"
+        className="w-full border-r-0 py-2 px-4 bg-gray-50 hover:bg-gray-100 focus:outline-orange-400 text-xs md:text-sm rounded-l-md"
+        placeholder="Search products..."
         onKeyDown={(e) => {
           if(e.key === "Enter") {
             handleSearch();
@@ -45,7 +42,7 @@ export default function SearchProduct() {
       />
       <button
         onClick={handleSearch}
-        className="bg-amber-500  text-white md:px-5 px-3 rounded-r-md hover:bg-transparent hover:text-amber-400 transition text-sm lg:text-base"
+        className="bg-amber-500  text-white md:px-5 px-3 rounded-r-md hover:bg-transparent hover:text-orange-500 transition text-sm"
       >
         <span className="block md:hidden">
           <Search className="size-4" />{" "}
@@ -54,11 +51,15 @@ export default function SearchProduct() {
       </button>
 
       <div className={searchTerm ? "w-full flex-col absolute bg-white top-full left-0 shadow-lg z-10 max-h-60 overflow-y-auto mt-2 rounded-sm shadow-md" : "hidden"}>
-        {productItems.map((item) => (
+        {productItems.length > 0 ? productItems.map((item) => (
           <div key={item.id} className="p-2 border-b border-gray-100 hover:bg-gray-100 cursor-pointer">
             <p className="text-xs md:text-sm">{item.productName}</p>
           </div>
-        ))}
+        )) : (
+          <div className="p-2 border-b border-gray-100">
+            <p className="text-xs md:text-sm">No products found</p>
+          </div>
+        )}
       </div>
     </div>
   );
