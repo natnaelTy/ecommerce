@@ -17,6 +17,9 @@ import {
 } from "../../../store/product/productSlice";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { useLocation } from "react-router-dom";
+import Loading from "../../loading/Loading";
+
+
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -91,6 +94,9 @@ export default function Shop() {
   }, [productItems, selectedSorting, selectedCategory]);
 
 
+  if(loading) {
+    return <Loading />
+  }
 
   return (
     <>
