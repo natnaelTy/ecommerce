@@ -17,21 +17,12 @@ import Cart from "./components/pages/account/Cart";
 import CheckOut from "./components/pages/account/CheckOut";
 import Orders from "./components/pages/account/Orders";
 import Notifications from "./components/pages/account/Notifications";
-import About from "./components/pages/shopPage/about/About";
+import About from "./components/pages/about/About";
 
 
 function App() {
 
-  const { loading } = useSelector((state) => state.product);
 
-    // loading
-    if (loading) {
-      return (
-        <div className="flex items-center justify-center h-screen">
-          <PuffLoader color="#ffab00" />
-        </div>
-      );
-    }
   return (
     <>
     
