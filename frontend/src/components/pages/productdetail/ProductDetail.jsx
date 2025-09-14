@@ -15,7 +15,7 @@ import {
   removeFromWishlist,
 } from "../../../store/product/productSlice";
 import { useDispatch } from "react-redux";
-import { PuffLoader } from "react-spinners";
+import Loading from "../../loading/Loading";
 
 
 
@@ -36,9 +36,7 @@ export default function ProductDetail() {
     // loading
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <PuffLoader color="#ffab00" />
-      </div>
+        <Loading />
     );
   }
   return (
