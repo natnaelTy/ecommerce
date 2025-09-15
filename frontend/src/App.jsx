@@ -1,6 +1,5 @@
 import "./index.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Route, Routes } from "react-router-dom";
 import ClientLayout from "./Layout/ClientLayout";
 import SignUp from "./components/pages/SignUp";
 import Hero from "./components/homepage/Hero";
@@ -18,7 +17,9 @@ import CheckOut from "./components/pages/account/CheckOut";
 import Orders from "./components/pages/account/Orders";
 import Notifications from "./components/pages/account/Notifications";
 import About from "./components/pages/about/About";
-
+import AdminRoute from "./Layout/AdminRoute";
+import AdminDashboard from "./components/adminSide/AdminDashboard";
+import AdminLogin from "./components/adminSide/adminLogin";
 
 function App() {
 
@@ -45,6 +46,13 @@ function App() {
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/verifyemail" element={<VerifyEmail />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+        </Route>
+        <Route element={<AdminRoute />}>
+          <Route path="/admin" element={<AdminDashboard />} />  
+          <Route path="/admin/products" element={<AdminDashboard />} />
+          <Route path="/admin/orders" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </>
