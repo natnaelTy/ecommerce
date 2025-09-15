@@ -6,8 +6,10 @@ import { useEffect } from "react";
 import { fetchCart, fetchWishlist } from "../../store/product/productSlice";
 import { ShoppingCart, User, Heart, Search, Menu } from "lucide-react";
 import { TbUserFilled } from "react-icons/tb";
+import { LiaTimesSolid } from "react-icons/lia";
 import "./style.css";
 import SearchProduct from "./SearchProduct";
+import { AnimatePresence, motion } from "framer-motion";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -37,15 +39,6 @@ export default function Header() {
         </Link>
 
         <Menu className="block md:hidden" />
-        <div
-          className={
-            showSearchInput
-              ? "w-full max-w-[400px]"
-              : "hidden"
-          }
-        >
-          <SearchProduct />
-        </div>
 
         <div
           className={
@@ -69,7 +62,22 @@ export default function Header() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <Search onClick={() => setShowSearchInput(!showSearchInput)} />
+          {showSearchInput && (
+            <motion.div
+              initial={{ opacity: 0, x: 20, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 20, scale: 0.95 }}
+              transition={{ duration: 0.4 }}
+              className="w-full max-w-[400px]"
+            >
+              <SearchProduct />
+            </motion.div>
+          )}
+
+          <button onClick={() => setShowSearchInput(!showSearchInput)}>
+            {showSearchInput ? <LiaTimesSolid /> : <Search />}
+          </button>
+
           <div className="text-center text-gray-700 hover:text-primary transition relative">
             <Link to="/wishlist">
               <div className="text-2xl">
