@@ -7,7 +7,7 @@ import passport from "passport";
 import uploadRoutes from "./router/uploadRoutes.js";
 import prisma  from "./prisma/prismaClient.js";
 import notificationRouter from "./router/notificationRoutes.js";
-
+import adminRouter from "./router/admin-route.js";
 
 dotenv.config();
 
@@ -37,6 +37,8 @@ app.use("/api/auth", router);
 app.use("/api/products", uploadRoutes);
 // notification routes
 app.use("/api/auth/notifications", notificationRouter);
+// admin routes
+app.use("/api/auth/admin", adminRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is is running on ${PORT}`);
