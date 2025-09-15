@@ -13,6 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  SUPER_ADMIN
+}
 
 model User {
   id       Int    @id @default(autoincrement())
@@ -39,6 +43,19 @@ model User {
   zip       String?
   orders    Order[]
   notifications Notification[]
+}
+
+model Admin {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  password     String
+  fullName     String
+  profilePhoto String?
+  createdAt    DateTime  @default(now())
+  role         UserRole? @default(ADMIN)
+  updatedAt    DateTime  @updatedAt
+  isActive     Boolean?  @default(true)
+  lastLogin    DateTime?
 }
 
 model Products {
