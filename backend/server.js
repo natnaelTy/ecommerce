@@ -8,9 +8,10 @@ import uploadRoutes from "./router/uploadRoutes.js";
 import prisma  from "./prisma/prismaClient.js";
 import notificationRouter from "./router/notificationRoutes.js";
 import adminRouter from "./router/admin-route.js";
+import paymentRouter from "./router/payment-route.js";
+
 
 dotenv.config();
-
 
 const app = express();
 app.use(passport.initialize());
@@ -39,6 +40,8 @@ app.use("/api/products", uploadRoutes);
 app.use("/api/auth/notifications", notificationRouter);
 // admin routes
 app.use("/api/auth/admin", adminRouter);
+// payment routes
+app.use("/api/payment", paymentRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is is running on ${PORT}`);
