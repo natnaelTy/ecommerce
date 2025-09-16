@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { loading, error } = useSelector((state) => state.admin);
+  const { admin, loading, error } = useSelector((state) => state.admin);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -21,7 +21,8 @@ export default function AdminLogin() {
     // Replace with your real admin login API call
     try {
      await dispatch(loginAdmin(form)).unwrap();
-        navigate("/admin");
+     toast.success("Login successful");
+      navigate("/admin/dashboard");
     } catch (err) {
       if (err && err.error) {
         toast.error(err.error);
@@ -29,7 +30,7 @@ export default function AdminLogin() {
     }
   };
 
-  console.log("Admin Login Error:", error)
+  console.log("Admin Login:", admin)
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form
