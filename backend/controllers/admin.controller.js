@@ -74,10 +74,20 @@ export const createAdmin = async (req, res) => {
 // logout
 export const logoutAdmin = async (req, res) => {
   try {
-    // Perform logout logic (e.g., invalidate session, clear cookies)
     res.json({ message: "Logout successful" });
   } catch (error) {
     console.error("Error logging out admin:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// get all the products
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await prisma.products.findMany();
+    res.json(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
