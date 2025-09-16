@@ -13,7 +13,7 @@ export const loginAdmin = createAsyncThunk(
     }
   }
 );
-
+// fetch all users
 export const fetchUsers = createAsyncThunk(
   "admin/fetchUsers",
   async (_, { rejectWithValue }) => {
@@ -25,6 +25,23 @@ export const fetchUsers = createAsyncThunk(
     }
   }
 );
+
+// fetch all products
+export const fetchProducts = createAsyncThunk(
+  "admin/fetchProducts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.get("/products");
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+
+
+
 
 const adminSlice = createSlice({
   name: "admin",
@@ -38,6 +55,7 @@ const adminSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+    // login admin
       .addCase(loginAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -50,6 +68,7 @@ const adminSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // fetch all users
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -59,6 +78,19 @@ const adminSlice = createSlice({
         state.users = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetch all products
+      .addCase(fetchProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = action.payload;
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
