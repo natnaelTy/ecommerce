@@ -212,7 +212,7 @@ const Cart = () => {
 
               {/* Checkout Button */}
               <Link to="/checkout">
-                <button className="w-full mt-2 bg-black text-white py-2 rounded-md hover:bg-orange-500 transition duration-200">
+                <button className="w-full mt-2 hover:bg-black text-white py-2 rounded-md bg-gray-950 transition duration-200">
                   Proceed to Checkout
                 </button>
               </Link>
