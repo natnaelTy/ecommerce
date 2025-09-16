@@ -158,10 +158,13 @@ model Payment {
   id        Int      @id @default(autoincrement())
   orderId   Int      @unique
   order     Order    @relation(fields: [orderId], references: [id])
-  method    String   // "Bank transfer"
+  method    String   // "Chapa"
   status    String   @default("PENDING") // PENDING, PAID, FAILED
   amount    Float
   createdAt DateTime @default(now())
+  txRef     String?   @unique
+  currency  String?
+  email     String?
 }
 
 model Notification {
