@@ -72,11 +72,11 @@ const Footer = () => {
         </div>
     </footer> */}
 
-    <div className="bg-gray-100 py-2">
-        <div className="max-w-[1000px] w-full mx-auto flex items-center justify-between">
+    <div className="bg-gray-100 py-1">
+        <div className="max-w-[1000px] w-full mx-auto flex items-center justify-between px-3">
             <p className="text-slate-800 text-sm">&copy; MessayFur - All Right Reserved</p>
             <div>
-                <img src="./images/chapaorg.png" alt="methods" title="Chapa Payment Method" className="h-10"/>
+                <img src="./images/chapapay.png" alt="methods" title="Chapa Payment Method" className="h-12"/>
             </div>
         </div>
     </div>
