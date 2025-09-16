@@ -20,13 +20,11 @@ import About from "./components/pages/about/About";
 import AdminRoute from "./Layout/AdminRoute";
 import AdminDashboard from "./components/adminSide/AdminDashboard";
 import AdminLogin from "./components/adminSide/adminLogin";
+import PaymentSuccess from "./components/pages/account/Payment";
 
 function App() {
-
-
   return (
     <>
-    
       <Routes>
         <Route element={<ClientLayout />}>
           <Route index element={<Hero />} />
@@ -39,6 +37,7 @@ function App() {
           <Route path="/checkout" element={<CheckOut />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
         </Route>
         <Route element={<AuthRoute />}>
           <Route path="/signup" element={<SignUp />} />
@@ -48,12 +47,12 @@ function App() {
           <Route path="/verifyemail" element={<VerifyEmail />} />
           <Route path="/admin-login" element={<AdminLogin />} />
         </Route>
-        <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<AdminDashboard />} />  
-          <Route path="/admin/products" element={<AdminDashboard />} />
-          <Route path="/admin/orders" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<AdminDashboard />} />
-        </Route>
+        <Route path="/admin/dashboard" element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </>
   );
