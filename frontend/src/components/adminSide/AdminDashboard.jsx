@@ -9,8 +9,6 @@ import { fetchProducts } from "../../store/adminside/adminSlice";
 
 
 export default function AdminDashboard() {
-  // Example: you can fetch stats from Redux or an API
-  const { productItems, orders } = useSelector((state) => state.product);
   const { users, products } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
 
@@ -32,7 +30,7 @@ export default function AdminDashboard() {
             <Link to="/admin/products" className="mt-4 text-amber-600 underline text-sm">Manage Products</Link>
           </div>
           <div className="bg-white rounded-lg shadow p-6 flex flex-col items-center">
-            <span className="text-4xl font-bold text-amber-500">{orders?.length}</span>
+            <span className="text-4xl font-bold text-amber-500"></span>
             <span className="mt-2 text-gray-700">Orders</span>
             <Link to="/admin/orders" className="mt-4 text-amber-600 underline text-sm">View Orders</Link>
           </div>
