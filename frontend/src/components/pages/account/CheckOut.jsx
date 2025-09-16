@@ -8,6 +8,8 @@ import { PuffLoader } from "react-spinners";
 import { z } from "zod";
 import { MdErrorOutline } from "react-icons/md"; // Added import for error icon
 import toast from "react-hot-toast"; // Added import for toast notifications
+import axios from "axios";
+
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -22,7 +24,7 @@ export default function Checkout() {
     city: "",
     country: "Ethiopia",
     phone: "",
-    paymentMethod: "bank_transfer",
+    paymentMethod: "chapa",
   });
   const [errors, setErrors] = useState({});
 
@@ -33,7 +35,7 @@ export default function Checkout() {
     address: z.string().min(2, "Address is required"),
     city: z.string().min(2, "City is required"),
     country: z.string().min(2, "Country is required"),
-    paymentMethod: z.enum(["bank_transfer"], {
+    paymentMethod: z.enum(["chapa"], {
       errorMap: () => ({ message: "Select a payment method" }),
     }),
   });
@@ -73,6 +75,17 @@ export default function Checkout() {
 
       await dispatch(createCheckout(payload)).unwrap();
       toast.success("Order placed successfully!");
+
+      const res = await axios.post("http://localhost:5000/api/payment/initialize", {
+        amount: cart.reduce((acc, wi) => {
+          const product = wi.product || {};
+          const qty = quantities[product.id] || wi.quantity || 1;
+          return acc + (product.price || 0) * qty;
+        }, 0),
+        email: user.email,
+      });
+
+      window.location.href = res.data.data.checkout_url; // redirect to Chapa
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {};
@@ -285,13 +298,7 @@ export default function Checkout() {
                       onChange={handleChange}
                     />
                     <div className="flex flex-col items-start">
-                      Direct bank transfer
-                      <span className="text-xs text-gray-500 mt-1">
-                        Make your payment directly into our bank account. Please
-                        use your Order ID as the payment reference. Your order
-                        won't be shipped until the funds have cleared in our
-                        account.
-                      </span>
+                      Chapa - Pay
                     </div>
                   </label>
                   {errors.paymentMethod && (
@@ -311,9 +318,9 @@ export default function Checkout() {
                   </label>
                   <button
                     type="submit"
-                    className="w-full bg-black text-white py-2 rounded-md hover:bg-orange-500 transition duration-200"
+                    className="w-full bg-black text-white py-0.5 flex items-center justify-center gap-1 font-medium rounded-md hover:bg-orange-500 transition duration-200"
                   >
-                    Place Order
+                    Pay with <img src="./images/chapapay.png" alt="chapa pay" className="w-30 h-10  object-cover inline" />
                   </button>
                 </div>
               </div>
