@@ -1,5 +1,5 @@
 import express from "express";
-import { createAdmin, loginAdmin, getAllUsers, getAllProducts } from "../controllers/admin.controller.js";
+import { createAdmin, loginAdmin, getAllUsers, getAllProducts, getAllOrders, getAllPayments } from "../controllers/admin.controller.js";
 
 
 const adminRouter = express.Router();
@@ -12,5 +12,10 @@ adminRouter.post("/createAdmin", createAdmin);
 adminRouter.get("/users", getAllUsers);
 // Get all products
 adminRouter.get("/products", getAllProducts);
+// Get all orders
+adminRouter.get("/orders", getAllOrders);
+// Get all payments
+adminRouter.get("/payments", getAllPayments);
+
 
 export default adminRouter;
