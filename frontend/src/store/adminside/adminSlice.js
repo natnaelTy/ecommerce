@@ -39,9 +39,29 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
+// fetch all orders
+export const fetchOrders = createAsyncThunk(
+  "admin/fetchOrders", async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.get("/orders");
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
 
-
-
+// fetch all payments
+export const fetchPayments = createAsyncThunk(
+  "admin/fetchPayments", async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.get("/payments");
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
 
 const adminSlice = createSlice({
   name: "admin",
@@ -49,6 +69,8 @@ const adminSlice = createSlice({
     admin: null,
     users: [],
     products: [],
+    orders: [],
+    payments: [],
     loading: false,
     error: null,
   },
@@ -91,6 +113,32 @@ const adminSlice = createSlice({
         state.products = action.payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetch all orders
+      .addCase(fetchOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orders = action.payload;
+      })
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetch all payments
+      .addCase(fetchPayments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPayments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.payments = action.payload;
+      })
+      .addCase(fetchPayments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
