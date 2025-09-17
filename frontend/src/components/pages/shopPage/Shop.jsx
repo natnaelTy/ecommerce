@@ -17,7 +17,7 @@ import {
 } from "../../../store/product/productSlice";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { useLocation } from "react-router-dom";
-import Loading from "../../loading/Loading";
+import Loading from "../../../utils/loading/Loading";
 
 
 
