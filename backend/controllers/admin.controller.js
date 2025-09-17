@@ -91,3 +91,29 @@ export const getAllProducts = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// get all the orders
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await prisma.order.findMany({
+      include: { orderItems: { include: { product: true } }, payment: true, user: true },
+    });
+    res.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// get payments
+export const getAllPayments = async (req, res) => {
+  try {
+    const payments = await prisma.payment.findMany();
+    res.json(payments);
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+//
