@@ -15,7 +15,7 @@ import {
   removeFromWishlist,
 } from "../../../store/product/productSlice";
 import { useDispatch } from "react-redux";
-import Loading from "../../loading/Loading";
+import Loading from "../../../utils/loading/Loading";
 
 
 
