@@ -18,8 +18,8 @@ import Orders from "./components/pages/account/Orders";
 import Notifications from "./components/pages/account/Notifications";
 import About from "./components/pages/about/About";
 import AdminRoute from "./Layout/AdminRoute";
-import AdminDashboard from "./components/adminSide/AdminDashboard";
-import AdminLogin from "./components/adminSide/adminLogin";
+import AdminDashboard from "./components/pages/adminSide/AdminDashboard";
+import AdminLogin from "./components/pages/adminSide/AdminLogin";
 import PaymentSuccess from "./components/pages/account/Payment";
 
 function App() {
