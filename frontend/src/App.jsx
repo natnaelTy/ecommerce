@@ -21,6 +21,11 @@ import AdminRoute from "./Layout/AdminRoute";
 import AdminDashboard from "./components/pages/adminSide/AdminDashboard";
 import AdminLogin from "./components/pages/adminSide/AdminLogin";
 import PaymentSuccess from "./components/pages/account/Payment";
+import Users from "./components/pages/adminSide/users/Users";
+import ProductList from "./components/pages/adminSide/products/ProductList";
+import EditProduct from "./components/pages/adminSide/products/EditProduct";
+
+
 
 function App() {
   return (
@@ -50,6 +55,24 @@ function App() {
         <Route path="/admin/dashboard" element={
             <AdminRoute>
               <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route path="/admin/users" element={
+            <AdminRoute>
+              <Users />
+            </AdminRoute>
+          }
+        />
+        <Route path="/admin/products" element={
+            <AdminRoute>
+              <ProductList />
+            </AdminRoute>
+          }
+        />
+        <Route path="/admin/products/edit/:id" element={
+            <AdminRoute>
+              <EditProduct />
             </AdminRoute>
           }
         />
