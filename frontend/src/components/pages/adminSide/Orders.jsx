@@ -43,7 +43,7 @@ export default function Orders() {
               orders.map(order => (
                 <tr key={order.id} className="text-left capitalize font-medium">
                   <td className="px-4 py-2">
-                    <img src={order.orderItems?.[0]?.product?.image} alt={order.orderItems?.[0]?.product?.productName} className='w-8 h-8 object-cover rounded-md'/>
+                    <img src={order.orderItems?.[0]?.product?.image} alt={order.orderItems?.[0]?.product?.productName} className='w-8 h-8 object-cover rounded-sm'/>
                   </td>
                   <td className="px-4 py-2">#{order.id}</td>
                   <td className="px-4 py-2">{order.user.fullName}</td>
