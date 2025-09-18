@@ -39,7 +39,7 @@ app.use("/api/products", uploadRoutes);
 // notification routes
 app.use("/api/auth/notifications", notificationRouter);
 // admin routes
-app.use("/api/auth/admin", adminRouter);
+app.use("/api/admin", adminRouter);
 // payment routes
 app.use("/api/payment", paymentRouter);
 
