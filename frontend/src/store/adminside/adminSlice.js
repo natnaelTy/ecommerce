@@ -26,6 +26,46 @@ export const fetchUsers = createAsyncThunk(
   }
 );
 
+// add new product
+export const addNewProduct = createAsyncThunk(
+  "admin/addNewProduct",
+  async (productData, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.post("/products", productData);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+// edit product
+export const editProduct = createAsyncThunk(
+  "admin/editProduct",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.put(`/products/edit/${id}`, formData);
+      console.log(response.data);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+// delete product
+export const deleteProduct = createAsyncThunk(
+  "admin/deleteProduct",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.delete(`/products/${id}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 // fetch all products
 export const fetchProducts = createAsyncThunk(
   "admin/fetchProducts",
@@ -100,6 +140,47 @@ const adminSlice = createSlice({
         state.users = action.payload;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // add new product
+      .addCase(addNewProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addNewProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products.push(action.payload);
+      })
+      .addCase(addNewProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // edit product
+      .addCase(editProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(editProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = state.products.map((p) =>
+          p.id === action.payload.id ? action.payload : p
+        );
+      })
+      .addCase(editProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // delete product
+      .addCase(deleteProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteProduct.fulfilled, (state, action) => {
+        state.loading = false;
+        state.products = state.products.filter((p) => p.id !== action.payload.id);
+      })
+      .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
