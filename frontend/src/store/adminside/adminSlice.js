@@ -13,6 +13,20 @@ export const loginAdmin = createAsyncThunk(
     }
   }
 );
+
+// get admin profile
+export const getAdminProfile = createAsyncThunk(
+  "admin/getAdminProfile",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.get("/profile");
+      return response.data.admin;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
 // fetch all users
 export const fetchUsers = createAsyncThunk(
   "admin/fetchUsers",
@@ -31,7 +45,7 @@ export const addNewProduct = createAsyncThunk(
   "admin/addNewProduct",
   async (productData, { rejectWithValue }) => {
     try {
-      const response = await adminApi.post("/products", productData);
+      const response = await adminApi.post("/products/addProduct", productData);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -44,11 +58,12 @@ export const editProduct = createAsyncThunk(
   "admin/editProduct",
   async ({ id, formData }, { rejectWithValue }) => {
     try {
-      const response = await adminApi.put(`/products/edit/${id}`, formData);
-      console.log(response.data);
+      const response = await adminApi.put(`/products/edit/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data?.message || "Failed to edit product");
     }
   }
 );
@@ -127,6 +142,19 @@ const adminSlice = createSlice({
         state.admin = action.payload;
       })
       .addCase(loginAdmin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // get admin profile
+      .addCase(getAdminProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAdminProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.admin = action.payload;
+      })
+      .addCase(getAdminProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
