@@ -1,5 +1,9 @@
 import prisma from "../prisma/prismaClient.js";
 import bcrypt from "bcryptjs";
+import cloudinary from "./cloudinary folder/cloudinary.js";
+import { generateTokenSetCookie } from "../utils/generateTokenSetCookie.js";
+import jwt from "jsonwebtoken";
+
 
 // Get all users
 export const getAllUsers = async (req, res) => {
@@ -9,6 +13,39 @@ export const getAllUsers = async (req, res) => {
   } catch (error) {
     console.error("Error fetching users:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// create admin
+export const createAdmin = async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    const checkAdmin = await prisma.admin.findUnique({
+      where: {
+        email,
+      },
+    });
+    if (checkAdmin) {
+      return res.status(400).json({ error: "Admin already exists" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const admin = await prisma.admin.create({
+      data: {
+        fullName,
+        email,
+        password: hashedPassword,
+        role: "ADMIN",
+      },
+    });
+    // Generate token and set cookie
+    const token = generateTokenSetCookie(res, admin.id, "ADMIN");
+    res.status(200).json({ message: "Admin created successfully", token });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+    console.log(error);
   }
 };
 
@@ -33,47 +70,48 @@ export const loginAdmin = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid password" });
     }
+    // Generate token and set cookie
+    const token = generateTokenSetCookie(res, admin.id, "ADMIN");
 
-    res.json({ message: "Login successful", admin });
+    res.json({ message: "Login successful", admin, token });
   } catch (error) {
     console.error("Error logging in admin:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-export const createAdmin = async (req, res) => {
+// get admin profile
+export const getAdminProfile = async (req, res) => {
+  const { token } = req.cookies;
   try {
-    const { fullName, email, password } = req.body;
-    if (!fullName || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
     }
-    const checkAdmin = await prisma.admin.findUnique({
-      where: {
-        email,
-      },
-    });
-    if (checkAdmin) {
-      return res.status(400).json({ error: "Admin already exists" });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.id) {
+      return res.status(401).json({ success: false, message: "Invalid token" });
     }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await prisma.admin.create({
-      data: {
-        fullName,
-        email,
-        password: hashedPassword,
-        role: "ADMIN",
-      },
+    const adminId = decoded.id;
+
+    const admin = await prisma.admin.findUnique({
+      where: { id: adminId },
     });
-    res.status(200).json({ message: "Admin created successfully" });
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+    res.json({ message: "Admin profile fetched successfully", admin });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-    console.log(error);
+    console.error("Error fetching admin profile:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 // logout
 export const logoutAdmin = async (req, res) => {
   try {
+    res.clearCookie("token");
     res.json({ message: "Logout successful" });
   } catch (error) {
     console.error("Error logging out admin:", error);
@@ -83,18 +121,36 @@ export const logoutAdmin = async (req, res) => {
 
 // add new product
 export const addProduct = async (req, res) => {
-  const { productName, description, price, category, image } = req.body;
-  if (!productName || !description || !price || !category || !image) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+  const {
+    productName,
+    description,
+    price,
+    category,
+    color,
+    material,
+    weight,
+    brand,
+  } = req.body;
+  const imagePath = req.file && req.file.path;
+
   try {
+    const result = await cloudinary.uploader.upload(imagePath, {
+      folder: "ecommerce-products",
+    });
+
     const newProduct = await prisma.products.create({
       data: {
         productName,
         description,
         price: Number(price),
         category,
-        image,
+        image: result.secure_url,
+        color,
+        material,
+        weight: Number(weight),
+        brand,
+        review: 0,
+        quantity: 1,
       },
     });
     res
@@ -121,7 +177,7 @@ export const getAllProducts = async (req, res) => {
 export const editProduct = async (req, res) => {
   const { id } = req.params;
   const { productName, description, price, category } = req.body;
-  const image = req.file?.fullPath;
+  const image = req.file && req.file.path;
   try {
     // Check if product exists
     const existingProduct = await prisma.products.findUnique({
@@ -167,6 +223,7 @@ export const editProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
   try {
+    cloudinary.uploader.destroy(id);
     await prisma.products.delete({
       where: { id: Number(id) },
     });
