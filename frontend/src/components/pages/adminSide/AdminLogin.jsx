@@ -18,7 +18,6 @@ export default function AdminLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Replace with your real admin login API call
     try {
      await dispatch(loginAdmin(form)).unwrap();
      toast.success("Login successful");
@@ -30,7 +29,9 @@ export default function AdminLogin() {
     }
   };
 
-  console.log("Admin Login:", admin)
+  if (error && error) {
+    toast.error(error);
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form
