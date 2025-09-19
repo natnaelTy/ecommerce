@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import { editProduct } from "../../../../store/adminside/adminSlice";
 import Loading from "../../../../utils/loading/Loading";
+import toast from "react-hot-toast";
 
 export default function EditProduct() {
   const { id } = useParams();
@@ -50,15 +51,8 @@ export default function EditProduct() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("productName", form.productName);
-    formData.append("price", form.price);
-    formData.append("category", form.category);
-    formData.append("description", form.description);
-    if (form.image instanceof File) {
-      formData.append("image", form.image);
-    }
-    dispatch(editProduct({ id, formData }));
+    dispatch(editProduct({ id, formData: form }));
+    toast.success("Product updated successfully");
     navigate("/admin/products");
   };
 
