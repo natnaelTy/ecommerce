@@ -3,9 +3,9 @@ import dotenv from "dotenv"
 
 dotenv.config();
 
-export const generateTokenSetCookie = (res, userId) => {
+export const generateTokenSetCookie = (res, userId, role) => {
 
-    const token = jwt.sign({id: userId}, process.env.JWT_SECRET,{
+    const token = jwt.sign({id: userId, role}, process.env.JWT_SECRET,{
         expiresIn: "7d",
     });
 
