@@ -68,6 +68,9 @@ model Products {
   brand       String
   review      Int
   quantity    Int
+  color       String?
+  weight      Int?
+  material    String?
   createdAt   DateTime @default(now())
 
   newarrival  Newarrival[]
@@ -80,14 +83,14 @@ model Products {
 model Newarrival {
   id         Int       @id @default(autoincrement())
   productId  Int       @unique
-  products   Products @relation(fields: [productId], references: [id])
+  products   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model WishList {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   Products @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
 
   @@unique([userId, productId]) // Prevent duplicate wishlist items for a user
@@ -97,7 +100,7 @@ model Cart {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  product   Products @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
   quantity  Int      @default(1)
 
@@ -115,7 +118,7 @@ model ProductCategory {
   productId  Int
   categoryId Int
 
-  product    Products  @relation(fields: [productId], references: [id])
+  product    Products  @relation(fields: [productId], references: [id], onDelete: Cascade)
   category   Category @relation(fields: [categoryId], references: [id])
 
   @@id([productId, categoryId])
@@ -151,7 +154,7 @@ model OrderItem {
   quantity  Int
   price     Float
   order     Order   @relation(fields: [orderId], references: [id])
-  product   Products @relation(fields: [productId], references: [id])
+  product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
