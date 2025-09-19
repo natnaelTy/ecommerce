@@ -53,7 +53,7 @@ export const signup = async (req, res) => {
       },
     });
 
-    const token = generateTokenSetCookie(res, newUser.id, email, fullName);
+    const token = generateTokenSetCookie(res, newUser.id, "USER");
 
     await sendVerificationCode(email, verificationCode);
 
@@ -181,8 +181,7 @@ export const login = async (req, res) => {
     const token = generateTokenSetCookie(
       res,
       user.id,
-      user.email,
-      user.fullName
+      "USER"
     );
 
     res
@@ -281,7 +280,9 @@ export const resetPassword = async (req, res) => {
 export const updateUserProfile = async (req, res) => {
   const token = req.cookies.token;
   if (!token) {
-    return res.status(401).json({ success: false, message: "Not authenticated" });
+    return res
+      .status(401)
+      .json({ success: false, message: "Not authenticated" });
   }
   let userId;
   try {
@@ -291,7 +292,8 @@ export const updateUserProfile = async (req, res) => {
     return res.status(401).json({ success: false, message: "Invalid token" });
   }
 
-  const { fullName, email, phoneNumber, gender, birthday, profileImage } = req.body;
+  const { fullName, email, phoneNumber, gender, birthday, profileImage } =
+    req.body;
 
   try {
     const user = await prisma.user.update({
@@ -324,7 +326,9 @@ export const getMe = async (req, res) => {
   const token = req.cookies.token;
   try {
     if (!token) {
-      return res.status(401).json({ success: false, message: "Not authenticated" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
     }
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded.id) {
@@ -337,11 +341,13 @@ export const getMe = async (req, res) => {
         email: true,
         fullName: true,
         phoneNumber: true,
-        isEmailVerified: true
+        isEmailVerified: true,
       },
     });
     if (!user) {
-      return res.status(401).json({ success: false, message: "User not found" });
+      return res
+        .status(401)
+        .json({ success: false, message: "User not found" });
     }
     res.status(200).json({ success: true, user });
   } catch (error) {
