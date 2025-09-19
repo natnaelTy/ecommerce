@@ -24,7 +24,7 @@ import PaymentSuccess from "./components/pages/account/Payment";
 import Users from "./components/pages/adminSide/users/Users";
 import ProductList from "./components/pages/adminSide/products/ProductList";
 import EditProduct from "./components/pages/adminSide/products/EditProduct";
-
+import AddNewProduct from "./components/pages/adminSide/products/AddNewProduct";
 
 
 function App() {
@@ -73,6 +73,12 @@ function App() {
         <Route path="/admin/products/edit/:id" element={
             <AdminRoute>
               <EditProduct />
+            </AdminRoute>
+          }
+        />
+        <Route path="/admin/products/addProduct" element={
+            <AdminRoute>
+              <AddNewProduct />
             </AdminRoute>
           }
         />
