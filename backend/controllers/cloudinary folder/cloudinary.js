@@ -5,9 +5,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 cloudinary.config({
-  cloud_name: "dhoenyn4d",
-  api_key: "728157352976489",
-  api_secret: "BKdmQskRfQpAwRk0I-7JDY2ZMKE",
+  cloud_name: process.env.CLOUD_NAME ,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
 
 export default cloudinary;
