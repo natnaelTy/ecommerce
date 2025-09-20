@@ -4,13 +4,11 @@ import { loginAdmin } from "../../../store/adminside/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
-
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { admin, loading, error } = useSelector((state) => state.admin);
+  const { loading, error } = useSelector((state) => state.admin);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,8 +17,8 @@ export default function AdminLogin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-     await dispatch(loginAdmin(form)).unwrap();
-     toast.success("Login successful");
+      await dispatch(loginAdmin(form)).unwrap();
+      toast.success("Login successful");
       navigate("/admin/dashboard");
     } catch (err) {
       if (err && err.error) {
