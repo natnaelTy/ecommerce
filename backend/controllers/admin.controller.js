@@ -73,7 +73,12 @@ export const loginAdmin = async (req, res) => {
     // Generate token and set cookie
     const token = generateTokenSetCookie(res, admin.id, "ADMIN");
 
-    res.json({ message: "Login successful", admin, token });
+    res.status(200).json({ message: "Login successful", admin: {
+      id: admin.id,
+      fullName: admin.fullName,
+      email: admin.email,
+      role: "ADMIN",
+    }, token});
   } catch (error) {
     console.error("Error logging in admin:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -82,7 +87,7 @@ export const loginAdmin = async (req, res) => {
 
 // get admin profile
 export const getAdminProfile = async (req, res) => {
-  const { token } = req.cookies;
+  const token  = req.cookies.token;
   try {
     if (!token) {
       return res
@@ -101,7 +106,8 @@ export const getAdminProfile = async (req, res) => {
     if (!admin) {
       return res.status(404).json({ error: "Admin not found" });
     }
-    res.json({ message: "Admin profile fetched successfully", admin });
+    console.log(admin);
+    res.status(200).json({ message: "Admin profile fetched successfully", admin });
   } catch (error) {
     console.error("Error fetching admin profile:", error);
     res.status(500).json({ error: "Internal server error" });
