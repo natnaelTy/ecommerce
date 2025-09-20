@@ -7,7 +7,7 @@ export const loginAdmin = createAsyncThunk(
   async (adminData, { rejectWithValue }) => {
     try {
       const response = await adminApi.post("/login", adminData);
-      return response.data;
+      return response.data.admin;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -63,7 +63,9 @@ export const editProduct = createAsyncThunk(
       });
       return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to edit product");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to edit product"
+      );
     }
   }
 );
@@ -96,7 +98,8 @@ export const fetchProducts = createAsyncThunk(
 
 // fetch all orders
 export const fetchOrders = createAsyncThunk(
-  "admin/fetchOrders", async (_, { rejectWithValue }) => {
+  "admin/fetchOrders",
+  async (_, { rejectWithValue }) => {
     try {
       const response = await adminApi.get("/orders");
       return response.data;
@@ -108,7 +111,8 @@ export const fetchOrders = createAsyncThunk(
 
 // fetch all payments
 export const fetchPayments = createAsyncThunk(
-  "admin/fetchPayments", async (_, { rejectWithValue }) => {
+  "admin/fetchPayments",
+  async (_, { rejectWithValue }) => {
     try {
       const response = await adminApi.get("/payments");
       return response.data;
@@ -132,7 +136,7 @@ const adminSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-    // login admin
+      // login admin
       .addCase(loginAdmin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -152,10 +156,11 @@ const adminSlice = createSlice({
       })
       .addCase(getAdminProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.admin = action.payload;
+        state.admin = action.payload.admin;
       })
       .addCase(getAdminProfile.rejected, (state, action) => {
         state.loading = false;
+        state.admin = null;
         state.error = action.payload;
       })
       // fetch all users
@@ -206,7 +211,9 @@ const adminSlice = createSlice({
       })
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.loading = false;
-        state.products = state.products.filter((p) => p.id !== action.payload.id);
+        state.products = state.products.filter(
+          (p) => p.id !== action.payload.id
+        );
       })
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
