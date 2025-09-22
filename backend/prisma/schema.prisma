@@ -37,10 +37,6 @@ model User {
 
   wishlists   WishList[]
   carts     Cart[]
-  address   String?
-  city      String?
-  country   String?
-  zip       String?
   orders    Order[]
   notifications Notification[]
 }
@@ -141,10 +137,13 @@ model Order {
   user      User        @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
   total     Float
-  status    String      @default("PENDING") // PENDING, PAID, SHIPPED, DELIVERED, CANCELLED
+  status    String      @default("PENDING") // PENDING, SHIPPED, DELIVERED, CANCELLED
   payment   Payment?
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  address   String?
+  city      String?
+  country   String?
 }
 
 model OrderItem {
