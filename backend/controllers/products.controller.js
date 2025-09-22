@@ -393,8 +393,10 @@ export const getRecommendedProducts = async (req, res) => {
 // Checkout
 export const checkout = async (req, res) => {
   try {
-    const { userId, items, method } = req.body;
-
+    const { userId, items, method, shippingAddress, country, city, } = req.body;
+      if (!Array.isArray(items)) {
+    return res.status(400).json({ error: "Invalid items: must be an array" });
+  }
     // Calculate total
     let total = 0;
     const orderItemsData = [];
@@ -427,6 +429,9 @@ export const checkout = async (req, res) => {
       data: {
         userId,
         total,
+        address: shippingAddress,
+        country,
+        city,
         status: "pending",
         orderItems: { create: orderItemsData },
         payment: {
