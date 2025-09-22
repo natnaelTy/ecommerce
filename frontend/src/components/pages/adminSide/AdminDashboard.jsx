@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Armchair, Users, Box, ChartNoAxesCombined } from "lucide-react";
-import { fetchUsers, fetchProducts } from "../../../store/adminside/adminSlice";
+import { fetchUsers, fetchProducts, fetchOrders } from "../../../store/adminside/adminSlice";
 import { useDispatch } from "react-redux";
 import { Bar, Pie } from "react-chartjs-2";
 import {
@@ -15,23 +15,18 @@ import {
   Legend,
 } from "chart.js";
 import Orders from "./Orders";
-import { fetchOrders } from "../../../store/adminside/adminSlice";
+
 
 // chartjs components
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
 export default function AdminDashboard() {
-  const { users, products } = useSelector((state) => state.admin);
-   const { orders, loading, error } = useSelector((state) => state.admin);
+  const { users, products, orders, loading, error, admin } = useSelector((state) => state.admin);
   const dispatch = useDispatch();
- 
-  console.log(orders.length)
 
   useEffect(() => {
-    dispatch(fetchUsers());
-    dispatch(fetchProducts());
-    dispatch(fetchOrders());
-  }, [dispatch]);
+    dispatch(fetchUsers()), dispatch(fetchProducts()), dispatch(fetchOrders());
+  }, [admin, dispatch]);
 
   const barData = {
     labels: ["Users", "Products", "Orders", "Revenue"],
@@ -41,8 +36,8 @@ export default function AdminDashboard() {
         data: [
           users?.length || 0,
           products?.length || 0,
-          orders?.length || 0, // Replace with orders count
-          users?.length * 100 || 0, // Replace with revenue
+          orders?.length || 0, 
+          users?.length * 100 || 0,
         ],
         backgroundColor: [
           "#a78bfa",
@@ -65,8 +60,10 @@ export default function AdminDashboard() {
     ],
   };
 
+  console.log("Users:", users);
+
   return (
-    <div className="min-h-screen bg-gray-50 py-6 px-5">
+    <div className="min-h-screen">
       <div className="max-w-[1200px] w-full ml-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-10">
           <div className="bg-white rounded-lg shadow p-6 flex items-center justify-center space-x-4">
