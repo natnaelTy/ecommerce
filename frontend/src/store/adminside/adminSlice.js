@@ -1,31 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import adminApi from "../../services/adminApi";
 
-// login admin
-export const loginAdmin = createAsyncThunk(
-  "admin/loginAdmin",
-  async (adminData, { rejectWithValue }) => {
-    try {
-      const response = await adminApi.post("/login", adminData);
-      return response.data.admin;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
-// get admin profile
-export const getAdminProfile = createAsyncThunk(
-  "admin/getAdminProfile",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await adminApi.get("/profile");
-      return response.data.admin;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
 
 // fetch all users
 export const fetchUsers = createAsyncThunk(
@@ -136,33 +111,6 @@ const adminSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // login admin
-      .addCase(loginAdmin.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(loginAdmin.fulfilled, (state, action) => {
-        state.loading = false;
-        state.admin = action.payload;
-      })
-      .addCase(loginAdmin.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      // get admin profile
-      .addCase(getAdminProfile.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(getAdminProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.admin = action.payload.admin;
-      })
-      .addCase(getAdminProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.admin = null;
-        state.error = action.payload;
-      })
       // fetch all users
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
