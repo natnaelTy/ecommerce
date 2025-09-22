@@ -8,7 +8,7 @@ const { CHAPA_SECRET } = process.env;
 
 // initialize chapa pay payment
 export const InitializePayment = async (req, res) => {
-  const { amount, email } = req.body;
+  const { amount, email, fullName } = req.body;
   const tx_ref = `tx-${Date.now()}`; // unique reference
 
   try {
@@ -18,6 +18,8 @@ export const InitializePayment = async (req, res) => {
         amount,
         currency: "ETB",
         email,
+        first_name: fullName, 
+        last_name: "",  
         tx_ref,
         callback_url: "https://your-backend.com/api/payment/verify",
         return_url: "http://localhost:3000/payment-success",
@@ -58,9 +60,6 @@ export const VerifyPayment = async (req, res) => {
         status: response.data.data.status,
       },
     });
-
-    // Example: store result in database with Prisma
-    // await prisma.payment.create({ data: response.data });
 
     res.json(response.data);
   } catch (err) {
