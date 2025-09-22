@@ -24,7 +24,7 @@ export default function SideBar() {
   const [activeItem, setActiveItem] = useState('dashboard');
   return (
     <div className="">   
-      <div className={`w-64 bg-white overflow-y-hidden p-2 shadow-md h-screen fixed top-0 left-0 z-10 ${menuOpen ? "block" : "hidden"} md:block`}>
+      <div className={`w-64 bg-white overflow-y-hidden p-2 shadow-md h-screen fixed top-0 left-0 z-50 ${menuOpen ? "block" : "hidden"} md:block`}>
       <Menu  className="inline-block size-6 md:hidden" onClick={() => setMenuOpen(!menuOpen)}/>
       <h2 className="text-2xl font-semibold mb-8 px-4 mt-5 text-orange-400"> <ShoppingCart className="inline-block mr-2 size-7"/> Mesay <span className="text-black">Fur.</span></h2>
       <ul className="space-y-1 w-full text-sm font-medium">
