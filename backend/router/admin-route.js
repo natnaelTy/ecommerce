@@ -1,19 +1,24 @@
 import express from "express";
-import { createAdmin, loginAdmin, getAllUsers, getAllProducts, getAllOrders, getAllPayments, addProduct, editProduct, deleteProduct, getAdminProfile } from "../controllers/admin.controller.js";
+import { getAllUsers, getAllProducts, getAllOrders, getAllPayments, addProduct, editProduct, deleteProduct,  } from "../controllers/admin.controller.js";
 import multer from "multer";
+import { getAdminProfile, logoutAdmin, createAdmin, loginAdmin } from "../controllers/admin-auth.controller.js";
+
 
 const upload = multer({ dest: "uploads/" });
 
 const adminRouter = express.Router();
 
 // Admin login
-adminRouter.post("/login", loginAdmin);
+adminRouter.post("/auth/login", loginAdmin);
 
 // Create admin
-adminRouter.post("/createAdmin", createAdmin);
+adminRouter.post("/auth/createAdmin", createAdmin);
 
 // Get admin profile
-adminRouter.get("/profile", getAdminProfile);
+adminRouter.get("/auth/profile", getAdminProfile);
+
+// Admin logout
+adminRouter.post("/auth/logout", logoutAdmin);
 
 // Get all users
 adminRouter.get("/users", getAllUsers);
