@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginAdmin } from "../../../store/adminside/adminSlice";
+import { loginAdmin } from "../../../store/adminside/adminAuthSlice";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { loading, error } = useSelector((state) => state.admin);
+  const { loading, error } = useSelector((state) => state.adminAuth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
