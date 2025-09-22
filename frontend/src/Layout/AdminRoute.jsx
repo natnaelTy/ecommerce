@@ -1,40 +1,27 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { Navigate } from "react-router-dom";
 import SideBar from "../components/pages/adminSide/adminlayout/SideBar";
 import Navbar from "../components/pages/adminSide/adminlayout/Navbar";
-import { getAdminProfile } from "../store/adminside/adminSlice";
-import { useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { getAdminProfile } from "../store/adminside/adminAuthSlice";
+import Loading from "../utils/loading/Loading";
 
 export default function AdminRoute({ children }) {
-  const { admin, loading, error } = useSelector((state) => state.admin);
+  const { admin, loading } = useSelector((state) => state.adminAuth);
   const dispatch = useDispatch();
   const adminChildren = React.Children.toArray(children);
 
   useEffect(() => {
-      dispatch(getAdminProfile());
-  }, [dispatch]); 
+    dispatch(getAdminProfile());
+  }, [dispatch]);
 
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-lg">Loading admin dashboard...</div>
-      </div>
-    );
+  if (admin?.role !== "ADMIN") {
+    return <Navigate to="/admin-login" replace />;
   }
 
-  // Handle errors
- 
-  console.log("Current Admin:", admin?.role);
-  if (!admin || admin.role !== "ADMIN") {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
-
-
-  
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-50">
       <SideBar />
       <div className="flex flex-col flex-1">
         <Navbar />
