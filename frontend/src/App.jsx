@@ -25,6 +25,8 @@ import Users from "./components/pages/adminSide/users/Users";
 import ProductList from "./components/pages/adminSide/products/ProductList";
 import EditProduct from "./components/pages/adminSide/products/EditProduct";
 import AddNewProduct from "./components/pages/adminSide/products/AddNewProduct";
+import AllOrders from "./components/pages/adminSide/orders/Orders";
+import AdminAccount from "./components/pages/adminSide/AdminAccount";
 
 function App() {
   return (
@@ -49,16 +51,64 @@ function App() {
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/verifyemail" element={<VerifyEmail />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
         </Route>
-        <Route element={<AdminRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<Users />} />
-          <Route path="/admin/products" element={<ProductList />} />
-          <Route path="/admin/products/edit/:id" element={<EditProduct />} />
-          <Route path="/admin/products/addProduct" element={<AddNewProduct />} />
-        </Route>
-
-        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <Users />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/products"
+          element={
+            <AdminRoute>
+              <ProductList />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/products/edit/:id"
+          element={
+            <AdminRoute>
+              <EditProduct />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/products/addProduct"
+          element={
+            <AdminRoute>
+              <AddNewProduct />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <AdminRoute>
+              <AllOrders />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/account"
+          element={
+            <AdminRoute>
+              <AdminAccount />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </>
   );
