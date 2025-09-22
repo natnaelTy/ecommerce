@@ -1,15 +1,22 @@
 import { useSelector } from "react-redux";
 import Loading from "../../../../utils/loading/Loading";
-
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { fetchUsers } from "../../../../store/adminside/adminSlice";
 export default function Users() {
   const { users, loading } = useSelector((state) => state.admin);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   if (loading) {
     return <Loading />;
   }
 
   return (
-    <div className="max-w-[1250px] px-4 w-full ml-auto bg-gray-50 min-h-screen py-2">
+    <div className="max-w-[1250px] w-full px-5 ml-auto min-h-screen">
       <div className="overflow-x-auto border-gray-100 border-1 shadow-xs rounded-sm bg-white">
         <table className="w-full">
           <thead className="h-10 px-4">
