@@ -1,7 +1,7 @@
 import express from "express";
 import { getAllUsers, getAllProducts, getAllOrders, getAllPayments, addProduct, editProduct, deleteProduct,  } from "../controllers/admin.controller.js";
 import multer from "multer";
-import { getAdminProfile, logoutAdmin, createAdmin, loginAdmin } from "../controllers/admin-auth.controller.js";
+import { getAdminProfile, logoutAdmin, createAdmin, loginAdmin, updateAdminProfile } from "../controllers/admin-auth.controller.js";
 
 
 const upload = multer({ dest: "uploads/" });
@@ -16,6 +16,9 @@ adminRouter.post("/auth/createAdmin", createAdmin);
 
 // Get admin profile
 adminRouter.get("/auth/profile", getAdminProfile);
+
+// Update admin profile
+adminRouter.put("/auth/edit-profile", updateAdminProfile);
 
 // Admin logout
 adminRouter.post("/auth/logout", logoutAdmin);
