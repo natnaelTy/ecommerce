@@ -19,10 +19,23 @@ export const getAdminProfile = createAsyncThunk(
   "adminAuth/getAdminProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.get("/auth/profile", { withCredentials: true });
+      const response = await adminApi.get("/auth/profile");
       return response.data.admin;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || "Failed to fetch admin profile");
+    }
+  }
+);
+
+// update admin profile
+export const updateAdminProfile = createAsyncThunk(
+  "adminAuth/updateAdminProfile",
+  async (adminData, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.put("/auth/edit-profile", adminData);
+      return response.data.admin;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to update admin profile");
     }
   }
 );
@@ -75,6 +88,19 @@ const adminAuthSlice = createSlice({
       .addCase(getAdminProfile.rejected, (state, action) => {
         state.loading = false;
         state.admin = null;
+        state.error = action.payload;
+      })
+      // update admin profile
+      .addCase(updateAdminProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAdminProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.admin = action.payload;
+      })
+      .addCase(updateAdminProfile.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       })
       // logout admin
