@@ -79,9 +79,6 @@ export const loginAdmin = async (req, res) => {
 // get admin profile
 export const getAdminProfile = async (req, res) => {
   const token = req.cookies.token;
-  console.log("Token from cookies:", token);
-  console.log("JWT_SECRET:", process.env.JWT_SECRET); 
-  console.log("Request cookies:", req.cookies);
   try {
     if (!token) {
       return res
@@ -112,6 +109,59 @@ export const getAdminProfile = async (req, res) => {
       .json({ message: "Admin profile fetched successfully", admin });
   } catch (error) {
     console.error("Error fetching admin profile:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// update profile
+export const updateAdminProfile = async (req, res) => {
+  const token = req.cookies.token;
+  try {
+    if (!token) {
+      return res 
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded.id) {
+      return res.status(401).json({ success: false, message: "Invalid token" });
+    }
+
+    const admin = await prisma.admin.findUnique({
+      where: { id: decoded.id },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        profilePhoto: true,
+        role: true,
+      },
+    });
+    if (!admin) {
+      return res.status(404).json({ error: "Admin not found" });
+    }
+
+    const { fullName, email, profilePhoto, currentPassword, newPassword } = req.body;
+
+    const isPasswordValid =  await bcrypt.compare(currentPassword, admin.password);
+
+    if(!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid current password" });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    const updatedAdmin = await prisma.admin.update({
+      where: { id: decoded.id },
+      data: {
+        fullName,
+        email,
+        profilePhoto,
+        password: hashedNewPassword
+      },
+    });
+    res.status(200).json({ message: "Profile updated successfully", updatedAdmin });
+  } catch (error) {
+    console.error("Error updating admin profile:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
