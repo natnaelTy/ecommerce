@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getAdminProfile } from "../../../store/adminside/adminAuthSlice";
+import { getAdminProfile, updateAdminProfile } from "../../../store/adminside/adminAuthSlice";
 import { toast } from "react-hot-toast";
-import { updateUserProfile } from "../../../store/user/userSlice";
-
+import { SquarePen } from "lucide-react";
 
 export default function AdminAccount() {
   const dispatch = useDispatch();
   const { admin, loading, error } = useSelector((state) => state.adminAuth);
+  const [isVisible, setIsVisible] = useState(false);
 
   const [form, setForm] = useState({
     fullName: "",
     email: "",
-    phoneNumber: "",
-    gender: "",
-    birthday: "",
     profileImage: null || "",
+    password: "",
+    newPassword: "",
   });
+  const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
     if (admin) {
@@ -24,8 +24,7 @@ export default function AdminAccount() {
         fullName: admin.fullName || "",
         email: admin.email || "",
         phoneNumber: admin.phoneNumber || "",
-        gender: admin.gender || "",
-        birthday: admin.birthday || "",
+        password: admin.password || "",
         profileImage: admin.image || null || "",
       });
     } else {
@@ -34,84 +33,125 @@ export default function AdminAccount() {
   }, [admin, dispatch]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+    if (name === "image" && files && files[0]) {
+      const file = files[0];
+      setForm({ ...form, image: file });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await dispatch(updateUserProfile(form)).unwrap();
+    await dispatch(updateAdminProfile(form)).unwrap();
     toast.success("Profile updated successfully");
   };
 
   return (
     <div className="bg-gray-50">
       <div className="max-w-[1200px] w-full bg-white ml-auto p-6 rounded-md shadow">
-      <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center gap-6">
-          <div className="w-32 h-32 rounded-full overflow-hidden border border-gray-200">
-            <img
-              src={admin?.image ? admin?.image : "/images/pfp.jpg"}
-              alt={admin?.fullName}
-              className="w-full h-full object-cover"
+        <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex items-center gap-6">
+            <div className="w-32 h-32 rounded-full overflow-hidden border border-gray-200">
+              <img
+                src={admin?.image ? admin?.image : imagePreview ? imagePreview : "/images/adminlogo.png"}
+                alt={admin?.fullName}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label className="text-sm px-3 py-2 border-1 border-gray-300 rounded-md hover:bg-black transition hover:text-white hover:border-black">
+                <input
+                  type="file"
+                  name="image"
+                  accept="image/*"
+                  onChange={handleChange}
+                />
+              </label>
+              <div className="text-gray-500 text-xs space-y-1">
+                <p>At least 800*800 px recommended</p>
+                <p>Supported formats: JPG, PNG</p>
+              </div>
+            </div>
+          </div>
+
+          <hr className="border-b-0.5 border-gray-200" />
+          <div>
+            <label className="block mb-1">Full Name</label>
+            <input
+              type="text"
+              name="fullName"
+              value={form.fullName}
+              onChange={handleChange}
+              className="inputs"
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              className="inputs"
+              required
+            />
+          </div>
+          <div className="">
+            <label className="block mb-1">
+              Current Password
+              <div className="flex items-center justify-end rounded-md gap-3 w-full border-1 border-gray-200 bg-gray-50 pr-3">
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  className="inputs flex-1"
+                  placeholder="◾◾◾◾◾◾◾◾"
+                  required
+                  disabled={!isVisible}
+                />
+                <span
+                  onClick={() => setIsVisible(!isVisible)}
+                  className="ml-6 flex text-orange-400 hover:underline cursor-pointer hover:text-orange-500 font-medium text-sm"
+                >
+                  <SquarePen className="inline-block mr-1 size-5" />
+                  Change Password
+                </span>
+              </div>
+            </label>
+          </div>
+
+          <div className={`${isVisible ? "block" : "hidden"}`}>
+            <label className="block mb-1">New Password</label>
+            <input
+              type="password"
+              name="newPassword"
+              value={form.newPassword}
+              onChange={handleChange}
+              className="inputs"
+              required
             />
           </div>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm px-3 py-1.5 border-1 border-gray-300 rounded-md hover:bg-black transition hover:text-white hover:border-black">
-              <input type="file" />
-            </label>
-            <div className="text-gray-500 text-xs space-y-1">
-              <p>At least 800*800 px recommended</p>
-              <p>Supported formats: JPG, PNG</p>
-            </div>
-          </div>
-        </div>
-
-        <hr className="border-b-0.5 border-gray-200"/>
-        <div>
-          <label className="block mb-1">Full Name</label>
-          <input
-            type="text"
-            name="fullName"
-            value={form.fullName}
-            onChange={handleChange}
-            className="inputs"
-            required
-          />
-        </div>
-        <div>
-          <label className="block mb-1">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            className="inputs"
-            required
-          />
-        </div>
-        <div>
-          <label className="block mb-1">Password</label>
-          <input
-            type="password"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            className="inputs"
-            placeholder="*********"
-            required
-          />
-        </div>
-        {error && <p className="text-red-500">{error}</p>}
-        <button
-          type="submit"
-          className="w-full py-2 px-4 bg-black text-white rounded-md hover:bg-slate-950 transition"
-          disabled={loading}
-        >
-          {loading ? "Saving..." : "Save Changes"}
-        </button>
-      </form>
+          {error && <p className="text-red-500">{error}</p>}
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-black text-white rounded-md hover:bg-slate-950 transition"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save Changes"}
+          </button>
+        </form>
       </div>
     </div>
   );
