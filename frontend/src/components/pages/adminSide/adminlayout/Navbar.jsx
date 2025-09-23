@@ -34,8 +34,8 @@ export default function Navbar() {
         </span>
       </div>
 
-      <div className={`absolute right-5 top-14 w-48 bg-white rounded-md border overflow-hidden border-gray-100 shadow-lg ${isModalOpen ? 'block' : 'hidden'}`}>
-        <div className="w-full flex flex-col items-start">
+      <div onClick={() => setIsModalOpen(!isModalOpen)} className={`absolute right-5 top-14 w-48 bg-white rounded-md border overflow-hidden border-gray-100 shadow-lg ${isModalOpen ? 'block' : 'hidden'}`}>
+        <div className="w-full flex flex-col items-start" >
           <Link to="/admin/account" className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-orange-400 hover:text-white"><Settings className='inline-block mr-2 size-5'/>Account Settings</Link>
           <button onClick={() => dispatch(logoutAdmin())} className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-orange-400 hover:text-white"><LogOut className='inline-block mr-2 size-5'/>Logout</button>
         </div>
