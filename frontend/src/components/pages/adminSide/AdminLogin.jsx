@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { loginAdmin } from "../../../store/adminside/adminAuthSlice";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { set } from "zod";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: "", password: "" });
   const { loading, error } = useSelector((state) => state.adminAuth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [errorsMessage, setErrorsMessage] = useState({});
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -20,15 +23,14 @@ export default function AdminLogin() {
       toast.success("Login successful");
       navigate("/admin/dashboard");
     } catch (err) {
-      if (err && err.error) {
-        toast.error(err.error);
-      }
+      toast.error(err?.message);
+      setErrorsMessage(err?.message);
     }
   };
 
-  if (error && error) {
-    toast.error(error);
-  }
+  console.log("Admin error:",  errorsMessage );
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form
@@ -41,9 +43,6 @@ export default function AdminLogin() {
         <p className="text-center text-sm text-gray-600">
           Please enter your admin credentials to access the dashboard.
         </p>
-        {error && (
-          <div className="mb-4 text-red-500 text-center text-sm">{error}</div>
-        )}
         <div className="mb-4">
           <label className="block mb-1 text-sm text-gray-700">Email</label>
           <input
@@ -53,7 +52,6 @@ export default function AdminLogin() {
             onChange={handleChange}
             className="inputs"
             required
-            autoFocus
           />
         </div>
         <div className="mb-6">
@@ -70,7 +68,7 @@ export default function AdminLogin() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-black text-white py-2 rounded hover:bg-orange-500 transition"
+          className="w-full bg-black text-white py-2 rounded hover:bg-orange-500 transition disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>
