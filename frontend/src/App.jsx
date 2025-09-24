@@ -27,6 +27,8 @@ import EditProduct from "./components/pages/adminSide/products/EditProduct";
 import AddNewProduct from "./components/pages/adminSide/products/AddNewProduct";
 import AllOrders from "./components/pages/adminSide/orders/Orders";
 import AdminAccount from "./components/pages/adminSide/AdminAccount";
+import Payment from "./components/pages/adminSide/payment/Payment";
+
 
 function App() {
   return (
@@ -106,6 +108,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminAccount />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/payments"
+          element={
+            <AdminRoute>
+              <Payment />
             </AdminRoute>
           }
         />
