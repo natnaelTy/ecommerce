@@ -8,8 +8,8 @@ const { CHAPA_SECRET } = process.env;
 
 // initialize chapa pay payment
 export const InitializePayment = async (req, res) => {
-  const { amount, email, fullName } = req.body;
-  const tx_ref = `tx-${Date.now()}`; // unique reference
+  const { amount, email, fullName, phone } = req.body;
+  const tx_ref = `tx-${Date.now()}`;
 
   try {
     const response = await axios.post(
@@ -20,6 +20,7 @@ export const InitializePayment = async (req, res) => {
         email,
         first_name: fullName, 
         last_name: "",  
+        phone_number: phone,
         tx_ref,
         callback_url: "https://your-backend.com/api/payment/verify",
         return_url: "http://localhost:3000/payment-success",
@@ -65,5 +66,77 @@ export const VerifyPayment = async (req, res) => {
   } catch (err) {
     console.error(err.response?.data || err.message);
     res.status(500).json({ error: "Verification failed" });
+  }
+};
+
+// get payments
+export const getAllPayments = async (_, res) => {
+  try {
+    const payments = await prisma.payment.findMany({
+      include: {
+        order: {
+          include: {
+            user: true,
+            orderItems: { include: { product: true } },
+          },
+        },
+      },
+    });
+    console.log("Fetched payments:", payments);
+    res.status(200).json(payments);
+  } catch (error) {
+    console.error("Error fetching payments:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Simulate payment 
+export const simulatePayment = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body; 
+
+    const payment = await prisma.payment.update({
+      where: { orderId: parseInt(orderId) },
+      data: { status },
+    });
+
+    // Update order status if paid
+    if (status === "paid") {
+      await prisma.order.update({
+        where: { id: parseInt(orderId) },
+        data: { status: "paid" },
+      });
+    }
+
+    res.json({ message: "Payment updated", payment });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Payment update failed" });
+  }
+};
+
+// get payment by id
+export const getPaymentByOrderId = async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const payment = await prisma.payment.findUnique({
+      where: { orderId: parseInt(orderId) },
+      include: {
+        order: {
+          include: {
+            user: true,
+            orderItems: { include: { product: true } },
+          }
+        }
+      }
+    });
+    if (!payment) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+    res.json(payment);
+  } catch (error) {
+    console.error("Error fetching payment:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
