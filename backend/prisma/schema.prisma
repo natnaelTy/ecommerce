@@ -29,12 +29,11 @@ model User {
   password String
   createdAt DateTime @default(now())
   isEmailVerified Boolean @default(false)
-
-  resetPasswordCode       String?  
-  resetPasswordCodeExpiresAt DateTime? 
-  verificationCode        String?  
-  verificationCodeExpiresAt DateTime? 
-
+  resetPasswordCode       String?
+  resetPasswordCodeExpiresAt DateTime?
+  verificationCode        String?
+  verificationCodeExpiresAt DateTime?
+  
   wishlists   WishList[]
   carts     Cart[]
   orders    Order[]
@@ -137,7 +136,7 @@ model Order {
   user      User        @relation(fields: [userId], references: [id])
   orderItems OrderItem[]
   total     Float
-  status    String      @default("PENDING") // PENDING, SHIPPED, DELIVERED, CANCELLED
+  status    String      @default("PENDING")
   payment   Payment?
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -160,11 +159,11 @@ model Payment {
   id        Int      @id @default(autoincrement())
   orderId   Int      @unique
   order     Order    @relation(fields: [orderId], references: [id])
-  method    String   // "Chapa"
-  status    String   @default("PENDING") // PENDING, PAID, FAILED
+  method    String
+  status    String   @default("PENDING")
   amount    Float
   createdAt DateTime @default(now())
-  txRef     String?   @unique
+  txRef     String?  @unique
   currency  String?
   email     String?
 }
