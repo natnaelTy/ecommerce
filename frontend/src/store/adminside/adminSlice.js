@@ -199,13 +199,14 @@ const adminSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchPayments.fulfilled, (state, action) => {
+        console.log("Fetched payments in slice:", action.payload);
         state.loading = false;
         state.payments = action.payload;
       })
       .addCase(fetchPayments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
   },
 });
 
