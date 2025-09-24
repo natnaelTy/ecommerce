@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createCheckout, fetchCart } from "../../../store/product/productSlice";
 import { Link } from "react-router-dom";
@@ -6,9 +6,11 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import { CreditCard } from "lucide-react";
 import { PuffLoader } from "react-spinners";
 import { z } from "zod";
-import { MdErrorOutline } from "react-icons/md"; // Added import for error icon
-import toast from "react-hot-toast"; // Added import for toast notifications
+import { MdErrorOutline } from "react-icons/md";
+import toast from "react-hot-toast"; 
 import axios from "axios";
+
+
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -58,6 +60,7 @@ export default function Checkout() {
 
       // Validate form data
       const validatedData = shippingSchema.parse(formData);
+      console.log(validatedData)
       setErrors({});
 
       // Build items array for backend
@@ -70,11 +73,7 @@ export default function Checkout() {
         userId: user.id,
         items,
         method: validatedData.paymentMethod,
-        ...validatedData,
       };
-
-      await dispatch(createCheckout(payload)).unwrap();
-      toast.success("Order placed successfully!");
 
       const res = await axios.post(
         "http://localhost:5000/api/payment/initialize",
@@ -85,11 +84,17 @@ export default function Checkout() {
             return acc + (product.price || 0) * qty;
           }, 0),
           email: validatedData.email,
-          fullName: validatedData.fullName
+          fullName: validatedData.fullName,
+          phone_number: validatedData.phone,
         }
       );
 
+      console.log("Chapa response:", res.data);
+
       window.location.href = res.data.data.checkout_url; // redirect to Chapa
+      // dispatch checkout
+      await dispatch(createCheckout(payload)).unwrap();
+      toast.success("Order placed successfully!");
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {};
