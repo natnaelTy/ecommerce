@@ -481,28 +481,3 @@ export const getOrdersByUser = async (req, res) => {
   }
 };
 
-// Simulate payment 
-export const simulatePayment = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const { status } = req.body; // "paid" or "failed"
-
-    const payment = await prisma.payment.update({
-      where: { orderId: parseInt(orderId) },
-      data: { status },
-    });
-
-    // Update order status if paid
-    if (status === "paid") {
-      await prisma.order.update({
-        where: { id: parseInt(orderId) },
-        data: { status: "paid" },
-      });
-    }
-
-    res.json({ message: "Payment updated", payment });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Payment update failed" });
-  }
-};
