@@ -11,7 +11,6 @@ import {
   removeFromWishlist,
   checkout,
   getOrdersByUser,
-  simulatePayment,
   updateCart,
   getRecommendedProducts,
   getRelatedProducts,
@@ -72,7 +71,5 @@ productRoute.post("/checkout", checkout);
 // Get orders by user
 productRoute.get("/orders/:userId", getOrdersByUser);
 
-// Simulate payment
-productRoute.post("/simulate-payment/:orderId", simulatePayment);
 
 export default productRoute;
