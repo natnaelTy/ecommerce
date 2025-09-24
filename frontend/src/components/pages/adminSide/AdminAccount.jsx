@@ -12,8 +12,8 @@ export default function AdminAccount() {
   const [form, setForm] = useState({
     fullName: "",
     email: "",
-    profileImage: null || "",
-    password: "",
+    profilePhoto: null || "",
+    currentPassword: "",
     newPassword: "",
   });
   const [imagePreview, setImagePreview] = useState("");
@@ -23,9 +23,8 @@ export default function AdminAccount() {
       setForm({
         fullName: admin.fullName || "",
         email: admin.email || "",
-        phoneNumber: admin.phoneNumber || "",
-        password: admin.password || "",
-        profileImage: admin.image || null || "",
+        currentPassword: admin.password || "",
+        profilePhoto: admin.profilePhoto || null || "",
       });
     } else {
       dispatch(getAdminProfile());
@@ -49,9 +48,14 @@ export default function AdminAccount() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await dispatch(updateAdminProfile(form)).unwrap();
-    toast.success("Profile updated successfully");
+    try {
+      await dispatch(updateAdminProfile(form)).unwrap();
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      toast.error(error?.message);
+    }
   };
+
 
   return (
     <div className="bg-gray-50">
@@ -112,8 +116,8 @@ export default function AdminAccount() {
               <div className="flex items-center justify-end rounded-md gap-3 w-full border-1 border-gray-200 bg-gray-50 pr-3">
                 <input
                   type="password"
-                  name="password"
-                  value={form.password}
+                  name="currentPassword"
+                  value={form.currentPassword}
                   onChange={handleChange}
                   className="inputs flex-1"
                   placeholder="◾◾◾◾◾◾◾◾"
@@ -142,8 +146,6 @@ export default function AdminAccount() {
               required
             />
           </div>
-
-          {error && <p className="text-red-500">{error}</p>}
           <button
             type="submit"
             className="w-full py-2 px-4 bg-black text-white rounded-md hover:bg-slate-950 transition"
