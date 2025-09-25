@@ -381,8 +381,6 @@ export const getRecommendedProducts = async (req, res) => {
       });
     }
 
-    console.log("Recommended products for user", userId, ":", recommended);
-
     res.status(200).json({ message: "Recommended products fetched", recommendedProducts: recommended });
   } catch (error) {
     console.error(error);
