@@ -56,47 +56,48 @@ export default function AdminAccount() {
     }
   };
 
+  console.log(error);
 
   return (
-    <div className="bg-gray-50">
-      <div className="max-w-[1200px] w-full bg-white ml-auto p-6 rounded-md shadow">
-        <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
+    <div className="bg-gray-50 min-h-screen p-2 md:p-6">
+      <div className="max-w-[600px] lg:max-w-[1200px] w-full bg-white mx-auto p-4 md:p-6 rounded-md shadow">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4">Edit Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center gap-6">
-            <div className="w-32 h-32 rounded-full overflow-hidden border border-gray-200">
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border border-gray-200">
               <img
                 src={admin?.image ? admin?.image : imagePreview ? imagePreview : "/images/adminlogo.png"}
                 alt={admin?.fullName}
                 className="w-full h-full object-cover"
               />
             </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-sm px-3 py-2 border-1 border-gray-300 rounded-md hover:bg-black transition hover:text-white hover:border-black">
+            <div className="flex flex-col gap-2 w-full">
+              <label className="text-sm px-3 py-2 border border-gray-300 rounded-md hover:bg-black transition hover:text-white hover:border-black cursor-pointer">
                 <input
                   type="file"
                   name="image"
                   accept="image/*"
                   onChange={handleChange}
+                  className="hidden"
                 />
+                Upload New Photo
               </label>
               <div className="text-gray-500 text-xs space-y-1">
-                <p>At least 800*800 px recommended</p>
+                <p>At least 800×800 px recommended</p>
                 <p>Supported formats: JPG, PNG</p>
               </div>
             </div>
           </div>
 
-          <hr className="border-b-0.5 border-gray-200" />
+          <hr className="border-b border-gray-200" />
           <div>
             <label className="block mb-1">Full Name</label>
             <input
               type="text"
               name="fullName"
-              value={form.fullName}
+              value={form.fullName ?? ""}
               onChange={handleChange}
-              className="inputs"
-              required
+              className="inputs w-full"
             />
           </div>
           <div>
@@ -104,24 +105,21 @@ export default function AdminAccount() {
             <input
               type="email"
               name="email"
-              value={form.email}
+              value={form.email ?? ""}
               onChange={handleChange}
-              className="inputs"
-              required
+              className="inputs w-full"
             />
           </div>
-          <div className="">
+          <div>
             <label className="block mb-1">
               Current Password
-              <div className="flex items-center justify-end rounded-md gap-3 w-full border-1 border-gray-200 bg-gray-50 pr-3">
+              <div className="flex items-center justify-end rounded-md gap-3 w-full border border-gray-200 bg-gray-50 pr-3">
                 <input
                   type="password"
                   name="currentPassword"
-                  value={form.currentPassword}
                   onChange={handleChange}
                   className="inputs flex-1"
                   placeholder="◾◾◾◾◾◾◾◾"
-                  required
                   disabled={!isVisible}
                 />
                 <span
@@ -140,10 +138,9 @@ export default function AdminAccount() {
             <input
               type="password"
               name="newPassword"
-              value={form.newPassword}
+              value={form.newPassword ?? ""}
               onChange={handleChange}
-              className="inputs"
-              required
+              className="inputs w-full"
             />
           </div>
           <button
