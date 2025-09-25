@@ -41,7 +41,9 @@ export const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ success: false, message: "Email and password are required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email and password are required" });
   }
 
   try {
@@ -50,12 +52,16 @@ export const loginAdmin = async (req, res) => {
     });
 
     if (!admin) {
-      return res.status(404).json({ success: false, message: "Invalid email or password" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid email or password" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, admin.password);
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, message: "Invalid email or password" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid email or password" });
     }
     // Generate token and set cookie
     const token = generateTokenSetCookie(res, admin.id, "ADMIN");
@@ -103,7 +109,6 @@ export const getAdminProfile = async (req, res) => {
     if (!admin) {
       return res.status(404).json({ error: "Admin not found" });
     }
-    console.log(admin);
     res
       .status(200)
       .json({ message: "Admin profile fetched successfully", admin });
@@ -118,7 +123,7 @@ export const updateAdminProfile = async (req, res) => {
   const token = req.cookies.token;
   try {
     if (!token) {
-      return res 
+      return res
         .status(401)
         .json({ success: false, message: "Not authenticated" });
     }
@@ -135,32 +140,42 @@ export const updateAdminProfile = async (req, res) => {
         email: true,
         profilePhoto: true,
         role: true,
-        password: true
+        password: true,
       },
     });
     if (!admin) {
-      return res.status(404).json({ error: "Admin not found" });
+      return res.status(404).json({ success: false, error: "Admin not found" });
     }
 
-    const { fullName, email, profilePhoto, currentPassword, newPassword } = req.body;
+    const { fullName, email, profilePhoto, currentPassword, newPassword } =
+      req.body;
 
-    const isPasswordValid =  await bcrypt.compare(currentPassword, admin.password);
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      admin.password
+    );
 
-    if(!isPasswordValid) {
-      return res.status(401).json({ error: "Incorrect current password" });
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, error: "Current password is incorrect" });
+    }
+    
+    const dataToUpdate = {
+      fullName,
+      email,
+      profilePhoto,
+    };
+
+    if (newPassword && newPassword.trim() !== "") {
+      dataToUpdate.password = await bcrypt.hash(newPassword, 10);
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     const updatedAdmin = await prisma.admin.update({
       where: { id: decoded.id },
-      data: {
-        fullName,
-        email,
-        profilePhoto,
-        password: hashedNewPassword
-      },
+      data: dataToUpdate,
     });
-    res.status(200).json({ message: "Profile updated successfully", updatedAdmin });
+    res
+      .status(200)
+      .json({ message: "Profile updated successfully", updatedAdmin });
   } catch (error) {
     console.error("Error updating admin profile:", error);
     res.status(500).json({ error: "Internal server error" });
