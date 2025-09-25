@@ -145,15 +145,3 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
-// get payments
-export const getAllPayments = async (req, res) => {
-  try {
-    const payments = await prisma.payment.findMany();
-    res.json(payments);
-  } catch (error) {
-    console.error("Error fetching payments:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-//
