@@ -226,19 +226,6 @@ export const fetchOrders = createAsyncThunk(
   }
 );
 
-// Update payment status
-export const updatePayment = createAsyncThunk(
-  "orders/updatePayment",
-  async ({ orderId, status }, thunkAPI) => {
-    try {
-      const res = await productApi.post(`/payment/${orderId}`, { status });
-      return res.data;
-    } catch (err) {
-      return thunkAPI.rejectWithValue(err.response?.data || err.message);
-    }
-  }
-);
-
 const productSlice = createSlice({
   name: "product",
   initialState: {
@@ -418,31 +405,6 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
-      // Update Payment
-      .addCase(updatePayment.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(updatePayment.fulfilled, (state, action) => {
-        state.loading = false;
-        const updatedPayment = action.payload.payment;
-        // update order in state
-        const orderIndex = state.orders.findIndex(
-          (o) => o.id === updatedPayment.orderId
-        );
-        if (orderIndex !== -1) {
-          state.orders[orderIndex].payment = updatedPayment;
-          state.orders[orderIndex].status =
-            updatedPayment.status === "paid"
-              ? "paid"
-              : state.orders[orderIndex].status;
-        }
-        state.error = null;
-      })
-      .addCase(updatePayment.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
   },
 });
 
