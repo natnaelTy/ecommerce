@@ -20,7 +20,7 @@ import About from "./components/pages/about/About";
 import AdminRoute from "./Layout/AdminRoute";
 import AdminDashboard from "./components/pages/adminSide/AdminDashboard";
 import AdminLogin from "./components/pages/adminSide/AdminLogin";
-import PaymentSuccess from "./components/pages/account/Payment";
+import PaymentSuccess from "./components/pages/account/PaymentSuccess";
 import Users from "./components/pages/adminSide/users/Users";
 import ProductList from "./components/pages/adminSide/products/ProductList";
 import EditProduct from "./components/pages/adminSide/products/EditProduct";
