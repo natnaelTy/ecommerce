@@ -96,13 +96,13 @@ export default function Orders() {
                   </td>
                   <td className="px-4 py-2">#{order.id}</td>
                   <td className="px-4 py-2">{order.user.fullName}</td>
-                  <td className="px-4 py-2">
+                  <td className="px-4 py-2 text-green-600 font-semibold">
                     {formatCurrency(order.total, "ETB", "en-ET")}
                   </td>
                   <td
                     className={`px-4 rounded-2xl ${
-                      order.status === "PAID"
-                        ? "text-green-500 bg-green-100 "
+                      order.status === "paid"
+                        ? "text-green-500"
                         : "text-red-500 "
                     }`}
                   >
