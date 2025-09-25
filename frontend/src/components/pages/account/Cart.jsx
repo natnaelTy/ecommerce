@@ -8,7 +8,15 @@ import {
 import { PuffLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { ShoppingCart, MoveLeft, Trash, Minus, Plus,  Store, ChevronRight } from "lucide-react";
+import {
+  ShoppingCart,
+  MoveLeft,
+  Trash,
+  Minus,
+  Plus,
+  Store,
+  ChevronRight,
+} from "lucide-react";
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -30,7 +38,9 @@ const Cart = () => {
     if (cart && cart.length > 0) {
       const initialQuantities = {};
       cart.forEach((item) => {
-        initialQuantities[item.product.id] = item.quantity;
+        if (item.product && item.product.id) {
+          initialQuantities[item.product.id] = item.quantity;
+        }
       });
       setQuantities(initialQuantities);
     }
@@ -80,7 +90,7 @@ const Cart = () => {
         <div className="w-full">
           <div className="flex items-center justify-start gap-2 mb-6">
             <Link to="/shop" title="Go to shop">
-              <Store  className="hover:text-orange-500 transition duration-200"/>
+              <Store className="hover:text-orange-500 transition duration-200" />
             </Link>
 
             <ChevronRight />
