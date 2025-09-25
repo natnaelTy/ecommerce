@@ -41,7 +41,7 @@ app.use("/api/auth/notifications", notificationRouter);
 // admin routes
 app.use("/api/admin", adminRouter);
 // payment routes
-app.use("/api/admin/payments", paymentRouter);
+app.use("/api/payment", paymentRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is is running on ${PORT}`);
