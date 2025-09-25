@@ -8,22 +8,27 @@ const { CHAPA_SECRET } = process.env;
 
 // initialize chapa pay payment
 export const InitializePayment = async (req, res) => {
-  const { amount, email, fullName, phone } = req.body;
-  const tx_ref = `tx-${Date.now()}`;
-
+  const { amount, email, fullName, phone, orderId } = req.body;
   try {
+    // generate tx_ref and save to payment db
+    const tx_ref = `tx-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+    // Update payment record with tx_ref
+    await prisma.payment.update({
+      where: { orderId: parseInt(orderId) },
+      data: { txRef: tx_ref },
+    });
     const response = await axios.post(
       "https://api.chapa.co/v1/transaction/initialize",
       {
         amount,
         currency: "ETB",
         email,
-        first_name: fullName, 
-        last_name: "",  
+        first_name: fullName,
+        last_name: "",
         phone_number: phone,
         tx_ref,
-        callback_url: "https://your-backend.com/api/payment/verify",
-        return_url: "http://localhost:3000/payment-success",
+        callback_url: "http://localhost:5000/api/payment/verify",
+        return_url: `http://localhost:5173/payment-success?tx_ref=${tx_ref}`,
         customization: {
           title: "Product Checkout",
           description: "Payment for products",
@@ -34,7 +39,7 @@ export const InitializePayment = async (req, res) => {
       }
     );
 
-    res.json(response.data); // contains checkout_url
+    res.status(200).json({ ...response.data, tx_ref });
   } catch (err) {
     console.error(err.response?.data || err.message);
     res.status(500).json({ error: "Payment initialization failed" });
@@ -44,7 +49,6 @@ export const InitializePayment = async (req, res) => {
 // verify chapa pay payment
 export const VerifyPayment = async (req, res) => {
   const { tx_ref } = req.params;
-
   try {
     const response = await axios.get(
       `https://api.chapa.co/v1/transaction/verify/${tx_ref}`,
@@ -52,17 +56,30 @@ export const VerifyPayment = async (req, res) => {
         headers: { Authorization: `Bearer ${CHAPA_SECRET}` },
       }
     );
-    await prisma.payment.create({
+    let status = response.data.data.status;
+    if (status === "success" || status === "completed") {
+      status = "paid";
+    }
+    // update payment by tx_ref
+    const payment = await prisma.payment.update({
+      where: { txRef: tx_ref },
       data: {
-        txRef: response.data.data.tx_ref,
         amount: parseFloat(response.data.data.amount),
         currency: response.data.data.currency,
         email: response.data.data.email,
-        status: response.data.data.status,
+        status: status,
+        method: "chapa",
       },
     });
-
-    res.json(response.data);
+    // update order status if paid
+    if (status === "paid") {
+      await prisma.order.update({
+        where: { id: payment.orderId },
+        data: { status: "paid" },
+      });
+    }
+    console.log("Payment verified:", payment);
+    res.status(200).json({ message: "Payment verified successfully", payment });
   } catch (err) {
     console.error(err.response?.data || err.message);
     res.status(500).json({ error: "Verification failed" });
@@ -83,18 +100,24 @@ export const getAllPayments = async (_, res) => {
       },
     });
     console.log("Fetched payments:", payments);
-    res.status(200).json(payments);
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "payments fetched successfully",
+        allPayments: payments,
+      });
   } catch (error) {
     console.error("Error fetching payments:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
-// Simulate payment 
+// Simulate payment
 export const simulatePayment = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { status } = req.body; 
+    const { status } = req.body;
 
     const payment = await prisma.payment.update({
       where: { orderId: parseInt(orderId) },
@@ -127,9 +150,9 @@ export const getPaymentByOrderId = async (req, res) => {
           include: {
             user: true,
             orderItems: { include: { product: true } },
-          }
-        }
-      }
+          },
+        },
+      },
     });
     if (!payment) {
       return res.status(404).json({ message: "Payment not found" });
