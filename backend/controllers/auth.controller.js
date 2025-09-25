@@ -360,14 +360,16 @@ export const getMe = async (req, res) => {
 passport.use(
   new GoogleStrategy(
     {
-      clientID: process.env.CLIENTID,
-      clientSecret: process.env.CLIENTSECRECT,
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.CALLBACKURL,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
         const email = profile.emails[0].value;
         const fullName = profile.displayName;
+        const profilePhoto = profile.photos[0].value;
+        const emailVerified = profile.emails[0].verified;
 
         let user = await prisma.user.findUnique({ where: { email } });
 
@@ -377,7 +379,9 @@ passport.use(
             data: {
               fullName,
               email,
-              user_password: hashedPassword,
+              password: hashedPassword,
+              profileImage: profilePhoto,
+              isEmailVerified: emailVerified,
             },
           });
         }
