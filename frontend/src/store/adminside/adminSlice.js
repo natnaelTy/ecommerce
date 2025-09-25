@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import adminApi from "../../services/adminApi";
+import axios from "axios";
 
 
 // fetch all users
@@ -89,10 +90,23 @@ export const fetchPayments = createAsyncThunk(
   "admin/fetchPayments",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await adminApi.get("/payments");
-      return response.data;
+      const response = await axios.get("http://localhost:5000/api/payment/payments");
+      return response.data.allPayments;
     } catch (err) {
       return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+// Update payment status
+export const updatePayment = createAsyncThunk(
+  "admin/updatePayment",
+  async ({ orderId, status }, thunkAPI) => {
+    try {
+      const res = await axios.post(`http://localhost:5000/api/payment/updatePayment/${orderId}`, { status });
+      return res.data;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(err.response?.data || err.message);
     }
   }
 );
@@ -199,7 +213,6 @@ const adminSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchPayments.fulfilled, (state, action) => {
-        console.log("Fetched payments in slice:", action.payload);
         state.loading = false;
         state.payments = action.payload;
       })
@@ -207,6 +220,21 @@ const adminSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // update payment status
+      .addCase(updatePayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePayment.fulfilled, (state, action) => {
+        state.loading = false;
+        state.payments = state.payments.map((payment) =>
+          payment.id === action.payload.id ? action.payload : payment
+        );
+      })
+      .addCase(updatePayment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 
