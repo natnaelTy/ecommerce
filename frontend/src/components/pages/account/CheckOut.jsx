@@ -9,7 +9,7 @@ import { z } from "zod";
 import { MdErrorOutline } from "react-icons/md";
 import toast from "react-hot-toast"; 
 import axios from "axios";
-
+import Loading from "../../../utils/loading/Loading";
 
 
 export default function Checkout() {
@@ -60,7 +60,6 @@ export default function Checkout() {
 
       // Validate form data
       const validatedData = shippingSchema.parse(formData);
-      console.log(validatedData)
       setErrors({});
 
       // Build items array for backend
@@ -69,32 +68,45 @@ export default function Checkout() {
         quantity: quantities[wi.product.id] || wi.quantity || 1,
       }));
 
-      const payload = {
-        userId: user.id,
-        items,
-        method: validatedData.paymentMethod,
-      };
+      // Create order 
+      const orderRes = await dispatch(
+        createCheckout({
+          userId: user.id,
+          items,
+          method: validatedData.paymentMethod,
+        })
+      ).unwrap();
 
-      const res = await axios.post(
+      const orderId = orderRes?.order?.id;
+      if (!orderId) {
+        toast.error("Order creation failed");
+        return;
+      }
+
+      // Initialize payment with orderId
+      const amount = cart.reduce((acc, wi) => {
+        const product = wi.product || {};
+        const qty = quantities[product.id] || wi.quantity || 1;
+        return acc + (product.price || 0) * qty;
+      }, 0);
+
+      const paymentRes = await axios.post(
         "http://localhost:5000/api/payment/initialize",
         {
-          amount: cart.reduce((acc, wi) => {
-            const product = wi.product || {};
-            const qty = quantities[product.id] || wi.quantity || 1;
-            return acc + (product.price || 0) * qty;
-          }, 0),
+          amount,
           email: validatedData.email,
           fullName: validatedData.fullName,
-          phone_number: validatedData.phone,
+          phone: validatedData.phone,
+          orderId,
         }
       );
 
-      console.log("Chapa response:", res.data);
-
-      window.location.href = res.data.data.checkout_url; // redirect to Chapa
-      // dispatch checkout
-      await dispatch(createCheckout(payload)).unwrap();
-      toast.success("Order placed successfully!");
+      const checkoutUrl = paymentRes.data?.data?.checkout_url || paymentRes.data?.checkout_url;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        toast.error("Failed to initialize payment");
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {};
@@ -135,9 +147,7 @@ export default function Checkout() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <PuffLoader color="#ffab00" />
-      </div>
+     <Loading />
     );
   }
 
