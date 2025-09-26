@@ -11,6 +11,7 @@ import {
   sendVerificationCode,
 } from "../utils/sendEmail.js";
 import crypto from "crypto";
+import { uploadProfilePicture } from "../utils/cloudinary.js";
 
 dotenv.config();
 
@@ -178,11 +179,7 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Email or password is incorrect" });
     }
 
-    const token = generateTokenSetCookie(
-      res,
-      user.id,
-      "USER"
-    );
+    const token = generateTokenSetCookie(res, user.id, "USER");
 
     res
       .status(200)
@@ -292,10 +289,17 @@ export const updateUserProfile = async (req, res) => {
     return res.status(401).json({ success: false, message: "Invalid token" });
   }
 
-  const { fullName, email, phoneNumber, gender, birthday, profileImage } =
-    req.body;
-
   try {
+    const { fullName, email, phoneNumber, gender, birthday } = req.body;
+    const profileImage = req.file && req.file.path;
+     console.log(profileImage)
+     if (!profileImage) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+    // profile image, upload it to Cloudinary
+    const imageUrl = await uploadProfilePicture(profileImage);
+    // update user
+
     const user = await prisma.user.update({
       where: { id: userId },
       data: {
@@ -304,14 +308,17 @@ export const updateUserProfile = async (req, res) => {
         phoneNumber,
         gender,
         birthday: birthday ? new Date(birthday) : null,
-        profileImage,
+        profileImage: imageUrl || profileImage,
       },
     });
+
+    console.log("Updated user:", user);
 
     res.status(200).json({ success: true, updatedUser: user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ error: "Image upload failed" });
   }
 };
 
@@ -341,6 +348,7 @@ export const getMe = async (req, res) => {
         email: true,
         fullName: true,
         phoneNumber: true,
+        profileImage: true,
         isEmailVerified: true,
       },
     });
@@ -418,38 +426,14 @@ export const googleCallback = (req, res, next) => {
     if (err) return next(err);
     if (!user) return res.redirect("/login");
 
+    console.log(user);
     const token = generateTokenSetCookie(
       res,
       user.id,
-      user.email,
-      user.fullName
+      "USER"
     );
+    console.log("Generated Token:", token);
     res.redirect(`http://localhost:5173?token=${token}`);
   })(req, res, next);
 };
 
-// Get Profile
-export const getProfile = async (req, res) => {
-  const userId = req.user.id;
-
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-      },
-    });
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
-    }
-
-    res.status(200).json({ success: true, user });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Database error" });
-  }
-};
