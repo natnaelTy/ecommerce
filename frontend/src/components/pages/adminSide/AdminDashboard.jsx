@@ -36,8 +36,8 @@ export default function AdminDashboard() {
         data: [
           users?.length || 0,
           products?.length || 0,
-          orders?.length || 0, 
-          users?.length * 100 || 0,
+          orders?.length || 0,
+          payments?.reduce((total, payment) => total + payment.amount, 0),
         ],
         backgroundColor: [
           "#a78bfa",
