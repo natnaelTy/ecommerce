@@ -38,6 +38,7 @@ model User {
   carts     Cart[]
   orders    Order[]
   notifications Notification[]
+  review      Review[]
 }
 
 model Admin {
@@ -61,7 +62,6 @@ model Products {
   price       Float
   category    String?
   brand       String
-  review      Int
   quantity    Int
   color       String?
   weight      Int?
@@ -73,6 +73,18 @@ model Products {
   carts       Cart[]
   orderItems  OrderItem[]
   categories  ProductCategory[]
+  review      Review[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  product   Products @relation(fields: [productId], references: [id])
+  productId Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
 }
 
 model Newarrival {
