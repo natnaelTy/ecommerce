@@ -17,9 +17,43 @@ export const fetchProduct = createAsyncThunk(
   }
 );
 
+// create review for a product
+export const createReview = createAsyncThunk(
+  "product/createReview",
+  async ({ userId, productId, rating, comment }, { rejectWithValue }) => {
+    try {
+      const response = await productApi.post(
+        `/reviews`,
+        { userId, productId, rating, comment },
+        { withCredentials: true }
+      );
+      return response.data.review;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create review"
+      );
+    }
+  }
+);
+
+// get reviews for a product
+export const fetchProductReviews = createAsyncThunk(
+  "product/fetchProductReviews",
+  async (productId, { rejectWithValue }) => {
+    try {
+      const response = await productApi.get(`/${productId}/reviews`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch reviews"
+      );
+    }
+  }
+);
+
 // fetch new arrival products
 export const fetchNewArrivalProducts = createAsyncThunk(
-  "/newarrival/fetchNewArrivalProducts",
+  "products/fetchNewArrivalProducts",
   async (_, { rejectWithValue }) => {
     try {
       const response = await productApi.get("/newarrival");
@@ -238,9 +272,11 @@ const productSlice = createSlice({
     orders: [],
     related: [],
     recommended: [],
-    coupon: null,
-    couponError: null,
+    reviews: [],
+    rating: 0,
+    comment: "",
     currentOrder: null,
+    coupon: null,
     loading: false,
     error: null,
   },
@@ -259,6 +295,38 @@ const productSlice = createSlice({
         state.totalPages = action.payload;
       })
       .addCase(fetchProduct.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // create review
+      .addCase(createReview.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createReview.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.reviews.push(action.payload);
+        state.rating = 0;
+        state.comment = "";
+      })
+      .addCase(createReview.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetch reviews for a product
+      .addCase(fetchProductReviews.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchProductReviews.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.reviews = action.payload;
+        state.rating = 0;
+        state.comment = "";
+      })
+      .addCase(fetchProductReviews.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
