@@ -11,10 +11,13 @@ import {
   addToCart,
   handleAddToWishlist,
 } from "../../store/product/productSlice";
+import { fetchProductReviews } from "../../store/product/productSlice";
+import { Star, ChevronDown } from "lucide-react";
+import Loading from "../../utils/loading/Loading";
 
 export default function NewArrival() {
   const dispatch = useDispatch();
-  const { newArrivalProducts, loading, error } = useSelector(
+  const { newArrivalProducts, loading, error, reviews } = useSelector(
     (state) => state.product
   );
   const { user } = useSelector((state) => state.user);
@@ -23,10 +26,22 @@ export default function NewArrival() {
     dispatch(fetchNewArrivalProducts());
   }, [dispatch]);
 
-  const getOnly4Products = newArrivalProducts.slice(-4).reverse();
+  useEffect(() => {
+    if (newArrivalProducts && newArrivalProducts.id) {
+      dispatch(fetchProductReviews(newArrivalProducts.id));
+    }
+  }, [newArrivalProducts, dispatch]);
 
+  const getOnly4Products = newArrivalProducts.slice(-4).reverse();
+  // calculate average rating
+  const validReviews = reviews.filter((r) => typeof r?.rating === "number");
+  const avgRating =
+    validReviews.reduce((acc, r) => acc + r.rating, 0) / validReviews.length;
+  const rounded = Math.round(avgRating * 2) / 2;
+
+  console.log(reviews);
   if (loading) {
-    <div>Loading..</div>;
+    return <Loading />;
   }
 
   return (
@@ -76,17 +91,29 @@ export default function NewArrival() {
                       55,900 birr
                     </p>
                   </div>
-                  <div className="flex items-center">
-                    <div className="flex gap-1 text-xs text-yellow-400">
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                      <FaStar />
-                    </div>
-                    <div className="text-xs text-gray-500 ml-3">
-                      ({item?.review})
-                    </div>
+                  <div className="flex items-center gap-1 mt-2">
+                    {
+                    avgRating > 0 ? (
+                      <>
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <Star
+                            key={n}
+                            size={16}
+                            fill={n <= Math.floor(rounded) ? "#facc15" : "none"}
+                            stroke="#facc15"
+                            style={{ opacity: n - 0.5 === rounded ? 0.5 : 1 }}
+                          />
+                        ))}
+                        <span className="text-xs text-gray-600 ml-1">
+                          {
+                          avgRating.toFixed(1)} / 5
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-xs text-gray-400 ml-1">
+                        No ratings yet
+                      </span>
+                    )}
                   </div>
                 </div>
                 {/* add to cart button */}
