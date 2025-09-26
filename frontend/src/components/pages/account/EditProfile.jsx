@@ -3,10 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchUser, updateUserProfile } from "../../../store/user/userSlice";
 import { toast } from "react-hot-toast";
 
-
 export default function EditProfile() {
   const dispatch = useDispatch();
   const { user, loading, error } = useSelector((state) => state.user);
+  const [imagePreview, setImagePreview] = useState("");
 
   const [form, setForm] = useState({
     fullName: "",
@@ -14,7 +14,7 @@ export default function EditProfile() {
     phoneNumber: "",
     gender: "",
     birthday: "",
-    profileImage: null || "",
+    image: null || "",
   });
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function EditProfile() {
         phoneNumber: user.phoneNumber || "",
         gender: user.gender || "",
         birthday: user.birthday || "",
-        profileImage: user.image || null || "",
+        image: user.image || null || "",
       });
     } else {
       dispatch(fetchUser());
@@ -33,40 +33,78 @@ export default function EditProfile() {
   }, [user, dispatch]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, files } = e.target;
+    if (name === "image" && files && files[0]) {
+      const file = files[0];
+      setForm({ ...form, image: file });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await dispatch(updateUserProfile(form)).unwrap();
-    toast.success("Profile updated successfully");
+    try {
+      const formData = new FormData();
+      formData.append("fullName", form.fullName);
+      formData.append("email", form.email);
+      formData.append("phoneNumber", form.phoneNumber);
+      formData.append("gender", form.gender);
+      formData.append("birthday", form.birthday);
+      if (form.image) {
+        formData.append("image", form.image);
+      }
+      await dispatch(updateUserProfile(formData)).unwrap();
+      toast.success("Profile updated successfully");
+    } catch (error) {
+      toast.error(error);
+    }
   };
+
+  console.log(user)
 
   return (
     <div className="w-full mx-auto bg-white p-2">
       <h2 className="text-2xl font-semibold mb-4">Edit Profile</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex items-center gap-6">
-          <div className="w-32 h-32 rounded-full overflow-hidden border border-gray-200">
+        <div className="flex flex-col items-center gap-4 sm:gap-6">
+          <div className="w-32 h-32 rounded-full mr-auto overflow-hidden border border-gray-200">
             <img
-              src={user?.image ? user?.image : "/images/pfp.jpg"}
+              src={
+                user?.profileImage
+                  ? user?.profileImage
+                  : imagePreview
+                  ? imagePreview
+                  : "/images/pfp.jpg"
+              }
               alt={user?.fullName}
               className="w-full h-full object-cover"
             />
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label className="text-sm px-3 py-1.5 border-1 border-gray-300 rounded-md hover:bg-black transition hover:text-white hover:border-black">
-              <input type="file" />
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-sm px-3 py-2 border border-gray-300 rounded-md hover:bg-black transition hover:text-white hover:border-black cursor-pointer">
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+                className="hidden"
+              />
+              Upload New Photo
             </label>
             <div className="text-gray-500 text-xs space-y-1">
-              <p>At least 800*800 px recommended</p>
+              <p>At least 800×800 px recommended</p>
               <p>Supported formats: JPG, PNG</p>
             </div>
           </div>
         </div>
 
-        <hr className="border-b-0.5 border-gray-200"/>
+        <hr className="border-b-0.5 border-gray-200" />
         <div>
           <label className="block mb-1">Full Name</label>
           <input
@@ -124,7 +162,6 @@ export default function EditProfile() {
             className="inputs"
           />
         </div>
-        {error && <p className="text-red-500">{error}</p>}
         <button
           type="submit"
           className="w-full py-2 px-4 bg-black text-white rounded-md hover:bg-slate-950 transition"
