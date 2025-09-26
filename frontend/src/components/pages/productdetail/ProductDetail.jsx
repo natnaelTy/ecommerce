@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { FaStar } from "react-icons/fa6";
-import { House, ChevronRight, ShoppingCart, Heart } from "lucide-react";
+import { Star } from "lucide-react";
+import { House, ChevronRight, ShoppingCart, Heart, ChevronUp, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { FaFacebook } from "react-icons/fa";
@@ -13,32 +13,83 @@ import {
   handleAddToWishlist,
   removeFromCart,
   removeFromWishlist,
+  createReview,
+  fetchProductReviews,
 } from "../../../store/product/productSlice";
 import { useDispatch } from "react-redux";
 import Loading from "../../../utils/loading/Loading";
-
-
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function ProductDetail() {
   const dispatch = useDispatch();
   const { id } = useParams();
-
-  const { productItems, loading, newArrivalProducts, cart, wishlistItems } = useSelector(
-    (state) => state.product
-  );
+  const {
+    productItems,
+    loading,
+    newArrivalProducts,
+    cart,
+    wishlistItems,
+    reviews,
+  } = useSelector((state) => state.product);
   const { user } = useSelector((state) => state.user);
-  const product =
+
+  const [product, setProduct] = useState(
     productItems.find((p) => p.id === id || p.id === parseInt(id)) ||
-    newArrivalProducts.find((p) => p.id === id || p.id === parseInt(id));
+      newArrivalProducts.find((p) => p.id === id || p.id === parseInt(id)) ||
+      null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [form, setForm] = useState({
+    rating: 0,
+    comment: "",
+  });
+  const validReviews = reviews.filter((r) => typeof r?.rating === "number");
+  const avgRating = validReviews.reduce((acc, r) => acc + r.rating, 0) / validReviews.length;
+  const rounded = Math.round(avgRating * 2) / 2;
+ 
+  // Fetch product by ID if not found in Redux state
+  useEffect(() => {
+    if (!product && id) {
+      axios
+        .get(`http://localhost:5000/api/products/allProducts`)
+        .then((res) => {
+          const all = res.data.products || [];
+          const found = all.find((p) => p.id === id || p.id === parseInt(id));
+          if (found) setProduct(found);
+        });
+    }
+  }, [product, id]);
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+
+    await dispatch(
+      createReview({
+        userId: user.id,
+        productId: product.id,
+        rating: form.rating,
+        comment: form.comment,
+      })
+    ).unwrap();
+  };
+
+  // fetch reviews
+  useEffect(() => {
+    if (product && product.id) {
+      dispatch(fetchProductReviews(product.id));
+    }
+  }, [product, dispatch]);
 
   if (!product) return <p>Product not found</p>;
 
-    // loading
+  // loading
   if (loading) {
-    return (
-        <Loading />
-    );
+    return <Loading />;
   }
+
+
   return (
     <>
       <div className="max-w-[1000px] mx-auto w-full py-4 flex items-center gap-3 p-3">
@@ -87,16 +138,32 @@ export default function ProductDetail() {
           <h2 className="text-3xl font-medium uppercase mb-2">
             {product.productName}
           </h2>
-          <div className="flex items-center mb-4">
-            <div className="flex gap-1 text-sm text-yellow-400">
-              <FaStar />
-              <FaStar />
-              <FaStar />
-              <FaStar />
-              <FaStar />
-            </div>
-            <div className="text-xs text-gray-500 ml-3">({product.review})</div>
-          </div>
+          {/* average rating section */}
+          {Array.isArray(reviews) &&
+            reviews.filter((r) => typeof r?.rating === "number").length > 0 &&
+            (() => {
+              return (
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="flex gap-0.5 text-yellow-500">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <Star
+                        key={n}
+                        size={18}
+                        fill={n <= Math.floor(rounded) ? "#facc15" : "none"}
+                        stroke="#facc15"
+                        style={{ opacity: n - 0.5 === rounded ? 0.5 : 1 }}
+                      />
+                    ))}
+                  </span>
+                  <span className="text-gray-600 text-xs">
+                    {avgRating.toFixed(1)} / 5
+                  </span>
+                  <span className="text-gray-600 text-sm">
+                    ({validReviews.length} reviews)
+                  </span>
+                </div>
+              );
+            })()}
           <div className="space-y-2">
             <p className="text-gray-800 font-semibold space-x-2">
               <span>Availability: </span>
@@ -130,7 +197,7 @@ export default function ProductDetail() {
               <div className="color-selector">
                 <input type="radio" name="color" id="red" className="hidden" />
                 <label
-                  for="red"
+                  htmlFor="red"
                   className="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
                 ></label>
               </div>
@@ -142,7 +209,7 @@ export default function ProductDetail() {
                   className="hidden"
                 />
                 <label
-                  for="black"
+                  htmlFor="black"
                   className="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
                 ></label>
               </div>
@@ -154,7 +221,7 @@ export default function ProductDetail() {
                   className="hidden"
                 />
                 <label
-                  for="white"
+                  htmlFor="white"
                   className="border border-gray-200 rounded-sm h-6 w-6  cursor-pointer shadow-sm block"
                 ></label>
               </div>
@@ -210,7 +277,8 @@ export default function ProductDetail() {
                         })
                       )
                   : () =>
-                      dispatch(handleAddToWishlist({
+                      dispatch(
+                        handleAddToWishlist({
                           productId: product.id,
                           userId: user.id,
                         })
@@ -218,8 +286,10 @@ export default function ProductDetail() {
               }
               className="border border-gray-300 text-gray-600 px-5 py-2 w-full text-sm rounded flex items-center gap-2 hover:text-pink-500 transition"
             >
-               <Heart className="size-4" />{" "}
-              {wishlistItems.some((cartItem) => cartItem.productId === product.id)
+              <Heart className="size-4" />{" "}
+              {wishlistItems.some(
+                (cartItem) => cartItem.productId === product.id
+              )
                 ? "Remove from wishlist"
                 : "Add to wishlist"}
             </button>
@@ -251,8 +321,99 @@ export default function ProductDetail() {
         </div>
       </div>
 
+      {/* add review Section */}
+
       <div className="p-3 max-w-[1000px] mx-auto w-full pb-16">
-        <h3 className="border-b border-gray-200 font-roboto text-gray-800 pb-3 font-medium">
+        <h1 className="text-lg md:text-xl lg:text-2xl font-semibold pb-4">
+          Add a Review
+        </h1>
+        <form onSubmit={handleReviewSubmit} className="mt-4">
+          <h3 className="text-sm">Add Your Rating*</h3>
+          <label>
+            <span className="inline-flex items-center text-yellow-500 cursor-pointer">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <Star
+                  key={n}
+                  size={25}
+                  fill={n <= form.rating ? "#facc15" : "none"}
+                  stroke="#facc15"
+                  onClick={() => setForm({ ...form, rating: n })}
+                  className={n <= form.rating ? "" : "opacity-40"}
+                  style={{ transition: "opacity 0.2s" }}
+                />
+              ))}
+            </span>
+          </label>
+          <textarea
+            value={form.comment}
+            onChange={(e) => setForm({ ...form, comment: e.target.value })}
+            placeholder="Write your review (optional)"
+            className="inputs"
+          />
+          <button
+            type="submit"
+            className="mt-2 px-4 py-2 bg-pink-500 hover:bg-pink-600 transition-colors duration-200 text-white text-sm rounded-md"
+          >
+            Submit Review
+          </button>
+        </form>
+
+        {/* reviews */}
+
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-3">Recent Reviews <ChevronDown onClick={() => setIsModalOpen(!isModalOpen)} className="inline-block hover:text-gray-500 size-6"/></h3>
+          {(!Array.isArray(reviews) ||
+            reviews.filter((r) => typeof r?.rating === "number").length === 0) && (
+            <p className="text-sm text-gray-500">No reviews yet.</p>
+          )}
+          {Array.isArray(reviews) &&
+            reviews
+              .filter((r) => typeof r?.rating === "number").reverse()
+              .map((r) => (
+                <div
+                  key={r?.id}
+                  className={isModalOpen ? "flex items-start gap-3 mb-6 pb-4 border-b border-gray-200 last:border-b-0 last:mb-0 last:pb-0" : "hidden"}
+                >
+                  <img
+                    src={r?.user?.profileImage}
+                    alt="profile"
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-gray-800 text-sm">
+                        {r?.user?.fullName}
+                      </span>
+                      <span className="flex gap-0.5 text-yellow-500">
+                        {Array.from({ length: r.rating }).map((_, i) => (
+                          <Star
+                            key={i}
+                            size={16}
+                            fill="#facc15"
+                            stroke="#facc15"
+                          />
+                        ))}
+                      </span>
+                      <span className="text-gray-500 text-xs ml-auto">
+                        {new Date(r.createdAt).toLocaleTimeString("en-ET", {
+                          hour: "numeric",
+                          minute: "numeric",
+                          second: "numeric",
+                        })}
+                        <span className="ml-2">
+                        {new Date(r.createdAt).toLocaleDateString()}
+                        </span>
+                      </span>
+                    </div>
+                    {r?.comment && (
+                      <p className="text-gray-500 text-xs">{r.comment}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+        </div>
+
+        <h3 className="border-b border-gray-200 font-roboto text-gray-800 pb-3 font-medium mt-6">
           Product details
         </h3>
         <div className="w-full pt-6">
@@ -261,26 +422,28 @@ export default function ProductDetail() {
           </div>
 
           <table className="table-auto border-collapse w-full text-left text-gray-600 text-sm mt-6">
-            <tr>
-              <th className="py-2 px-4 border border-gray-300 w-40 font-medium">
-                Color
-              </th>
-              <th className="py-2 px-4 border border-gray-300 ">
-                Blank, Brown, Red
-              </th>
-            </tr>
-            <tr>
-              <th className="py-2 px-4 border border-gray-300 w-40 font-medium">
-                Material
-              </th>
-              <th className="py-2 px-4 border border-gray-300 ">Latex</th>
-            </tr>
-            <tr>
-              <th className="py-2 px-4 border border-gray-300 w-40 font-medium">
-                Weight
-              </th>
-              <th className="py-2 px-4 border border-gray-300 ">55kg</th>
-            </tr>
+            <tbody>
+              <tr>
+                <th className="py-2 px-4 border border-gray-300 w-40 font-medium">
+                  Color
+                </th>
+                <th className="py-2 px-4 border border-gray-300 ">
+                  Blank, Brown, Red
+                </th>
+              </tr>
+              <tr>
+                <th className="py-2 px-4 border border-gray-300 w-40 font-medium">
+                  Material
+                </th>
+                <th className="py-2 px-4 border border-gray-300 ">Latex</th>
+              </tr>
+              <tr>
+                <th className="py-2 px-4 border border-gray-300 w-40 font-medium">
+                  Weight
+                </th>
+                <th className="py-2 px-4 border border-gray-300 ">55kg</th>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -289,9 +452,7 @@ export default function ProductDetail() {
         <h2 className="text-2xl font-medium text-gray-800 uppercase mb-6">
           Related products
         </h2>
-        <div>
-          {product?.id && <RelatedProducts productId={product.id} />}
-        </div>
+        <div>{product?.id && <RelatedProducts productId={product.id} />}</div>
       </div>
     </>
   );
