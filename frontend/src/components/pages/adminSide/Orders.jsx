@@ -18,14 +18,13 @@ export default function Orders() {
   if(loading) {
     return <Loading />
   }
+  
+  const orderList = [...orders].reverse().slice(0, 10);
 
-  if(error) {
-    toast.error(error)
-  }
 
   return (
     <div className='mt-8'>
-      <h2 className="text-lg md:text-xl font-semibold mb-4"><Box className="inline-block bg-orange-100 text-orange-400 rounded-md p-2 size-10" /> All Orders</h2>
+      <h2 className="text-lg md:text-xl font-semibold mb-4"><Box className="inline-block bg-orange-100 text-orange-400 rounded-md p-2 size-10" /> Latest Orders</h2>
       <div className="overflow-x-auto border-gray-100 border-1 shadow rounded-lg bg-white">
         <table className="w-full">
           <thead className="h-10 px-4">
@@ -39,18 +38,22 @@ export default function Orders() {
             </tr>
           </thead>
           <tbody>
-            {orders.length > 0 ? (
-              orders.map(order => (
+            {orderList.length > 0 ? (
+              orderList.map(order => (
                 <tr key={order.id} className="text-left capitalize font-medium">
                   <td className="px-4 py-2">
                     <img src={order.orderItems?.[0]?.product?.image} alt={order.orderItems?.[0]?.product?.productName} className='w-8 h-8 object-cover rounded-sm'/>
                   </td>
                   <td className="px-4 py-2">#{order.id}</td>
                   <td className="px-4 py-2">{order.user.fullName}</td>
-                  <td className="px-4 py-2">{formatCurrency(order.total, "ETB", "en-ET")}</td>
-                  <td className={`px-4 rounded-2xl ${order.status === "PAID" ? "text-green-500 bg-green-100 " : "text-red-500 "}`}>{order.status}</td>
-                  <td className="px-4 py-2">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                  <td className="px-4 py-2 text-green-600">{formatCurrency(order.total, "ETB", "en-ET")}</td>
+                  <td className={`px-4 rounded-2xl ${order.status === "paid" ? "text-green-500" : "text-red-500 "}`}>{order.status}</td>
+                  <td className="px-4 py-2 text-gray-600">
+                    {new Date(order.createdAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric"
+                    })}
                   </td>
                 </tr>
               ))
