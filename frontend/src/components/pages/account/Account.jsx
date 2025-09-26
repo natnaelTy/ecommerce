@@ -12,8 +12,8 @@ import {
   Settings,
   User,
   House,
-  ChevronRight ,
-  LogOut 
+  ChevronRight,
+  LogOut,
 } from "lucide-react";
 import WishList from "./WishList";
 import EditProfile from "./EditProfile";
@@ -29,28 +29,30 @@ export default function Account() {
 
   return (
     <>
-      <div className="max-w-[1000px] w-full mx-auto  py-4 flex items-center gap-3">
+      <div className="max-w-[1000px] w-full mx-auto py-4 flex items-center gap-3 px-2 sm:px-0">
         <Link to="/" className="text-orange-400 hover:text-orange-300 text-sm">
-          <House/>
+          <House />
         </Link>
         <span className="text-sm text-gray-400">
-          <ChevronRight  />
+          <ChevronRight />
         </span>
         <p className="text-gray-600 font-medium">Account</p>
       </div>
 
-      <div className="grid grid-cols-12 items-start gap-6 pt-4 pb-16 max-w-[1000px] w-full mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-12 items-start gap-6 pt-4 pb-16 max-w-[1000px] w-full mx-auto px-2 sm:px-0">
         {/* Sidebar */}
-        <div className="col-span-3">
-          <div className="px-4 py-3 shadow flex items-center gap-4">
+        <div className="col-span-12 md:col-span-3 mb-6 md:mb-0">
+          <div className="px-4 py-3 shadow flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
             <div className="flex-shrink-0">
               <img
-                src={user?.image ? user?.image : "/images/pfp.jpg"}
+                src={
+                  user?.profileImage ? user?.profileImage : "/images/pfp.jpg"
+                }
                 alt="profile"
-                className="rounded-full w-14 h-14 border border-gray-200 p-1 object-cover"
+                className="rounded-full w-15 h-15 border border-gray-200 p-1 object-cover"
               />
             </div>
-            <div className="flex-grow">
+            <div className="flex-grow text-center sm:text-left">
               <p className="text-gray-600">Hello,</p>
               <h4 className="text-gray-800 font-medium">{user?.fullName}</h4>
             </div>
@@ -166,7 +168,7 @@ export default function Account() {
                 className="relative hover:text-pink-500 block font-medium capitalize transition"
               >
                 <span className="absolute -left-8 top-0 text-base">
-                 <LogOut />
+                  <LogOut />
                 </span>
                 Logout
               </Link>
@@ -175,23 +177,27 @@ export default function Account() {
         </div>
 
         {/* Main Content */}
-        <div className="col-span-9 rounded-md border-1 border-gray-200 shadow-xs px-6 pt-5 pb-7">
+        <div className="col-span-12 md:col-span-9 rounded-md border-1 border-gray-200 shadow-xs px-2 sm:px-6 pt-5 pb-7">
           {activeTab === "profile" && (
             <>
               <h4 className="text-lg font-medium capitalize mb-4">
                 Personal Info
               </h4>
               <div className="space-y-4">
-                <div className="flex items-center gap-6">
-                  <div className="w-32 h-32 rounded-full overflow-hidden border border-gray-200">
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border border-gray-200">
                     <img
-                      src={user?.image ? user?.image : "/images/pfp.jpg"}
+                      src={
+                        user?.profileImage
+                          ? user?.profileImage
+                          : "/images/pfp.jpg"
+                      }
                       alt={user?.fullName}
                       className="w-full h-full object-cover"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 text-center sm:text-left">
                     <button
                       onClick={() => setActiveTab("edit-profile")}
                       className="text-sm px-3 py-1.5 border-1 border-gray-300 rounded-md hover:bg-black transition hover:text-white hover:border-black"
