@@ -1,14 +1,14 @@
 import express from "express";
-import  router  from "./router/auth-router.js";
 import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import passport from "passport";
-import uploadRoutes from "./router/uploadRoutes.js";
+import productRoute from "./router/product-route.js";
 import prisma  from "./prisma/prismaClient.js";
 import notificationRouter from "./router/notificationRoutes.js";
 import adminRouter from "./router/admin-route.js";
 import paymentRouter from "./router/payment-route.js";
+import userRouter from "./router/auth-router.js";
 
 
 dotenv.config();
@@ -33,9 +33,9 @@ prisma
     console.error("❌ Database connection failed:", err.message);
   });
 // user routes
-app.use("/api/auth", router);
+app.use("/api/auth", userRouter);
 // product routes
-app.use("/api/products", uploadRoutes);
+app.use("/api/products", productRoute);
 // notification routes
 app.use("/api/auth/notifications", notificationRouter);
 // admin routes
