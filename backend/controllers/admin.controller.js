@@ -1,5 +1,5 @@
 import prisma from "../prisma/prismaClient.js";
-import cloudinary from "./cloudinary folder/cloudinary.js";
+import { uploadProfilePicture, uploadProductImage } from "../utils/cloudinary.js";
 
 
 // Get all users
@@ -28,17 +28,15 @@ export const addProduct = async (req, res) => {
   const imagePath = req.file && req.file.path;
 
   try {
-    const result = await cloudinary.uploader.upload(imagePath, {
-      folder: "ecommerce-products",
-    });
-
+   
+    const result = await uploadProductImage(imagePath);
     const newProduct = await prisma.products.create({
       data: {
         productName,
         description,
         price: Number(price),
         category,
-        image: result.secure_url,
+        image: result,
         color,
         material,
         weight: Number(weight),
