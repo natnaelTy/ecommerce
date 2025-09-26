@@ -36,7 +36,7 @@ export default function GetProfile ({userId}) {
       <div className="p-3 flex items-center gap-3 cursor-pointer">
         <div className="w-10 h-10 rounded-full overflow-hidden">
           <img
-            src={user?.profilePicture ? user?.profilePicture : "/images/pfp.jpg"}
+            src={user?.profileImage ? user?.profileImage : "/images/pfp.jpg"}
             alt="pp"
             className="w-full h-full object-cover"
           />
