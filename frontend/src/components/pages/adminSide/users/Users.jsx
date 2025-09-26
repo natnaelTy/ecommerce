@@ -34,9 +34,9 @@ export default function Users() {
                 <tr key={user.id} className="text-left capitalize font-medium">
                   <td className="px-4 py-2">
                     <img
-                      src={user.profilePicture}
+                      src={user.profileImage}
                       alt={user.fullName}
-                      className="w-8 h-8 object-cover rounded-sm"
+                      className="w-10 h-10 object-cover border border-gray-300  rounded-full"
                     />
                   </td>
                   <td className="px-4 py-2">#{user.id}</td>
