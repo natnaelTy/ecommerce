@@ -14,7 +14,7 @@ import Account from "./components/pages/account/Account";
 import WishList from "./components/pages/account/WishList";
 import Cart from "./components/pages/account/Cart";
 import CheckOut from "./components/pages/account/CheckOut";
-import Orders from "./components/pages/account/Orders";
+import UsersOrders from "./components/pages/account/UsersOrders";
 import Notifications from "./components/pages/account/Notifications";
 import About from "./components/pages/about/About";
 import AdminRoute from "./Layout/AdminRoute";
@@ -43,7 +43,7 @@ function App() {
           <Route path="/wishlist" element={<WishList />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
-          <Route path="/orders" element={<Orders />} />
+          <Route path="/orders" element={<UsersOrders />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
         </Route>
