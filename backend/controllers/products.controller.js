@@ -1,6 +1,9 @@
 import prisma from "../prisma/prismaClient.js";
 import dotenv from "dotenv";
-import cloudinary from "./cloudinary folder/cloudinary.js";
+import { uploadProductImage } from "../utils/cloudinary.js";
+import jwt from "jsonwebtoken";
+
+
 
 dotenv.config();
 
@@ -71,11 +74,8 @@ export const postedProducts = async (req, res) => {
       return res.status(400).send("All fields are required");
     }
 
-    const result = await cloudinary.uploader.upload(image, {
-      folder: "ecommerce-products",
-    });
-
-    const imageUrl = result.secure_url;
+    // Upload image to Cloudinary
+    const imageUrl = await uploadImage(image);
 
     const newProduct = await prisma.products.create({
       data: {
@@ -278,12 +278,41 @@ export const addNewArrival = async (req, res) => {
   }
 };
 
+// create review
+export const createReview = async (req, res) => {
+  const { productId, rating, comment } = req.body;
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized: No user token provided" });
+  }
+  // verify the token
+    let userId;
+   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+   userId = decoded.id;
+   const review = await prisma.review.create({
+    data: { productId, userId, rating, comment }
+  });
+  res.status(201).json(review);
+};
+
+// get reviews for a product
+export const getProductReviews = async (req, res) => {
+  const { productId } = req.params;
+  const reviews = await prisma.review.findMany({
+    where: { productId: parseInt(productId) },
+    include: { user: true }
+  });
+  res.json(reviews);
+};
+
 // Get new arrivals
 export const newArrival = async (_, res) => {
   try {
     const newArrivals = await prisma.products.findMany({
       include: {
         newarrival: true,
+        reviews: true,
       },
     });
 
