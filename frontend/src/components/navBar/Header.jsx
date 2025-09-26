@@ -35,7 +35,7 @@ export default function Header() {
           to={"/"}
           className="text-base lg:text-xl font-medium hidden md:block"
         >
-          <span className="text-amber-500 ">Messay </span>Fur.
+          <span className="text-amber-500 ">Mesay </span>Furniture.
         </Link>
 
         <Menu className="block md:hidden" />
