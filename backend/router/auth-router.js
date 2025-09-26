@@ -12,31 +12,36 @@ import {
   updateUserProfile
 } from "../controllers/auth.controller.js";
 import passport from "passport";
+import multer from "multer";
 
 
-const router = express.Router();
-router.use(passport.initialize());
+
+const userRouter = express.Router();
+userRouter.use(passport.initialize());
+
+// multer for file uploads 
+const upload = multer({ dest: "uploads/" });
 
 
 // Routes for authentication
-router.get("/google", googleLogin);
+userRouter.get("/google", googleLogin);
 
-router.get("/google/login", googleCallback);
+userRouter.get("/google/login", googleCallback);
 
-router.post("/signup", signup);
+userRouter.post("/signup", signup);
 
-router.post("/login", login);
+userRouter.post("/login", login);
 
-router.post("/verifyEmail", verifyEmail);
+userRouter.post("/verifyEmail", verifyEmail);
 
-router.post("/forgotPassword", forgotPassword);
+userRouter.post("/forgotPassword", forgotPassword);
 
-router.post("/resetPassword/:token", resetPassword);
+userRouter.post("/resetPassword/:token", resetPassword);
 
-router.post("/logout", logout);
+userRouter.post("/logout", logout);
 
-router.get("/me", getMe);
+userRouter.get("/me", getMe);
 
-router.put("/me", updateUserProfile);
+userRouter.put("/update-profile", upload.single("image"), updateUserProfile);
 
-export default router;
+export default userRouter;
