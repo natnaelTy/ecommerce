@@ -4,35 +4,47 @@ import { fetchRecommendedProducts } from "../../store/product/productSlice";
 import { formatCurrency } from "../../utils/formatCurrency";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoIosHeartEmpty } from "react-icons/io";
-import { FaStar } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import {
   addToCart,
   handleAddToWishlist,
+  fetchAverageRating,
 } from "../../store/product/productSlice";
+import Loading from "../../utils/loading/Loading";
+import { Star } from "lucide-react";
 
 
 
 export default function RecommendedForYou() {
   const dispatch = useDispatch();
-  const { recommended, loading, error } = useSelector((state) => state.product);
+  const { recommended, loading, error, averageRatings } = useSelector(
+    (state) => state.product
+  );
   const { user } = useSelector((state) => state.user);
   const userId = user?.id;
 
   useEffect(() => {
-    if (userId) {
-      dispatch(fetchRecommendedProducts(userId));
-    }
+   
+    dispatch(fetchRecommendedProducts(userId));
   }, [userId, dispatch]);
 
-  console.log("Recommended products:", recommended);
+  useEffect(() => {
+    if (recommended && recommended.length > 0) {
+      const productIds = recommended.map((p) => p.id);
+      dispatch(fetchAverageRating(productIds));
+    }
+  }, [recommended, dispatch]);
 
-  if (loading) return <p>Loading recommendations...</p>;
+  console.log("recommended", recommended);
+
+  if (loading) return <Loading />;
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="pb-16 max-w-[1000px] w-full mx-auto text-left p-3">
-      <h2 className="text-2xl font-medium text-gray-800 uppercase mb-6">Recommended for you</h2>
+      <h2 className="text-2xl font-medium text-gray-800 uppercase mb-6">
+        Recommended for you
+      </h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {recommended && recommended.length > 0 ? (
           recommended.map((item, _) => (
@@ -74,17 +86,32 @@ export default function RecommendedForYou() {
                     55,900 birr
                   </p>
                 </div>
-                <div className="flex items-center">
-                  <div className="flex gap-1 text-xs text-yellow-400">
-                    <FaStar />
-                    <FaStar />
-                    <FaStar />
-                    <FaStar />
-                    <FaStar />
-                  </div>
-                  <div className="text-xs text-gray-500 ml-3">
-                    ({item?.review})
-                  </div>
+                <div className="flex items-center gap-1 mt-2">
+                  {averageRatings[item.id] > 0 ? (
+                    <>
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <Star
+                          key={n}
+                          size={16}
+                          fill={
+                            n <= averageRatings[item.id] ? "#facc15" : "none"
+                          }
+                          stroke="#facc15"
+                          style={{
+                            opacity:
+                              n - 0.5 === averageRatings[item.id] ? 0.5 : 1,
+                          }}
+                        />
+                      ))}
+                      <span className="text-xs text-gray-600 ml-1">
+                        {averageRatings[item.id].toFixed(1)} / 5
+                      </span>
+                    </>
+                  ) : (
+                    <span className="text-xs text-gray-400 ml-1">
+                      No ratings yet
+                    </span>
+                  )}
                 </div>
               </div>
               {/* add to cart button */}
