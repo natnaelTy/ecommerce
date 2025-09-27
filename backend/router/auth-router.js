@@ -9,7 +9,8 @@ import {
   verifyEmail,
   forgotPassword,
   resetPassword,
-  updateUserProfile
+  updateUserProfile,
+  changePassword
 } from "../controllers/auth.controller.js";
 import passport from "passport";
 import multer from "multer";
@@ -43,5 +44,7 @@ userRouter.post("/logout", logout);
 userRouter.get("/me", getMe);
 
 userRouter.put("/update-profile", upload.single("image"), updateUserProfile);
+
+userRouter.put("/change-password", changePassword);
 
 export default userRouter;
