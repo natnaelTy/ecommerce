@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
 import { fetchUser } from "../../../store/user/userSlice";
@@ -17,16 +16,27 @@ import {
 } from "lucide-react";
 import WishList from "./WishList";
 import EditProfile from "./EditProfile";
+import { logoutUser } from "../../../store/user/userSlice";
+import toast from "react-hot-toast";
+import { useNavigate, Link } from "react-router-dom";
+import ChangePassword from "./ChangePassword";
+
 
 export default function Account() {
   const { user } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
     dispatch(fetchUser());
   }, [dispatch]);
 
+  const handleLogoutUser = () => {
+    dispatch(logoutUser());
+    toast.success("Logged out successfully");
+    navigate("/login");
+  }
   return (
     <>
       <div className="max-w-[1000px] w-full mx-auto py-4 flex items-center gap-3 px-2 sm:px-0">
@@ -143,7 +153,7 @@ export default function Account() {
                 to="#"
                 className="relative hover:text-pink-500 block capitalize transition"
               >
-                Tele Birr
+                <img src="/images/chapapay.png" alt="chapapay" className="w-20 h-9 object-cover" />
               </Link>
             </div>
 
@@ -162,17 +172,10 @@ export default function Account() {
               </Link>
             </div>
 
-            <div className="space-y-1 pl-8 pt-4">
-              <Link
-                to="#"
-                className="relative hover:text-pink-500 block font-medium capitalize transition"
-              >
-                <span className="absolute -left-8 top-0 text-base">
-                  <LogOut />
-                </span>
+            <button onClick={() => handleLogoutUser()} className="px-1 py-2 hover:text-pink-500 w-full text-left">
+                  <LogOut className="inline-block mr-2"/>
                 Logout
-              </Link>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -281,49 +284,7 @@ export default function Account() {
 
           {activeTab === "password" && (
             <>
-              <h4 className="text-lg font-medium capitalize mb-4">
-                Change Password
-              </h4>
-              {/* Change password form goes here */}
-              <div>
-                <label htmlFor="currentPassword">{user?.password}</label>
-                <input
-                  type="password"
-                  name="currentPassword"
-                  id="currentPassword"
-                  readOnly
-                  className="border-1 border-gray-200 rounded-md px-4 py-2"
-                  placeholder={user?.password}
-                />
-              </div>
-              <div>
-                <label htmlFor="newPassword">New Password</label>
-                <br />
-                <input
-                  type="password"
-                  name="newPassword"
-                  id="newPassword"
-                  className="border-1 border-gray-200 rounded-md px-4 py-2"
-                />
-              </div>
-              <div>
-                <label htmlFor="confirmPassword">Confirm New Password</label>
-                <br />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  id="confirmPassword"
-                  className="border-1 border-gray-200 rounded-md px-4 py-2"
-                />
-              </div>
-              <div className="mt-4">
-                <button
-                  type="submit"
-                  className="py-3 px-4 text-center text-white bg-pink-500 border border-pink-500 rounded-md hover:bg-transparent hover:text-pink-500 transition font-medium"
-                >
-                  Change Password
-                </button>
-              </div>
+              <ChangePassword />
             </>
           )}
           {activeTab === "wishlist" && (
