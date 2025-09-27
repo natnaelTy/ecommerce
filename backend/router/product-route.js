@@ -17,6 +17,7 @@ import {
   validateCoupon,
   createReview,
   getProductReviews,
+  getAverageRating
 } from "../controllers/products.controller.js";
 import multer from "multer";
 import express from "express";
@@ -60,6 +61,9 @@ productRoute.post("/reviews", createReview);
 
 // get reviews for a product
 productRoute.get("/:productId/reviews", getProductReviews);
+
+// get average rating for a product
+productRoute.post("/reviews/averages", getAverageRating);
 
 // get related products based on category
 productRoute.get("/:productId/related", getRelatedProducts);
