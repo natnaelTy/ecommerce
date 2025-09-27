@@ -6,9 +6,8 @@ import { IoSearchOutline } from "react-icons/io5";
 import { IoIosHeartEmpty } from "react-icons/io";
 import { BiSolidGrid } from "react-icons/bi";
 import { BiGridVertical } from "react-icons/bi";
-import { FaStar } from "react-icons/fa6";
+import { Star } from "lucide-react";
 import SideBar from "./SideBar";
-import { PuffLoader } from "react-spinners";
 import { TfiMenuAlt } from "react-icons/tfi";
 import {
   addToCart,
@@ -18,8 +17,7 @@ import {
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { useLocation } from "react-router-dom";
 import Loading from "../../../utils/loading/Loading";
-
-
+import { fetchAverageRating } from "../../../store/product/productSlice";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -34,6 +32,7 @@ export default function Shop() {
     loading,
     error,
     wishlistItems,
+    averageRatings,
     cart,
   } = useSelector((state) => state.product);
   const { user } = useSelector((state) => state.user);
@@ -93,9 +92,15 @@ export default function Shop() {
     setFilteredAndSorted(sorted);
   }, [productItems, selectedSorting, selectedCategory]);
 
+  useEffect(() => {
+    if (productItems && productItems.length > 0) {
+      const productIds = productItems.map((p) => p.id);
+      dispatch(fetchAverageRating(productIds));
+    }
+  }, [productItems, dispatch]);
 
-  if(loading) {
-    return <Loading />
+  if (loading) {
+    return <Loading />;
   }
 
   return (
@@ -229,17 +234,36 @@ export default function Shop() {
                           75,900 birr
                         </p>
                       </div>
-                      <div className="flex items-center">
-                        <div className="flex gap-1 text-xs text-yellow-400">
-                          <FaStar />
-                          <FaStar />
-                          <FaStar />
-                          <FaStar />
-                          <FaStar />
-                        </div>
-                        <div className="text-xs text-gray-500 ml-3">
-                          ({item.review})
-                        </div>
+                      <div className="flex items-center gap-1 mt-2">
+                        {averageRatings[item.id] > 0 ? (
+                          <>
+                            {[1, 2, 3, 4, 5].map((n) => (
+                              <Star
+                                key={n}
+                                size={16}
+                                fill={
+                                  n <= averageRatings[item.id]
+                                    ? "#facc15"
+                                    : "none"
+                                }
+                                stroke="#facc15"
+                                style={{
+                                  opacity:
+                                    n - 0.5 === averageRatings[item.id]
+                                      ? 0.5
+                                      : 1,
+                                }}
+                              />
+                            ))}
+                            <span className="text-xs text-gray-600 ml-1">
+                              {averageRatings[item.id].toFixed(1)} / 5
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-gray-400 ml-1">
+                            No ratings yet
+                          </span>
+                        )}
                       </div>
                     </div>
                     {/* add to cart button */}
@@ -296,10 +320,10 @@ export default function Shop() {
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 border-1 border-gray-300 rounded ${
-                i + 1 === currentPage
-                  ? "bg-orange-400 text-white border-1 border-orange-400"
-                  : "border-1 border-orange-400"
+              className={`px-3 py-1 rounded 
+              ${i + 1 === currentPage
+                ? "bg-orange-400 text-white border-1 border-orange-400"
+                : "border-1 border-orange-400"
               }`}
             >
               {currentPage}
@@ -307,7 +331,7 @@ export default function Shop() {
           ))}
 
           <button
-            disabled={currentPage === totalPages}
+            disabled={currentPage === totalPages || productItems.length === 0}
             onClick={() => setCurrentPage(currentPage + 1)}
             className="px-3 py-1 border-1 border-gray-300 bg-black hover:bg-gray-700 text-white rounded-md disabled:opacity-50"
           >
