@@ -322,6 +322,49 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
+// change password
+export const changePassword = async (req, res) => {
+  const token = req.cookies.token;
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ success: false, message: "Not authenticated" });
+  }
+  // decode token to get user id
+  let userId;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    userId = decoded.id;
+  } catch (err) {
+    return res.status(401).json({ success: false, message: "Invalid token" });
+  }
+
+  // change password
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    console.log(currentPassword, newPassword)
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid current password" });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+    res.status(200).json({ success: true, message: "Password changed successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 // Logout
 export const logout = (_, res) => {
   res.clearCookie("token");
