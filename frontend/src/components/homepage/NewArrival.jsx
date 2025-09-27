@@ -1,23 +1,23 @@
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { fetchNewArrivalProducts } from "../../store/product/productSlice";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { IoSearchOutline } from "react-icons/io5";
 import { IoIosHeartEmpty } from "react-icons/io";
-import { FaStar } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../utils/formatCurrency";
 import {
   addToCart,
   handleAddToWishlist,
+  fetchAverageRating,
+  fetchNewArrivalProducts,
 } from "../../store/product/productSlice";
-import { fetchProductReviews } from "../../store/product/productSlice";
-import { Star, ChevronDown } from "lucide-react";
+import { Star } from "lucide-react";
 import Loading from "../../utils/loading/Loading";
+
+
 
 export default function NewArrival() {
   const dispatch = useDispatch();
-  const { newArrivalProducts, loading, error, reviews } = useSelector(
+  const { newArrivalProducts, loading, averageRatings } = useSelector(
     (state) => state.product
   );
   const { user } = useSelector((state) => state.user);
@@ -27,19 +27,15 @@ export default function NewArrival() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (newArrivalProducts && newArrivalProducts.id) {
-      dispatch(fetchProductReviews(newArrivalProducts.id));
+    if (newArrivalProducts && newArrivalProducts.length > 0) {
+      const productIds = newArrivalProducts.map((p) => p.id);
+      dispatch(fetchAverageRating(productIds));
     }
   }, [newArrivalProducts, dispatch]);
 
   const getOnly4Products = newArrivalProducts.slice(-4).reverse();
-  // calculate average rating
-  const validReviews = reviews.filter((r) => typeof r?.rating === "number");
-  const avgRating =
-    validReviews.reduce((acc, r) => acc + r.rating, 0) / validReviews.length;
-  const rounded = Math.round(avgRating * 2) / 2;
 
-  console.log(reviews);
+  
   if (loading) {
     return <Loading />;
   }
@@ -93,20 +89,20 @@ export default function NewArrival() {
                   </div>
                   <div className="flex items-center gap-1 mt-2">
                     {
-                    avgRating > 0 ? (
+                    averageRatings[item.id] > 0 ? (
                       <>
                         {[1, 2, 3, 4, 5].map((n) => (
                           <Star
                             key={n}
                             size={16}
-                            fill={n <= Math.floor(rounded) ? "#facc15" : "none"}
+                            fill={n <= averageRatings[item.id] ? "#facc15" : "none"}
                             stroke="#facc15"
-                            style={{ opacity: n - 0.5 === rounded ? 0.5 : 1 }}
+                            style={{ opacity: n - 0.5 === averageRatings[item.id] ? 0.5 : 1 }}
                           />
                         ))}
                         <span className="text-xs text-gray-600 ml-1">
                           {
-                          avgRating.toFixed(1)} / 5
+                          averageRatings[item.id].toFixed(1)} / 5
                         </span>
                       </>
                     ) : (
