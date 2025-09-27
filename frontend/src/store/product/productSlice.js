@@ -51,6 +51,21 @@ export const fetchProductReviews = createAsyncThunk(
   }
 );
 
+// get average rating for a product
+export const fetchAverageRating = createAsyncThunk(
+  "product/fetchAverageRating",
+  async (productIds, { rejectWithValue }) => {
+    try {
+      const response = await productApi.post("/reviews/averages", { productIds });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch average rating"
+      );
+    }
+  }
+);
+
 // fetch new arrival products
 export const fetchNewArrivalProducts = createAsyncThunk(
   "products/fetchNewArrivalProducts",
@@ -275,6 +290,7 @@ const productSlice = createSlice({
     reviews: [],
     rating: 0,
     comment: "",
+    averageRatings: 0,
     currentOrder: null,
     coupon: null,
     loading: false,
@@ -329,6 +345,16 @@ const productSlice = createSlice({
       .addCase(fetchProductReviews.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      // fetch average rating for a product
+      .addCase(fetchAverageRating.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAverageRating.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.averageRatings = action.payload; 
       })
       // new arrival products
       .addCase(fetchNewArrivalProducts.pending, (state, _) => {
