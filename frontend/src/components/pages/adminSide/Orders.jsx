@@ -51,7 +51,7 @@ export default function Orders() {
                   <td className="px-4 py-2 text-gray-600">
                     {new Date(order.createdAt).toLocaleDateString("en-US", {
                         year: "numeric",
-                        month: "long",
+                        month: "short",
                         day: "numeric"
                     })}
                   </td>
