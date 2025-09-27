@@ -306,13 +306,25 @@ export const getProductReviews = async (req, res) => {
   res.json(reviews);
 };
 
+export const getAverageRating = async (req, res) => {
+  const { productIds } = req.body; // array of IDs
+  const averages = {};
+  for (const id of productIds) {
+    const reviews = await prisma.review.findMany({ where: { productId: id } });
+    averages[id] =
+      reviews.length > 0
+        ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length
+        : 0;
+  }
+  res.status(200).json(averages);
+};
+
 // Get new arrivals
 export const newArrival = async (_, res) => {
   try {
     const newArrivals = await prisma.products.findMany({
       include: {
         newarrival: true,
-        reviews: true,
       },
     });
 
@@ -366,51 +378,61 @@ export const getRelatedProducts = async (req, res) => {
   }
 };
 
-// get recomended for user
+// recommended products
 export const getRecommendedProducts = async (req, res) => {
   const { userId } = req.params;
 
   try {
-    // get last 4 purchased products by the user
-    const userOrders = await prisma.order.findMany({
-      where: { userId: Number(userId) },
-      include: { orderItems: true },
-      take: 4,
-    });
-
-    let productId = [];
-    userOrders.forEach((order) => {
-      order.orderItems.forEach((item) => {
-        productId.push(item.productId);
-      });
-    });
-
-    //  recommend based on categories of purchased products
     let recommended;
-    if (productId.length > 0) {
+
+    const parsedUserId = Number(userId);
+
+   // for guests user
+    if (!userId || isNaN(parsedUserId)) {
+     
       recommended = await prisma.products.findMany({
-        where: {
-          category: {
-            in: await prisma.products
-              .findMany({
-                where: { id: { in: productId } },
-                select: { category: true },
-              })
-              .then((cats) => cats.map((c) => c.category)),
-          },
-          NOT: { id: { in: productId } },
-        },
-        take: 6,
+        take: 8,
       });
     } else {
-      // If no history, recommend popular products
-      recommended = await prisma.products.findMany({
+      // get last 8 purchased products by the user
+      const userOrders = await prisma.order.findMany({
+        where: { userId: parsedUserId },
         include: { orderItems: true },
-        take: 4,
+        take: 8,
       });
+
+      let productId = [];
+      userOrders.forEach((order) => {
+        order.orderItems.forEach((item) => {
+          productId.push(item.productId);
+        });
+      });
+
+      if (productId.length > 0) {
+        // recommend based on categories
+        recommended = await prisma.products.findMany({
+          where: {
+            category: {
+              in: await prisma.products
+                .findMany({
+                  where: { id: { in: productId } },
+                  select: { category: true },
+                })
+                .then((cats) => cats.map((c) => c.category)),
+            },
+            NOT: { id: { in: productId } },
+          },
+          take: 8,
+        });
+      } else {
+        // if no history just take 8 products
+        recommended = await prisma.products.findMany({
+          take: 8,
+        });
+      }
     }
 
-    res.status(200).json({ message: "Recommended products fetched", recommendedProducts: recommended });
+    res.status(200).json({ recommendedProducts: recommended });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch recommended products" });
