@@ -1,7 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Star } from "lucide-react";
-import { House, ChevronRight, ShoppingCart, Heart, ChevronUp, ChevronDown } from "lucide-react";
+import {
+  House,
+  ChevronRight,
+  ShoppingCart,
+  Heart,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { FaFacebook } from "react-icons/fa";
@@ -46,10 +53,12 @@ export default function ProductDetail() {
     comment: "",
   });
   const validReviews = reviews.filter((r) => typeof r?.rating === "number");
-  const avgRating = validReviews.reduce((acc, r) => acc + r.rating, 0) / validReviews.length;
+  const avgRating =
+    validReviews.reduce((acc, r) => acc + r.rating, 0) / validReviews.length;
   const rounded = Math.round(avgRating * 2) / 2;
- 
-  // Fetch product by ID if not found in Redux state
+
+  console.log(reviews);
+  // fetch product by ID if not found in Redux state
   useEffect(() => {
     if (!product && id) {
       axios
@@ -88,7 +97,6 @@ export default function ProductDetail() {
   if (loading) {
     return <Loading />;
   }
-
 
   return (
     <>
@@ -268,7 +276,9 @@ export default function ProductDetail() {
             </button>
             <button
               onClick={
-                cart.some((cartItem) => cartItem.productId === product.id)
+                wishlistItems?.some(
+                  (cartItem) => cartItem.productId === product.id
+                )
                   ? () =>
                       dispatch(
                         removeFromWishlist({
@@ -280,7 +290,7 @@ export default function ProductDetail() {
                       dispatch(
                         handleAddToWishlist({
                           productId: product.id,
-                          userId: user.id,
+                          userId: user?.id,
                         })
                       )
               }
@@ -361,18 +371,28 @@ export default function ProductDetail() {
         {/* reviews */}
 
         <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-3">Recent Reviews <ChevronDown onClick={() => setIsModalOpen(!isModalOpen)} className="inline-block hover:text-gray-500 size-6"/></h3>
+          <h3 className="text-lg font-semibold mb-3">
+            Recent Reviews{" "}
+            <ChevronDown
+              onClick={() => setIsModalOpen(!isModalOpen)}
+              className="inline-block hover:text-gray-500 size-6"
+            />
+          </h3>
           {(!Array.isArray(reviews) ||
-            reviews.filter((r) => typeof r?.rating === "number").length === 0) && (
-            <p className="text-sm text-gray-500">No reviews yet.</p>
-          )}
+            reviews.filter((r) => typeof r?.rating === "number").length ===
+              0) && <p className="text-sm text-gray-500">No reviews yet.</p>}
           {Array.isArray(reviews) &&
             reviews
-              .filter((r) => typeof r?.rating === "number").reverse()
+              .filter((r) => typeof r?.rating === "number")
+              .reverse()
               .map((r) => (
                 <div
                   key={r?.id}
-                  className={isModalOpen ? "flex items-start gap-3 mb-6 pb-4 border-b border-gray-200 last:border-b-0 last:mb-0 last:pb-0" : "hidden"}
+                  className={
+                    isModalOpen
+                      ? "flex items-start gap-3 mb-6 pb-4 border-b border-gray-200 last:border-b-0 last:mb-0 last:pb-0"
+                      : "hidden"
+                  }
                 >
                   <img
                     src={r?.user?.profileImage}
@@ -401,7 +421,7 @@ export default function ProductDetail() {
                           second: "numeric",
                         })}
                         <span className="ml-2">
-                        {new Date(r.createdAt).toLocaleDateString()}
+                          {new Date(r.createdAt).toLocaleDateString()}
                         </span>
                       </span>
                     </div>
