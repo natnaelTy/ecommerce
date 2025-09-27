@@ -28,7 +28,7 @@ import AddNewProduct from "./components/pages/adminSide/products/AddNewProduct";
 import AllOrders from "./components/pages/adminSide/orders/Orders";
 import AdminAccount from "./components/pages/adminSide/AdminAccount";
 import Payment from "./components/pages/adminSide/payment/Payment";
-
+import TermsAndConditions from "./components/pages/about/TermsAndConditions";
 
 function App() {
   return (
@@ -46,6 +46,7 @@ function App() {
           <Route path="/orders" element={<UsersOrders />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         </Route>
         <Route element={<AuthRoute />}>
           <Route path="/signup" element={<SignUp />} />
