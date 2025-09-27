@@ -3,8 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createCheckout, fetchCart } from "../../../store/product/productSlice";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
-import { CreditCard } from "lucide-react";
-import { PuffLoader } from "react-spinners";
+import { CreditCard, CircleAlert, Check } from "lucide-react";
 import { z } from "zod";
 import { MdErrorOutline } from "react-icons/md";
 import toast from "react-hot-toast"; 
@@ -28,6 +27,9 @@ export default function Checkout() {
     paymentMethod: "chapa",
   });
   const [errors, setErrors] = useState({});
+  const [isChecked, setIsChecked] = useState(false);
+
+
 
   const shippingSchema = z.object({
     fullName: z.string().min(2, "Full name is required"),
@@ -47,6 +49,10 @@ export default function Checkout() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleCheckboxChange = (e) => {
+    setIsChecked(e.target.checked);
   };
 
   const handleSubmit = async (e) => {
@@ -152,9 +158,9 @@ export default function Checkout() {
   }
 
   return (
-    <div className="bg-gray-50">
-      <div className="max-w-[1000px] w-full mx-auto p-2 bg-white rounded-md shadow-md border-1 border-gray-50">
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 mt-4">
+    <div className="bg-gray-50 min-h-screen py-10">
+      <div className="max-w-[1000px] w-full mx-auto p-2 bg-white rounded-md shadow border-1 border-gray-200">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 mt-4 px-4">
           Checkout
         </h1>
         <div className="py-6 px-4 ">
@@ -335,14 +341,15 @@ export default function Checkout() {
                   <hr className="border-0.5 border-gray-200 mt-5 mb-8" />
                   <div className="flex flex-col gap-5">
                     <label className="flex gap-1 text-xs font-medium text-gray-600">
-                      <input type="checkbox" />I have read and accept the{" "}
+                      <input onChange={handleCheckboxChange} checked={isChecked} type="checkbox" />I have read and accept the{" "}
                       <Link
-                        className="text-black font-semibold hover:text-orange-500"
-                        to={"/"}
+                        className="text-black font-semibold hover:text-orange-500 underline"
+                        to={"/terms-and-conditions"}
                       >
                         Terms & Conditions
                       </Link>
                     </label>
+                    <p className={`${isChecked ? 'text-green-500' : 'text-red-500'} text-xs font-medium`}>{isChecked ? <Check className="inline size-3" /> : <CircleAlert className="inline size-3" />} {isChecked ? 'I have read Terms & Conditions' : 'Didn\'t read Terms & Conditions'}.</p>
                     <button
                       type="submit"
                       className="w-full bg-black text-white py-0.5 flex items-center justify-center gap-1 font-medium rounded-md hover:bg-orange-500 transition duration-200"
