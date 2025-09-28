@@ -4,14 +4,23 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { fetchUser, logoutUser } from "../../store/user/userSlice";
+import { fetchUser, logoutUser, fetchNotifications } from "../../store/user/userSlice";
 import { useEffect } from "react";
 import { Settings, User, Headset, LogOut, Bell, BaggageClaim } from "lucide-react";
 
+
+
 export default function GetProfile ({userId}) {
-  const { isAuthenticated, user } = useSelector((state) => state.user);
+  const { isAuthenticated, user, notifications } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchNotifications(user.id));
+    }
+  }, [user, dispatch]);
 
   useEffect(() => {
       dispatch(fetchUser(userId));
@@ -26,6 +35,10 @@ export default function GetProfile ({userId}) {
       console.log(err);
     }
   }
+
+
+
+  const readCount = notifications.filter(n => !n.isRead).length;
 
   function handleLogin() {
     navigate("/login");
@@ -64,11 +77,16 @@ export default function GetProfile ({userId}) {
             <Settings className="size-5"/> Settings
           </Link>
         </li>
-        <li className="lihover">
+        <li className="lihover relative">
           <Link className="liLink" to={"/notifications"}>
             <Bell  className="size-5"/>
             Notifications
           </Link>
+          {readCount > 0 && (
+            <span className="absolute top-1 left-5 bg-red-500 text-white text-xs rounded-full px-1">
+              {readCount}
+            </span>
+          )}
         </li>
         <li className="lihover">
           <Link className="liLink" to={"/orders"}>
