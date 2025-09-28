@@ -37,7 +37,7 @@ app.use("/api/auth", userRouter);
 // product routes
 app.use("/api/products", productRoute);
 // notification routes
-app.use("/api/auth/notifications", notificationRouter);
+app.use("/api/notifications", notificationRouter);
 // admin routes
 app.use("/api/admin", adminRouter);
 // payment routes
