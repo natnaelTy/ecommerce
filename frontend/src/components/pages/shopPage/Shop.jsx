@@ -18,6 +18,7 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import { useLocation } from "react-router-dom";
 import Loading from "../../../utils/loading/Loading";
 import { fetchAverageRating } from "../../../store/product/productSlice";
+import { motion } from "framer-motion";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -167,9 +168,17 @@ export default function Shop() {
           >
             {/* shop card */}
             {filteredAndSorted.length > 0 ? (
-              filteredAndSorted.map((item, _) => (
-                <div
-                  key={item.id}
+              filteredAndSorted.map((item, index) => (
+                <motion.div
+                  key={item?.id}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{
+                    duration: 0.6,
+                    delay: index * 0.15,
+                    ease: "easeOut",
+                  }}
                   className={
                     selectedLayout.includes("grid-1")
                       ? "bg-white border-b-1 border-gray-300 overflow-hidden max-w-[750px] w-full flex items-center gap-6"
@@ -296,7 +305,7 @@ export default function Shop() {
                         : "Add to cart"}
                     </button>
                   </div>
-                </div>
+                </motion.div>
               ))
             ) : (
               <p>No products found</p>
@@ -321,9 +330,10 @@ export default function Shop() {
               key={i}
               onClick={() => setCurrentPage(i + 1)}
               className={`px-3 py-1 rounded 
-              ${i + 1 === currentPage
-                ? "bg-orange-400 text-white border-1 border-orange-400"
-                : "border-1 border-orange-400"
+              ${
+                i + 1 === currentPage
+                  ? "bg-orange-400 text-white border-1 border-orange-400"
+                  : "border-1 border-orange-400"
               }`}
             >
               {currentPage}
