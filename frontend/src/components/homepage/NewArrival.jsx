@@ -12,8 +12,7 @@ import {
 } from "../../store/product/productSlice";
 import { Star } from "lucide-react";
 import Loading from "../../utils/loading/Loading";
-
-
+import { motion } from "framer-motion";
 
 export default function NewArrival() {
   const dispatch = useDispatch();
@@ -35,7 +34,6 @@ export default function NewArrival() {
 
   const getOnly4Products = newArrivalProducts.slice(-4).reverse();
 
-  
   if (loading) {
     return <Loading />;
   }
@@ -48,8 +46,19 @@ export default function NewArrival() {
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {getOnly4Products && getOnly4Products.length > 0 ? (
-            getOnly4Products.map((item, _) => (
-              <div key={item?.id} className="newArriveContainer">
+            getOnly4Products.map((item, index) => (
+              <motion.div
+                key={item?.id}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{
+                  duration: 0.6,
+                  delay: index * 0.15,
+                  ease: "easeOut",
+                }}
+                className="newArriveContainer"
+              >
                 <div className="relative">
                   <img src={item?.image} alt={item?.name} className="w-full" />
                   {/* hovering icons */}
@@ -88,21 +97,24 @@ export default function NewArrival() {
                     </p>
                   </div>
                   <div className="flex items-center gap-1 mt-2">
-                    {
-                    averageRatings[item.id] > 0 ? (
+                    {averageRatings[item.id] > 0 ? (
                       <>
                         {[1, 2, 3, 4, 5].map((n) => (
                           <Star
                             key={n}
                             size={16}
-                            fill={n <= averageRatings[item.id] ? "#facc15" : "none"}
+                            fill={
+                              n <= averageRatings[item.id] ? "#facc15" : "none"
+                            }
                             stroke="#facc15"
-                            style={{ opacity: n - 0.5 === averageRatings[item.id] ? 0.5 : 1 }}
+                            style={{
+                              opacity:
+                                n - 0.5 === averageRatings[item.id] ? 0.5 : 1,
+                            }}
                           />
                         ))}
                         <span className="text-xs text-gray-600 ml-1">
-                          {
-                          averageRatings[item.id].toFixed(1)} / 5
+                          {averageRatings[item.id].toFixed(1)} / 5
                         </span>
                       </>
                     ) : (
@@ -121,7 +133,7 @@ export default function NewArrival() {
                 >
                   Add to cart
                 </button>
-              </div>
+              </motion.div>
             ))
           ) : (
             <p>No products found</p>
