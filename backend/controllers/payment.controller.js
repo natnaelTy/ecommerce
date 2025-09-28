@@ -11,7 +11,7 @@ export const InitializePayment = async (req, res) => {
   const { amount, email, fullName, phone, orderId } = req.body;
   try {
     // generate tx_ref and save to payment db
-    const tx_ref = `tx-${Date.now()}-${Math.floor(Math.random()*10000)}`;
+    const tx_ref = `tx-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     // Update payment record with tx_ref
     await prisma.payment.update({
       where: { orderId: parseInt(orderId) },
@@ -78,7 +78,7 @@ export const VerifyPayment = async (req, res) => {
         data: { status: "paid" },
       });
     }
-    console.log("Payment verified:", payment);
+
     res.status(200).json({ message: "Payment verified successfully", payment });
   } catch (err) {
     console.error(err.response?.data || err.message);
@@ -100,13 +100,11 @@ export const getAllPayments = async (_, res) => {
       },
     });
     console.log("Fetched payments:", payments);
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "payments fetched successfully",
-        allPayments: payments,
-      });
+    res.status(200).json({
+      success: true,
+      message: "payments fetched successfully",
+      allPayments: payments,
+    });
   } catch (error) {
     console.error("Error fetching payments:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
