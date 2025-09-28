@@ -29,6 +29,8 @@ import AllOrders from "./components/pages/adminSide/orders/Orders";
 import AdminAccount from "./components/pages/adminSide/AdminAccount";
 import Payment from "./components/pages/adminSide/payment/Payment";
 import TermsAndConditions from "./components/pages/about/TermsAndConditions";
+import AdminNotifications from "./components/pages/adminSide/notifications/AdminNotifications";
+
 
 function App() {
   return (
@@ -117,6 +119,14 @@ function App() {
           element={
             <AdminRoute>
               <Payment />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/notifications"
+          element={
+            <AdminRoute>
+              <AdminNotifications />
             </AdminRoute>
           }
         />
