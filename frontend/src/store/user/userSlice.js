@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import userApi from "../../services/userApi";
+import notificationApi from "../../services/notificationApi";
 
 const initialState = {
   user: null,
@@ -142,7 +143,7 @@ export const fetchNotifications = createAsyncThunk(
   "user/fetchNotifications",
   async (userId, { rejectWithValue }) => {
     try {
-      const res = await userApi.get(`/notifications/${userId}`);
+      const res = await notificationApi.get(`/${userId}`);
       return res.data.notifications;
     } catch (err) {
       return rejectWithValue(
@@ -157,7 +158,7 @@ export const markNotificationAsRead = createAsyncThunk(
   "user/markNotificationAsRead",
   async (id, { rejectWithValue }) => {
     try {
-      await userApi.patch(`/notifications/${id}/read`);
+      await notificationApi.patch(`/${id}/read`);
       return id;
     } catch (err) {
       return rejectWithValue(
@@ -263,6 +264,7 @@ export const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // fetch notifications
       .addCase(fetchNotifications.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -275,10 +277,20 @@ export const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // mark notification as read
+      .addCase(markNotificationAsRead.pending, (state) => {
+        state.error = null;
+        state.loading = true;
+      })
       .addCase(markNotificationAsRead.fulfilled, (state, action) => {
         const notif = state.notifications.find((n) => n.id === action.payload);
-        if (notif) notif.read = true;
-      });
+        if (notif) notif.isRead = true;
+        state.loading = false;
+      })
+      .addCase(markNotificationAsRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
 
