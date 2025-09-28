@@ -12,8 +12,7 @@ import {
 } from "../../store/product/productSlice";
 import Loading from "../../utils/loading/Loading";
 import { Star } from "lucide-react";
-
-
+import { motion } from "framer-motion";
 
 export default function RecommendedForYou() {
   const dispatch = useDispatch();
@@ -24,7 +23,6 @@ export default function RecommendedForYou() {
   const userId = user?.id;
 
   useEffect(() => {
-   
     dispatch(fetchRecommendedProducts(userId));
   }, [userId, dispatch]);
 
@@ -34,8 +32,6 @@ export default function RecommendedForYou() {
       dispatch(fetchAverageRating(productIds));
     }
   }, [recommended, dispatch]);
-
-  console.log("recommended", recommended);
 
   if (loading) return <Loading />;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -47,8 +43,19 @@ export default function RecommendedForYou() {
       </h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {recommended && recommended.length > 0 ? (
-          recommended.map((item, _) => (
-            <div key={item?.id} className="newArriveContainer">
+          recommended.map((item, index) => (
+            <motion.div
+              key={item?.id}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{
+                duration: 0.6,
+                delay: index * 0.15,
+                ease: "easeOut",
+              }}
+              className="newArriveContainer"
+            >
               <div className="relative">
                 <img src={item?.image} alt={item?.name} className="w-full" />
                 {/* hovering icons */}
@@ -123,7 +130,7 @@ export default function RecommendedForYou() {
               >
                 Add to cart
               </button>
-            </div>
+            </motion.div>
           ))
         ) : (
           <p>No products found</p>
