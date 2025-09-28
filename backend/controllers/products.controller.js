@@ -3,8 +3,6 @@ import dotenv from "dotenv";
 import { uploadProductImage } from "../utils/cloudinary.js";
 import jwt from "jsonwebtoken";
 
-
-
 dotenv.config();
 
 // Get all products
@@ -284,14 +282,16 @@ export const createReview = async (req, res) => {
   const token = req.cookies.token;
 
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized: No user token provided" });
+    return res
+      .status(401)
+      .json({ error: "Unauthorized: No user token provided" });
   }
   // verify the token
-    let userId;
-   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-   userId = decoded.id;
-   const review = await prisma.review.create({
-    data: { productId, userId, rating, comment }
+  let userId;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  userId = decoded.id;
+  const review = await prisma.review.create({
+    data: { productId, userId, rating, comment },
   });
   res.status(201).json(review);
 };
@@ -301,7 +301,7 @@ export const getProductReviews = async (req, res) => {
   const { productId } = req.params;
   const reviews = await prisma.review.findMany({
     where: { productId: parseInt(productId) },
-    include: { user: true }
+    include: { user: true },
   });
   res.json(reviews);
 };
@@ -339,7 +339,7 @@ export const newArrival = async (_, res) => {
 export const getRelatedProducts = async (req, res) => {
   const { productId } = req.params;
   const limit = parseInt(req.query.limit) || 8;
-  
+
   if (!productId || isNaN(parseInt(productId))) {
     return res.status(400).json({
       error: "Invalid product ID",
@@ -387,9 +387,8 @@ export const getRecommendedProducts = async (req, res) => {
 
     const parsedUserId = Number(userId);
 
-   // for guests user
+    // for guests user
     if (!userId || isNaN(parsedUserId)) {
-     
       recommended = await prisma.products.findMany({
         take: 8,
       });
@@ -442,10 +441,10 @@ export const getRecommendedProducts = async (req, res) => {
 // Checkout
 export const checkout = async (req, res) => {
   try {
-    const { userId, items, method, shippingAddress, country, city, } = req.body;
-      if (!Array.isArray(items)) {
-    return res.status(400).json({ error: "Invalid items: must be an array" });
-  }
+    const { userId, items, method, shippingAddress, country, city } = req.body;
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ error: "Invalid items: must be an array" });
+    }
     // Calculate total
     let total = 0;
     const orderItemsData = [];
@@ -494,11 +493,33 @@ export const checkout = async (req, res) => {
       include: { orderItems: { include: { product: true } }, payment: true },
     });
 
+    // create notification for user
+    await prisma.notification.create({
+      data: {
+        userId: order.userId,
+        title: "Order Placed",
+        message: `Your order #${order.id} has been placed successfully.`,
+        type: "order",
+      },
+    });
+
+    // create notification for admin
+    await prisma.notification.create({
+      data: {
+        userId: null, 
+        title: "New Order",
+        message: `Order #${order.id} placed by User #${order.userId}`,
+        type: "order",
+      },
+    });
+
     // after purchase clear user's cart
     await prisma.cart.deleteMany({ where: { userId } });
 
-    const products = order.orderItems.map(item => item.product);
-    res.status(201).json({ success: true, message: "Order created", order, products });
+    const products = order.orderItems.map((item) => item.product);
+    res
+      .status(201)
+      .json({ success: true, message: "Order created", order, products });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Checkout failed" });
@@ -509,8 +530,14 @@ export const checkout = async (req, res) => {
 export const validateCoupon = async (req, res) => {
   const { code } = req.body;
   const coupon = await prisma.coupon.findUnique({ where: { code } });
-  if (!coupon || !coupon.active || (coupon.expiresAt && new Date() > coupon.expiresAt)) {
-    return res.status(400).json({ valid: false, message: "Invalid or expired coupon" });
+  if (
+    !coupon ||
+    !coupon.active ||
+    (coupon.expiresAt && new Date() > coupon.expiresAt)
+  ) {
+    return res
+      .status(400)
+      .json({ valid: false, message: "Invalid or expired coupon" });
   }
   res.json({ valid: true, coupon });
 };
@@ -529,4 +556,3 @@ export const getOrdersByUser = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch orders" });
   }
 };
-
