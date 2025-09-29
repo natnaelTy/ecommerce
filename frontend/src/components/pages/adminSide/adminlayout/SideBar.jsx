@@ -11,18 +11,24 @@ import {
   Menu,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { logoutAdmin } from "../../../../store/adminside/adminAuthSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchNotifications } from "../../../../store/adminside/adminSlice";
 
 export default function SideBar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState('dashboard');
+  const [activeItem, setActiveItem] = useState("dashboard");
   const dispatch = useDispatch();
+  const { notifications } = useSelector((state) => state.admin);
 
+  const readCount = notifications.filter((n) => !n.isRead).length;
 
+  useEffect(() => {
+    dispatch(fetchNotifications());
+  }, [dispatch]);
 
-  // Overlay for mobile
+  // overlay for mobile
   const Overlay = () =>
     menuOpen ? (
       <div
@@ -56,15 +62,18 @@ export default function SideBar() {
         style={{ maxHeight: "100vh" }}
       >
         <h2 className="text-2xl font-semibold mb-8 px-4 mt-5 text-orange-400">
-          <ShoppingCart className="inline-block mr-2 size-7" /> Mesay <span className="text-black">Fur.</span>
+          <ShoppingCart className="inline-block mr-2 size-7" /> Mesay{" "}
+          <span className="text-black">Fur.</span>
         </h2>
         <ul className="space-y-1 w-full text-sm font-medium flex flex-col h-[78vh]">
           <li
             onClick={() => {
-              setActiveItem('dashboard');
+              setActiveItem("dashboard");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${activeItem === 'dashboard' ? 'bg-orange-400 text-white' : ''}`}
+            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+              activeItem === "dashboard" ? "bg-orange-400 text-white" : ""
+            }`}
           >
             <Link to="/admin/dashboard">
               <LayoutDashboard className="inline-block mr-2" />
@@ -73,10 +82,12 @@ export default function SideBar() {
           </li>
           <li
             onClick={() => {
-              setActiveItem('users');
+              setActiveItem("users");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${activeItem === 'users' ? 'bg-orange-400 text-white' : ''}`}
+            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+              activeItem === "users" ? "bg-orange-400 text-white" : ""
+            }`}
           >
             <Link to="/admin/users">
               <Users className="inline-block mr-2" />
@@ -85,10 +96,12 @@ export default function SideBar() {
           </li>
           <li
             onClick={() => {
-              setActiveItem('products');
+              setActiveItem("products");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${activeItem === 'products' ? 'bg-orange-400 text-white' : ''}`}
+            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+              activeItem === "products" ? "bg-orange-400 text-white" : ""
+            }`}
           >
             <Link to="/admin/products">
               <Armchair className="inline-block mr-2" />
@@ -97,10 +110,12 @@ export default function SideBar() {
           </li>
           <li
             onClick={() => {
-              setActiveItem('orders');
+              setActiveItem("orders");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${activeItem === 'orders' ? 'bg-orange-400 text-white' : ''}`}
+            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+              activeItem === "orders" ? "bg-orange-400 text-white" : ""
+            }`}
           >
             <Link to="/admin/orders">
               <Box className="inline-block mr-2" />
@@ -109,10 +124,12 @@ export default function SideBar() {
           </li>
           <li
             onClick={() => {
-              setActiveItem('payments');
+              setActiveItem("payments");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${activeItem === 'payments' ? 'bg-orange-400 text-white' : ''}`}
+            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+              activeItem === "payments" ? "bg-orange-400 text-white" : ""
+            }`}
           >
             <Link to="/admin/payments">
               <CreditCard className="inline-block mr-2" />
@@ -121,10 +138,12 @@ export default function SideBar() {
           </li>
           <li
             onClick={() => {
-              setActiveItem('settings');
+              setActiveItem("settings");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${activeItem === 'settings' ? 'bg-orange-400 text-white' : ''}`}
+            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+              activeItem === "settings" ? "bg-orange-400 text-white" : ""
+            }`}
           >
             <Link to="/admin/settings">
               <Settings className="inline-block mr-2" />
@@ -133,15 +152,20 @@ export default function SideBar() {
           </li>
           <li
             onClick={() => {
-              setActiveItem('notifications');
+              setActiveItem("notifications");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${activeItem === 'notifications' ? 'bg-orange-400 text-white' : ''}`}
+            className={`relative w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+              activeItem === "notifications" ? "bg-orange-400 text-white" : ""
+            }`}
           >
             <Link to="/admin/notifications">
               <Bell className="inline-block mr-2" />
               Notifications
             </Link>
+            {readCount > 0 && (
+              <span className="absolute top-2 left-7.5 bg-red-500 w-1.5 h-1.5 rounded-full"></span>
+            )}
           </li>
         </ul>
         <hr className="my-4 border-gray-300" />
