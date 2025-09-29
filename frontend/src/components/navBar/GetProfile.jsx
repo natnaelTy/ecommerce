@@ -1,20 +1,29 @@
-
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { fetchUser, logoutUser, fetchNotifications } from "../../store/user/userSlice";
+import {
+  fetchUser,
+  logoutUser,
+  fetchNotifications,
+} from "../../store/user/userSlice";
 import { useEffect } from "react";
-import { Settings, User, Headset, LogOut, Bell, BaggageClaim } from "lucide-react";
+import {
+  Settings,
+  User,
+  Headset,
+  LogOut,
+  Bell,
+  Box
+} from "lucide-react";
 
-
-
-export default function GetProfile ({userId}) {
-  const { isAuthenticated, user, notifications } = useSelector((state) => state.user);
+export default function GetProfile({ userId }) {
+  const { isAuthenticated, user, notifications } = useSelector(
+    (state) => state.user
+  );
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
 
   useEffect(() => {
     if (user?.id) {
@@ -23,7 +32,7 @@ export default function GetProfile ({userId}) {
   }, [user, dispatch]);
 
   useEffect(() => {
-      dispatch(fetchUser(userId));
+    dispatch(fetchUser(userId));
   }, [userId, dispatch]);
 
   function handleLogout() {
@@ -36,13 +45,7 @@ export default function GetProfile ({userId}) {
     }
   }
 
-
-
-  const readCount = notifications.filter(n => !n.isRead).length;
-
-  function handleLogin() {
-    navigate("/login");
-  }
+  const readCount = notifications.filter((n) => !n.isRead).length;
 
   return (
     <div className="fixed top-19 right-2 md:right-3 lg:right-65 z-10 bg-white shadow-md border-1 border-gray-100 w-62 text-base rounded-lg">
@@ -55,12 +58,12 @@ export default function GetProfile ({userId}) {
           />
         </div>
         <Link className="liLink" to={"/account"}>
-        <div className="flex flex-col items-start justify-center">
-          <h1 className="text-gray-900">
-            {user?.fullName ? user?.fullName : "Guest"}
-          </h1>
-          <h2 className="text-gray-500 text-sm">{user?.email}</h2>
-        </div>
+          <div className="flex flex-col items-start justify-center">
+            <h1 className="text-gray-900">
+              {user?.fullName ? user?.fullName : "Guest"}
+            </h1>
+            <h2 className="text-gray-500 text-sm">{user?.email}</h2>
+          </div>
         </Link>
       </div>
 
@@ -69,47 +72,44 @@ export default function GetProfile ({userId}) {
       <ul className="flex text-gray-700 flex-col items-start justify-center">
         <li className="lihover">
           <Link className="liLink" to={"/account"}>
-            <User className="size-5"/> My Account
+            <User className="size-5" /> My Account
           </Link>
         </li>
         <li className="lihover">
           <Link className="liLink" to={"/account"}>
-            <Settings className="size-5"/> Settings
+            <Settings className="size-5" /> Settings
           </Link>
         </li>
         <li className="lihover relative">
           <Link className="liLink" to={"/notifications"}>
-            <Bell  className="size-5"/>
+            <Bell className="size-5" />
             Notifications
           </Link>
           {readCount > 0 && (
-            <span className="absolute top-1 left-5 bg-red-500 text-white text-xs rounded-full px-1">
-              {readCount}
-            </span>
+            <span className="absolute top-2.5 left-5 bg-red-500 w-1.5 h-1.5 rounded-full"></span>
           )}
         </li>
         <li className="lihover">
           <Link className="liLink" to={"/orders"}>
-            <BaggageClaim className="size-5"/>
+            <Box className="size-5" />
             Orders
           </Link>
         </li>
         <li className="lihover">
           {" "}
           <Link className="liLink" to={"/help-center"}>
-            <Headset className="size-5"/> Help center{" "}
+            <Headset className="size-5" /> Help center{" "}
           </Link>
         </li>
       </ul>
-         <hr className="border-gray-200" />
+      <hr className="border-gray-200" />
       <div
-        onClick={isAuthenticated ? handleLogout : handleLogin}
+        onClick={isAuthenticated ? handleLogout : () => navigate("/login")}
         className="p-3 flex items-center gap-2 hover:bg-amber-500 rounded-b-md hover:text-white cursor-pointer"
       >
-        <LogOut  className="size-5" />
+        <LogOut className="size-5" />
         <h1 className="text-sm">{isAuthenticated ? "Log out" : "Log in"}</h1>
       </div>
     </div>
   );
-};
-
+}
