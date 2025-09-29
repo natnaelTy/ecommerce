@@ -4,12 +4,12 @@ import { createCheckout, fetchCart } from "../../../store/product/productSlice";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import { CreditCard, CircleAlert, Check } from "lucide-react";
+import { PuffLoader } from "react-spinners";
 import { z } from "zod";
 import { MdErrorOutline } from "react-icons/md";
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
 import axios from "axios";
 import Loading from "../../../utils/loading/Loading";
-
 
 export default function Checkout() {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ export default function Checkout() {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    address: "",
+    street: "",
     city: "",
     country: "Ethiopia",
     phone: "",
@@ -35,7 +35,7 @@ export default function Checkout() {
     fullName: z.string().min(2, "Full name is required"),
     email: z.string().email("Invalid email address"),
     phone: z.string().min(10, "Phone must be at least 10 digits"),
-    address: z.string().min(2, "Address is required"),
+    street: z.string().min(2, "Street is required"),
     city: z.string().min(2, "City is required"),
     country: z.string().min(2, "Country is required"),
     paymentMethod: z.enum(["chapa"], {
@@ -74,12 +74,20 @@ export default function Checkout() {
         quantity: quantities[wi.product.id] || wi.quantity || 1,
       }));
 
-      // Create order 
+      // Create order
       const orderRes = await dispatch(
         createCheckout({
           userId: user.id,
           items,
           method: validatedData.paymentMethod,
+          address: {
+            fullName: validatedData.fullName,
+            email: validatedData.email,
+            phone: validatedData.phone,
+            street: validatedData.street,
+            city: validatedData.city,
+            country: validatedData.country,
+          },
         })
       ).unwrap();
 
@@ -107,7 +115,8 @@ export default function Checkout() {
         }
       );
 
-      const checkoutUrl = paymentRes.data?.data?.checkout_url || paymentRes.data?.checkout_url;
+      const checkoutUrl =
+        paymentRes.data?.data?.checkout_url || paymentRes.data?.checkout_url;
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       } else {
@@ -152,15 +161,13 @@ export default function Checkout() {
   }, 0);
 
   if (loading) {
-    return (
-     <Loading />
-    );
+    return <Loading />;
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen py-10">
-      <div className="max-w-[1000px] w-full mx-auto p-2 bg-white rounded-md shadow border-1 border-gray-200">
-        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 mt-4 px-4">
+    <div className="bg-gray-50">
+      <div className="max-w-[1000px] w-full mx-auto p-2 bg-white rounded-md shadow-md border-1 border-gray-50">
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 mt-4">
           Checkout
         </h1>
         <div className="py-6 px-4 ">
@@ -267,16 +274,16 @@ export default function Checkout() {
                   </label>
                   <input
                     type="text"
-                    name="address"
-                    placeholder="Address"
-                    value={formData.address}
+                    name="street"
+                    placeholder="Street Address"
+                    value={formData.street}
                     onChange={handleChange}
                     className="inputs"
                   />
-                  {errors.address && (
+                  {errors.street && (
                     <span className="inputError">
                       <MdErrorOutline />
-                      {errors.address}
+                      {errors.street}
                     </span>
                   )}
                 </div>
@@ -349,10 +356,11 @@ export default function Checkout() {
                         Terms & Conditions
                       </Link>
                     </label>
-                    <p className={`${isChecked ? 'text-green-500' : 'text-red-500'} text-xs font-medium`}>{isChecked ? <Check className="inline size-3" /> : <CircleAlert className="inline size-3" />} {isChecked ? 'I have read Terms & Conditions' : 'Didn\'t read Terms & Conditions'}.</p>
+                    <p className={`${isChecked ? 'text-green-500' : 'text-red-500'} text-xs font-medium`}>{isChecked ? <Check className="inline size-3" /> : <CircleAlert className="inline size-3" />} {isChecked ? 'I have read Terms & Conditions' : 'I didn\'t read Terms & Conditions'}.</p>
                     <button
+                      disabled={!isChecked || cartList.length === 0}
                       type="submit"
-                      className="w-full bg-black text-white py-0.5 flex items-center justify-center gap-1 font-medium rounded-md hover:bg-orange-500 transition duration-200"
+                      className="w-full bg-black text-white py-0.5 flex items-center justify-center gap-1 font-medium rounded-md hover:bg-orange-500 transition duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       Pay with{" "}
                       <img
