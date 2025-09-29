@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUsers, getAllProducts, getAllOrders, addProduct, editProduct, deleteProduct,  } from "../controllers/admin.controller.js";
+import { getAllUsers, getAllProducts, getAllOrders, addProduct, editProduct, deleteProduct, confirmOrder } from "../controllers/admin.controller.js";
 import multer from "multer";
 import { getAdminProfile, logoutAdmin, createAdmin, loginAdmin, updateAdminProfile } from "../controllers/admin-auth.controller.js";
 
@@ -41,5 +41,7 @@ adminRouter.delete("/products/:id", deleteProduct);
 // get all the orders
 adminRouter.get("/orders", getAllOrders);
 
+//confirm order
+adminRouter.put("/orders/:orderId/confirm", confirmOrder)
 
 export default adminRouter;
