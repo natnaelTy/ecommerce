@@ -441,7 +441,9 @@ export const getRecommendedProducts = async (req, res) => {
 // Checkout
 export const checkout = async (req, res) => {
   try {
-    const { userId, items, method, shippingAddress, country, city } = req.body;
+    const { userId, items, method, address } = req.body;
+
+    console.log("Checkout request body:", req.body);
     if (!Array.isArray(items)) {
       return res.status(400).json({ error: "Invalid items: must be an array" });
     }
@@ -473,13 +475,20 @@ export const checkout = async (req, res) => {
       });
     }
 
+    // create address first
+    const createdAddress = await prisma.address.create({
+      data: {
+        street: address.street,
+        city: address.city,
+        country: address.country,
+        userId: userId,
+      },
+    });
+    // create order
     const order = await prisma.order.create({
       data: {
         userId,
         total,
-        address: shippingAddress,
-        country,
-        city,
         status: "pending",
         orderItems: { create: orderItemsData },
         payment: {
@@ -489,6 +498,7 @@ export const checkout = async (req, res) => {
             status: "unpaid",
           },
         },
+        addressId: createdAddress.id,
       },
       include: { orderItems: { include: { product: true } }, payment: true },
     });
@@ -506,7 +516,7 @@ export const checkout = async (req, res) => {
     // create notification for admin
     await prisma.notification.create({
       data: {
-        userId: null, 
+        userId: null,
         title: "New Order",
         message: `Order #${order.id} placed by User #${order.userId}`,
         type: "order",
@@ -523,6 +533,42 @@ export const checkout = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Checkout failed" });
+  }
+};
+
+// cancel order
+export const cancelOrder = async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const order = await prisma.order.update({
+      where: { id: Number(orderId) },
+      data: { status: "cancelled" },
+    });
+
+    await prisma.cart.deleteMany({ where: { userId: order.userId } });
+    await prisma.orderItem.deleteMany({ where: { orderId: order.id } });
+
+    await prisma.notification.create({
+      data: {
+        userId: order.userId,
+        title: "Order Cancelled",
+        message: `Your order #${order.id} has been cancelled.`,
+        type: "order",
+      },
+    });
+
+    await prisma.notification.create({
+      data: {
+        userId: null,
+        title: "Order Cancelled",
+        message: `Order #${order.id} by User #${order.userId} has been cancelled.`,
+        type: "order",
+      },
+    });
+
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to cancel order" });
   }
 };
 
@@ -548,7 +594,11 @@ export const getOrdersByUser = async (req, res) => {
   try {
     const orders = await prisma.order.findMany({
       where: { userId: parseInt(userId) },
-      include: { orderItems: { include: { product: true } }, payment: true },
+      include: {
+        orderItems: { include: { product: true } },
+        payment: true,
+        address: true,
+      },
     });
     console.log("Orders fetched for user", userId, ":", orders);
     res.json({ success: true, orders });
