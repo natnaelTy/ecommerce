@@ -134,6 +134,7 @@ export const getAllOrders = async (req, res) => {
         orderItems: { include: { product: true } },
         payment: true,
         user: true,
+        address: true,
       },
     });
     res.json(orders);
@@ -143,3 +144,37 @@ export const getAllOrders = async (req, res) => {
   }
 };
 
+// confirm order
+export const confirmOrder = async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: parseInt(orderId) },
+      include: { user: true },
+    });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    if (order.status === "confirmed") {
+      return res.status(400).json({ message: "Order is already confirmed" });
+    }
+    const updatedOrder = await prisma.order.update({
+      where: { id: parseInt(orderId) },
+      data: { status: "confirmed" },
+      include: { user: true },
+    });
+
+    await prisma.notification.create({
+      data: {
+        title: "Order Confirmed",
+        type: "order",
+        userId: order.user.id,
+        message: `Your order #${order.id} has been confirmed, you will receive the product shortly.`,
+      },
+    });
+    res.json({ message: "Order confirmed successfully", order: updatedOrder });
+  } catch (error) {
+    console.error("Error confirming order:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
