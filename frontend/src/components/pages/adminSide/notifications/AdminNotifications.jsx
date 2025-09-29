@@ -1,13 +1,13 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { fetchNotifications, markNotificationAsRead } from "../../../../store/user/userSlice";
+import { fetchNotifications, markNotificationAsRead } from "../../../../store/adminside/adminSlice";
 import Loading from "../../../../utils/loading/Loading";
 
 
 
 export default function AdminNotifications() {
   const dispatch = useDispatch();
-  const { loading, error, notifications } = useSelector((state) => state.user);
+  const { notifications, loading, error } = useSelector((state) => state.admin);
 
   useEffect(() => {
       dispatch(fetchNotifications());
