@@ -235,16 +235,31 @@ export const checkoutOrder = createAsyncThunk(
 // Checkout → create order
 export const createCheckout = createAsyncThunk(
   "checkout/createCheckout",
-  async ({ userId, items, method }, thunkAPI) => {
+  async ({ userId, items, method, address }, thunkAPI) => {
     try {
       const res = await productApi.post(`/checkout`, {
         userId,
         items,
         method,
+        address
       });
+      console.log(res.data);
       return res.data;
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+// cancel order
+export const cancelOrder = createAsyncThunk(
+  "admin/cancelOrder",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const res = await productApi.put(`/orders/${orderId}/cancel`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || "Failed to cancel order");
     }
   }
 );
@@ -485,6 +500,22 @@ const productSlice = createSlice({
       .addCase(validateCoupon.rejected, (state, action) => {
         state.coupon = null;
         state.couponError = action.payload;
+      })
+      // Cancel Order
+      .addCase(cancelOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.orders = state.orders.map((order) =>
+          order.id === action.payload.id ? action.payload : order
+        );
+      })
+      .addCase(cancelOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       // Fetch Orders
       .addCase(fetchOrders.pending, (state) => {
