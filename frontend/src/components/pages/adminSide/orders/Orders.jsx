@@ -5,18 +5,23 @@ import { formatCurrency } from "../../../../utils/formatCurrency";
 import Loading from "../../../../utils/loading/Loading";
 import toast from "react-hot-toast";
 import { Box } from "lucide-react";
+import { confirmOrder } from "../../../../store/adminside/adminSlice";
+import ConfirmOrder from "./ConfirmOrder";
+
+
+
 
 export default function Orders() {
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.admin);
   const [selectedSorting, setSelectedSorting] = useState("all");
   const [filteredAndSorted, setFilteredAndSorted] = useState([]);
-
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
     dispatch(fetchOrders());
   }, [dispatch]);
-  
+
   // filter orders for this week and this month
   useEffect(() => {
     let sorted = [...orders];
@@ -54,7 +59,7 @@ export default function Orders() {
     toast.error(error);
   }
 
- 
+  console.log(orders);
 
   return (
     <div className="min-h-screen max-w-[1250px] w-full px-5 ml-auto">
@@ -65,7 +70,11 @@ export default function Orders() {
           {selectedSorting === "thisWeek" && "Orders This Week"}
           {selectedSorting === "thisMonth" && "Orders This Month"}
         </h2>
-        <select className="border border-gray-300 rounded-md px-4 py-2 shadow-xs" onChange={(e) => setSelectedSorting(e.target.value)} value={selectedSorting}>
+        <select
+          className="border border-gray-300 rounded-md px-4 py-2 shadow-xs"
+          onChange={(e) => setSelectedSorting(e.target.value)}
+          value={selectedSorting}
+        >
           <option value="all">All</option>
           <option value="thisWeek">This Week</option>
           <option value="thisMonth">This Month</option>
@@ -79,8 +88,10 @@ export default function Orders() {
               <th className="px-4 py-2">Order ID</th>
               <th className="px-4 py-2">Customer Name</th>
               <th className="px-4 py-2">Amount</th>
-              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Payment Status</th>
+              <th className="px-4 py-2">Order Status</th>
               <th className="px-4 py-2">Date</th>
+              <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -101,15 +112,36 @@ export default function Orders() {
                   </td>
                   <td
                     className={`px-4 rounded-2xl ${
-                      order.status === "paid"
+                      order.payment.status === "paid"
                         ? "text-green-500"
-                        : "text-red-500 "
+                        : "text-yellow-500 "
+                    }`}
+                  >
+                    {order.payment.status}
+                  </td>
+                  <td
+                    className={`px-4 rounded-2xl ${
+                      order.status === "confirmed"
+                        ? "text-green-500" || order.status === "cancelled"
+                        : order.status === "cancelled"
+                        ? "text-red-500"
+                        : "text-yellow-500 "
                     }`}
                   >
                     {order.status}
                   </td>
+                  <td className="px-4 py-2 text-gray-600">
+                    {new Date(order.createdAt).toLocaleString("en-US", {
+                      dateStyle: "medium",
+                    })}
+                  </td>
                   <td className="px-4 py-2">
-                    {new Date(order.createdAt).toLocaleDateString()}
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+                      onClick={() => setSelectedOrder(order)}
+                    >
+                      View
+                    </button>
                   </td>
                 </tr>
               ))
@@ -122,6 +154,7 @@ export default function Orders() {
             )}
           </tbody>
         </table>
+        <ConfirmOrder selectedOrder={selectedOrder} setSelectedOrder={setSelectedOrder} />
       </div>
     </div>
   );
