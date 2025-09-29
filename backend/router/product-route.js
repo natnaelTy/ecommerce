@@ -17,7 +17,8 @@ import {
   validateCoupon,
   createReview,
   getProductReviews,
-  getAverageRating
+  getAverageRating,
+  cancelOrder
 } from "../controllers/products.controller.js";
 import multer from "multer";
 import express from "express";
@@ -79,6 +80,9 @@ productRoute.post("/coupon/validate", validateCoupon);
 
 // Checkout
 productRoute.post("/checkout", checkout);
+
+// cancel order
+productRoute.put("/orders/:orderId/cancel", cancelOrder);
 
 // Get orders by user
 productRoute.get("/orders/:userId", getOrdersByUser);
