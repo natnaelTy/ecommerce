@@ -39,6 +39,7 @@ model User {
   orders    Order[]
   notifications Notification[]
   review      Review[]
+  address     Address[]
 }
 
 model Admin {
@@ -152,9 +153,20 @@ model Order {
   payment   Payment?
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  address   String?
-  city      String?
-  country   String?
+  addressId  Int?    
+  address    Address? @relation(fields: [addressId], references: [id])
+}
+
+model Address {
+  id        Int    @id @default(autoincrement())
+  user      User   @relation(fields: [userId], references: [id])
+  userId    Int
+  street    String
+  city      String
+  country   String
+  postalCode String?
+  phone     String?
+  orders    Order[]
 }
 
 model OrderItem {
