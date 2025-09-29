@@ -71,10 +71,10 @@ export const VerifyPayment = async (req, res) => {
         method: "chapa",
       },
     });
-    // update order status if paid
+    // update payment status if paid
     if (status === "paid") {
-      await prisma.order.update({
-        where: { id: payment.orderId },
+      await prisma.payment.update({
+        where: { id: payment.id },
         data: { status: "paid" },
       });
     }
@@ -122,7 +122,7 @@ export const simulatePayment = async (req, res) => {
       data: { status },
     });
 
-    // Update order status if paid
+    // update payment status if paid
     if (status === "paid") {
       await prisma.order.update({
         where: { id: parseInt(orderId) },
