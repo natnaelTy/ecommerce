@@ -3,8 +3,6 @@ import adminApi from "../../services/adminApi";
 import axios from "axios";
 import notificationApi from "../../services/notificationApi";
 
-
-
 // fetch all users
 export const fetchUsers = createAsyncThunk(
   "admin/fetchUsers",
@@ -95,7 +93,9 @@ export const confirmOrder = createAsyncThunk(
       const res = await adminApi.put(`/orders/${orderId}/confirm`);
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to confirm order");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to confirm order"
+      );
     }
   }
 );
@@ -161,6 +161,33 @@ export const markNotificationAsRead = createAsyncThunk(
   }
 );
 
+// get all conact messages
+export const fetchMessages = createAsyncThunk(
+  "admin/fetchMessages",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await adminApi.get("/messages");
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+
+// Mark message as read
+export const markMessageAsRead = createAsyncThunk(
+  "user/markMessageAsRead",
+  async (id, { rejectWithValue }) => {
+    try {
+      await adminApi.patch(`/messages/${id}/read`);
+      return id;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to update message"
+      );
+    }
+  }
+);
 
 const adminSlice = createSlice({
   name: "admin",
@@ -171,6 +198,7 @@ const adminSlice = createSlice({
     orders: [],
     payments: [],
     notifications: [],
+    messages: [],
     loading: false,
     error: null,
   },
@@ -326,6 +354,33 @@ const adminSlice = createSlice({
         state.loading = false;
       })
       .addCase(markNotificationAsRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetch all contact messages
+      .addCase(fetchMessages.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMessages.fulfilled, (state, action) => {
+        state.loading = false;
+        state.messages = action.payload;
+      })
+      .addCase(fetchMessages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // mark message as read
+      .addCase(markMessageAsRead.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(markMessageAsRead.fulfilled, (state, action) => {
+        const message = state.messages.find((m) => m.id === action.payload);
+        if (message) message.isRead = true;
+        state.loading = false;
+      })
+      .addCase(markMessageAsRead.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
