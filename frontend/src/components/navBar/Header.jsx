@@ -56,7 +56,7 @@ export default function Header() {
           <NavLink to={"/about"} className="hoverLink">
             About us
           </NavLink>
-          <NavLink to={"/contact"} className="hoverLink">
+          <NavLink to={"/contact-us"} className="hoverLink">
             Contact us
           </NavLink>
         </div>
