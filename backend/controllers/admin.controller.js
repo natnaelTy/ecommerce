@@ -178,3 +178,66 @@ export const confirmOrder = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// contact messages
+export const getAllMessages = async (_, res) => {
+  try {
+    const messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    res.json(messages);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+// create contact message 
+export const createContactMessage = async (req, res) => {
+  const {fullName, email, message } = req.body;
+  
+  if(!fullName || !email || !message) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+  
+  try{
+    const newMessage = await prisma.contactMessage.create({
+      data: {
+        fullName,
+        email,
+        message,
+        isRead: false,
+      }
+    });
+
+    console.log(newMessage)
+    res.status(201).json(newMessage);
+  } catch (error) {
+    console.error("Error creating contact message:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+// mark message as read
+export const markMessageAsRead = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const message = await prisma.contactMessage.findUnique({
+      where: { id: parseInt(id) },
+    });
+    if (!message) {
+      return res.status(404).json({ message: "Message not found" });
+    }
+    if (message.isRead) {
+      return res.status(400).json({ message: "Message is already read" });
+    }
+    const updatedMessage = await prisma.contactMessage.update({
+      where: { id: parseInt(id) },
+      data: { isRead: true },
+    });
+    res.json({ message: "Message marked as read", message: updatedMessage });
+  } catch (error) {
+    console.error("Error marking message as read:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
