@@ -13,6 +13,7 @@ import {
   House,
   ChevronRight,
   LogOut,
+  Box,
 } from "lucide-react";
 import WishList from "./WishList";
 import EditProfile from "./EditProfile";
@@ -20,6 +21,10 @@ import { logoutUser } from "../../../store/user/userSlice";
 import toast from "react-hot-toast";
 import { useNavigate, Link } from "react-router-dom";
 import ChangePassword from "./ChangePassword";
+import Orders from "./UsersOrders";
+import Cancellation from "./Cancellation";
+
+
 
 
 export default function Account() {
@@ -36,7 +41,7 @@ export default function Account() {
     dispatch(logoutUser());
     toast.success("Logged out successfully");
     navigate("/login");
-  }
+  };
   return (
     <>
       <div className="max-w-[1000px] w-full mx-auto py-4 flex items-center gap-3 px-2 sm:px-0">
@@ -79,7 +84,7 @@ export default function Account() {
                 onClick={() => setActiveTab("edit-profile")}
               >
                 <span className="absolute -left-8 top-0 text-base">
-                  <Settings />
+                  <User />
                 </span>
                 Account Settings
               </button>
@@ -110,33 +115,27 @@ export default function Account() {
             </div>
 
             <div className="space-y-1 pl-8 pt-4">
-              <Link
-                to="#"
-                className="relative hover:text-pink-500 block font-medium capitalize transition"
+              <button
+                onClick={() => setActiveTab("orders")}
+                className={`relative hover:text-pink-500 block font-medium capitalize transition ${activeTab === "orders" ? "text-pink-500" : "text-gray-600"}`}
               >
                 <span className="absolute -left-8 top-0 text-base">
-                  <BaggageClaim />
+                  <Box />
                 </span>
                 My order history
-              </Link>
+              </button>
               <Link
                 to="#"
                 className="relative hover:text-pink-500 block capitalize transition"
               >
                 My returns
               </Link>
-              <Link
-                to="#"
-                className="relative hover:text-pink-500 block capitalize transition"
+              <button
+                onClick={() => setActiveTab("cancellation")}
+                className={`relative hover:text-pink-500 block capitalize transition ${activeTab === "cancellation" ? "text-pink-500" : "text-gray-600"}`}
               >
                 My Cancellations
-              </Link>
-              <Link
-                to="#"
-                className="relative hover:text-pink-500 block capitalize transition"
-              >
-                My reviews
-              </Link>
+              </button>
             </div>
 
             <div className="space-y-1 pl-8 pt-4">
@@ -153,7 +152,11 @@ export default function Account() {
                 to="#"
                 className="relative hover:text-pink-500 block capitalize transition"
               >
-                <img src="/images/chapapay.png" alt="chapapay" className="w-20 h-9 object-cover" />
+                <img
+                  src="/images/chapapay.png"
+                  alt="chapapay"
+                  className="w-20 h-9 object-cover"
+                />
               </Link>
             </div>
 
@@ -172,9 +175,12 @@ export default function Account() {
               </Link>
             </div>
 
-            <button onClick={() => handleLogoutUser()} className="px-1 py-2 hover:text-pink-500 w-full text-left">
-                  <LogOut className="inline-block mr-2"/>
-                Logout
+            <button
+              onClick={() => handleLogoutUser()}
+              className="px-1 py-2 hover:text-pink-500 w-full text-left"
+            >
+              <LogOut className="inline-block mr-2" />
+              Logout
             </button>
           </div>
         </div>
@@ -282,6 +288,17 @@ export default function Account() {
             </>
           )}
 
+          {activeTab === "orders" && (
+            <>
+              <Orders />
+            </>
+          )}
+
+          {activeTab === "cancellation" && (
+            <>
+              <Cancellation/>
+            </>
+          )}
           {activeTab === "password" && (
             <>
               <ChangePassword />
@@ -290,7 +307,6 @@ export default function Account() {
           {activeTab === "wishlist" && (
             <>
               <WishList />
-              {/* Wish list items go here */}
             </>
           )}
         </div>
