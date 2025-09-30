@@ -1,30 +1,32 @@
-import React from 'react'
-import { fetchOrders } from '../../../store/adminside/adminSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import { useEffect } from 'react'
-import { formatCurrency } from '../../../utils/formatCurrency'
-import Loading from '../../../utils/loading/Loading'
-import toast from 'react-hot-toast'
+import React from "react";
+import { fetchOrders } from "../../../store/adminside/adminSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { formatCurrency } from "../../../utils/formatCurrency";
+import Loading from "../../../utils/loading/Loading";
+import toast from "react-hot-toast";
 import { Box } from "lucide-react";
 
 export default function Orders() {
-  const dispatch = useDispatch()
-  const { orders, loading, error } = useSelector((state) => state.admin)
+  const dispatch = useDispatch();
+  const { orders, loading, error } = useSelector((state) => state.admin);
 
   useEffect(() => {
-    dispatch(fetchOrders())
-  }, [dispatch])
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
-  if(loading) {
-    return <Loading />
+  if (loading) {
+    return <Loading />;
   }
-  
+
   const orderList = [...orders].reverse().slice(0, 10);
 
-
   return (
-    <div className='mt-8'>
-      <h2 className="text-lg md:text-xl font-semibold mb-4"><Box className="inline-block bg-orange-100 text-orange-400 rounded-md p-2 size-10" /> Latest Orders</h2>
+    <div className="mt-8">
+      <h2 className="text-lg md:text-xl font-semibold mb-4">
+        <Box className="inline-block bg-orange-100 text-orange-400 rounded-md p-2 size-10" />{" "}
+        Latest Orders
+      </h2>
       <div className="overflow-x-auto border-gray-100 border-1 shadow rounded-lg bg-white">
         <table className="w-full">
           <thead className="h-10 px-4">
@@ -33,26 +35,50 @@ export default function Orders() {
               <th className="px-4 py-2">Order ID</th>
               <th className="px-4 py-2">Customer Name</th>
               <th className="px-4 py-2">Amount</th>
-              <th className="px-4 py-2">Status</th>
+              <th className="px-4 py-2">Payment Status</th>
+              <th className="px-4 py-2">Order Status</th>
               <th className="px-4 py-2">Date</th>
             </tr>
           </thead>
           <tbody>
             {orderList.length > 0 ? (
-              orderList.map(order => (
+              orderList.map((order) => (
                 <tr key={order.id} className="text-left capitalize font-medium">
                   <td className="px-4 py-2">
-                    <img src={order.orderItems?.[0]?.product?.image} alt={order.orderItems?.[0]?.product?.productName} className='w-8 h-8 object-cover rounded-sm'/>
+                    <img
+                      src={order.orderItems?.[0]?.product?.image}
+                      alt={order.orderItems?.[0]?.product?.productName}
+                      className="w-8 h-8 object-cover rounded-sm"
+                    />
                   </td>
                   <td className="px-4 py-2">#{order.id}</td>
                   <td className="px-4 py-2">{order.user.fullName}</td>
-                  <td className="px-4 py-2 text-green-600">{formatCurrency(order.total, "ETB", "en-ET")}</td>
-                  <td className={`px-4 rounded-2xl ${order.status === "paid" ? "text-green-500" : "text-red-500 "}`}>{order.status}</td>
+                  <td className="px-4 py-2 text-green-600 font-semibold">
+                    {formatCurrency(order.total, "ETB", "en-ET")}
+                  </td>
+                  <td
+                    className={`px-4 rounded-2xl ${
+                      order.payment.status === "paid"
+                        ? "text-green-500"
+                        : "text-yellow-500 "
+                    }`}
+                  >
+                    {order.payment.status}
+                  </td>
+                  <td
+                    className={`px-4 rounded-2xl ${
+                      order.status === "confirmed"
+                        ? "text-green-500" || order.status === "cancelled"
+                        : order.status === "cancelled"
+                        ? "text-red-500"
+                        : "text-yellow-500 "
+                    }`}
+                  >
+                    {order.status}
+                  </td>
                   <td className="px-4 py-2 text-gray-600">
-                    {new Date(order.createdAt).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric"
+                    {new Date(order.createdAt).toLocaleString("en-US", {
+                      dateStyle: "medium",
                     })}
                   </td>
                 </tr>
@@ -68,5 +94,5 @@ export default function Orders() {
         </table>
       </div>
     </div>
-  )
+  );
 }
