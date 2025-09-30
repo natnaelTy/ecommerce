@@ -30,7 +30,9 @@ import AdminAccount from "./components/pages/adminSide/AdminAccount";
 import Payment from "./components/pages/adminSide/payment/Payment";
 import TermsAndConditions from "./components/pages/about/TermsAndConditions";
 import AdminNotifications from "./components/pages/adminSide/notifications/AdminNotifications";
-
+import Cancellation from "./components/pages/account/Cancellation";
+import Contact from "./components/pages/contact/Contact";
+import Messages from "./components/pages/adminSide/messages/Messages";
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
         <Route element={<ClientLayout />}>
           <Route index element={<Hero />} />
           <Route path="/about" element={<About />} />
+          <Route path="/contact-us" element={<Contact />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/account" element={<Account />} />
@@ -46,6 +49,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
           <Route path="/orders" element={<UsersOrders />} />
+          <Route path="/cancellation" element={<Cancellation />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
@@ -127,6 +131,14 @@ function App() {
           element={
             <AdminRoute>
               <AdminNotifications />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/messages"
+          element={
+            <AdminRoute>
+              <Messages />
             </AdminRoute>
           }
         />
