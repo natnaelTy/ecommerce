@@ -81,10 +81,10 @@ export default function AddNewProduct() {
 
   return (
     <div className="bg-gray-50 min-h-screen py-10">
-      <h2 className="text-xl md:text-2xl font-semibold ml-82 text-orange-400">
+      <h2 className="text-xl md:text-2xl font-semibold text-orange-400">
         Add New Product
       </h2>
-      <div className="max-w-6xl ml-82 bg-white p-8 rounded shadow mt-5">
+      <div className="bg-white p-8 rounded shadow mt-5">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
