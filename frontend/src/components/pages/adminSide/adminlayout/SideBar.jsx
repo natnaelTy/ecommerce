@@ -9,6 +9,7 @@ import {
   CreditCard,
   LogOut,
   Menu,
+  MessageSquare 
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -20,9 +21,10 @@ export default function SideBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("dashboard");
   const dispatch = useDispatch();
-  const { notifications } = useSelector((state) => state.admin);
+  const { notifications, messages } = useSelector((state) => state.admin);
 
   const readCount = notifications.filter((n) => !n.isRead).length;
+  const messageCount = messages.filter((m) => !m.isRead).length;
 
   useEffect(() => {
     dispatch(fetchNotifications());
@@ -141,14 +143,17 @@ export default function SideBar() {
               setActiveItem("settings");
               setMenuOpen(false);
             }}
-            className={`w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
+            className={`relative w-full text-gray-700 hover:text-white hover:bg-orange-400 rounded-md px-4 py-1 ${
               activeItem === "settings" ? "bg-orange-400 text-white" : ""
             }`}
           >
-            <Link to="/admin/settings">
-              <Settings className="inline-block mr-2" />
-              Settings
+            <Link to="/admin/messages">
+              <MessageSquare className="inline-block mr-2" />
+              Messages
             </Link>
+              {messageCount > 0 && (
+              <span className="absolute top-2.5 left-8.5 bg-red-500 w-1.5 h-1.5 rounded-full"></span>
+            )}
           </li>
           <li
             onClick={() => {
