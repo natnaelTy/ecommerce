@@ -9,7 +9,7 @@ import notificationRouter from "./router/notificationRoutes.js";
 import adminRouter from "./router/admin-route.js";
 import paymentRouter from "./router/payment-route.js";
 import userRouter from "./router/auth-router.js";
-
+import chatbotRouter from "./router/chatbot-router.js";
 
 dotenv.config();
 
@@ -32,6 +32,7 @@ prisma
   .catch((err) => {
     console.error("❌ Database connection failed:", err.message);
   });
+
 // user routes
 app.use("/api/auth", userRouter);
 // product routes
@@ -42,6 +43,9 @@ app.use("/api/notifications", notificationRouter);
 app.use("/api/admin", adminRouter);
 // payment routes
 app.use("/api/payment", paymentRouter);
+// chatbot routes
+app.use("/api", chatbotRouter)
+
 
 app.listen(PORT, () => {
     console.log(`Server is is running on ${PORT}`);
