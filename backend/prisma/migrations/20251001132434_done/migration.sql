@@ -8,6 +8,7 @@
 -- DropForeignKey
 ALTER TABLE `products` DROP FOREIGN KEY `Products_newarrivalId_fkey`;
 
+
 -- DropIndex
 DROP INDEX `Products_newarrivalId_fkey` ON `products`;
 
