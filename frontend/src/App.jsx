@@ -33,6 +33,8 @@ import AdminNotifications from "./components/pages/adminSide/notifications/Admin
 import Cancellation from "./components/pages/account/Cancellation";
 import Contact from "./components/pages/contact/Contact";
 import Messages from "./components/pages/adminSide/messages/Messages";
+import Chatbot from "./components/pages/ChatBot";
+
 
 function App() {
   return (
@@ -53,6 +55,7 @@ function App() {
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
           <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/chatbot" element={<Chatbot />} />
         </Route>
         <Route element={<AuthRoute />}>
           <Route path="/signup" element={<SignUp />} />
