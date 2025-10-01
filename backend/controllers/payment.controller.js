@@ -28,7 +28,7 @@ export const InitializePayment = async (req, res) => {
         phone_number: phone,
         tx_ref,
         callback_url: "http://localhost:5000/api/payment/verify",
-        return_url: `http://localhost:5173/payment-success?tx_ref=${tx_ref}`,
+        return_url: `https://abcd1234.ngrok-free.app/payment-success?tx_ref=${tx_ref}`,
         customization: {
           title: "Product Checkout",
           description: "Payment for products",
