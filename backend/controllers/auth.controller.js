@@ -476,7 +476,7 @@ export const googleCallback = (req, res, next) => {
       "USER"
     );
     console.log("Generated Token:", token);
-    res.redirect(`http://localhost:5173?token=${token}`);
+    res.redirect(`https://ecommerce-blue-beta-93.vercel.app?token=${token}`);
   })(req, res, next);
 };
 
