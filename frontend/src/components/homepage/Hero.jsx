@@ -31,13 +31,11 @@ const Hero = () => {
 {/*banner*/}
 <div className="bg-cover bg-no-repeat bg-center py-36 bg-[url(/images/banner-bg.jpg)] w-full max-h-[450px] flex items-center justify-around pl-6">
 
-    <div className="flex items-start flex-col gap-6">
+    <div className="max-w-5xl w-full mx-auto flex items-start flex-col gap-6">
         <h1 className="text-3xl md:text-4xl lg:text-5xl text-slate-950 font-medium capitalize">
             best collection for <br/> home decoration
         </h1>
-        <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aperiam <br/>
-            accusantium perspiciatis, sapiente
-            magni eos dolorum ex quos dolores odio</p>
+        <p className="max-w-3xl">Nestled in the vibrant city of Hawassa, Ethiopia, Mesay Furniture isn't just crafting pieces—it's weaving stories into wood. As a beacon of local artistry, Mesay draws its design inspirations from the rich tapestry of Ethiopian culture.</p>
         <div>
             <Link to={"/shop"} className="bg-amber-500 border text-sm border-amber-500 text-white px-5 py-2 font-medium 
                 rounded-md hover:bg-transparent hover:text-amber-500">Shop Now</Link>
