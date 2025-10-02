@@ -105,7 +105,7 @@ export default function Checkout() {
       }, 0);
 
       const paymentRes = await axios.post(
-        "http://localhost:5000/api/payment/initialize",
+        "https://ecommerce-ib95q.sevalla.app/api/payment/initialize",
         {
           amount,
           email: validatedData.email,
