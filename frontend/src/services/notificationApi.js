@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const notificationApi = axios.create({
-  baseURL: "http://localhost:5000/api/notifications",
+  baseURL: "https://ecommerce-ib95q.sevalla.app/api/notifications",
   withCredentials: true,
 });
 

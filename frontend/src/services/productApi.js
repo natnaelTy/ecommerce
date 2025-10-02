@@ -2,10 +2,10 @@ import axios from "axios";
 
 
 const productApi = axios.create({
-  baseURL: "http://localhost:5000/api/products",
+  baseURL: "https://ecommerce-ib95q.sevalla.app/api/products",
   withCredentials: true,
 });
 
-export const nPoint = "http://localhost:5000/";
+export const nPoint = "https://ecommerce-ib95q.sevalla.app/";
 
 export default productApi;

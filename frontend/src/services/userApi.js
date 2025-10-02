@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Axios instance
 const userApi = axios.create({
-  baseURL: "http://localhost:5000/api/auth",
+  baseURL: "https://ecommerce-ib95q.sevalla.app/api/auth",
   withCredentials: true,
 });
 
