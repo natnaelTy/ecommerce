@@ -11,8 +11,6 @@ import { loginUser } from "../../store/user/userSlice";
 import { Eye, EyeOff } from "lucide-react";
 import { LiaTimesSolid } from "react-icons/lia";
 
-
-
 const userSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z
@@ -63,7 +61,8 @@ const LogIn = () => {
   };
 
   function handleGoogleAuth() {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href =
+      "https://ecommerce-ib95q.sevalla.app/api/auth/google";
   }
 
   function handleClose() {
@@ -80,7 +79,7 @@ const LogIn = () => {
         <LiaTimesSolid />
       </button>
       {/* main container */}
-      <div className="flex items-center justify-between max-w-[800px] h-[500px] w-full shadow-xl rounded-md">
+      <div className="flex items-center justify-between max-w-[900px] h-[550px] w-full shadow-xl rounded-md">
         <div className="bg-gradient-to-br from-yellow-300 to-amber-500 w-full h-full rounded-l-md flex items-center justify-center h-full flex-col text-center px-4 gap-2 hidden lg:flex">
           <h1 className="text-xl md:text-2xl lg:text-3xl font-semibold text-white">
             Hey Welcome back!
@@ -162,6 +161,10 @@ const LogIn = () => {
                 </span>
               )}
             </label>
+            {/* forgot password button */}
+            <button className="ml-auto text-amber-500 underline text-xs hover:text-amber-300">
+              <Link to={"/forgotpassword"}>Forgot your password?</Link>
+            </button>
 
             {/* submit */}
             <button type="submit" disabled={loading} className="smallButton">
@@ -174,9 +177,16 @@ const LogIn = () => {
                 "Login"
               )}
             </button>
-              {/* forgot password button */}
-            <button className="text-amber-500 underline text-xs hover:text-amber-300">
-              <Link to={"/forgotpassword"}>Forgot your password?</Link>
+
+            <button className="text-gray-700 text-xs">
+              Doesn't have an account?{" "}
+              <Link
+                className="text-amber-500 hover:text-amber-400 hover:underline"
+                to={"/signup"}
+              >
+                {" "}
+                Signup{" "}
+              </Link>
             </button>
           </form>
         </div>
