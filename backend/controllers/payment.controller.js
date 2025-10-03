@@ -27,8 +27,8 @@ export const InitializePayment = async (req, res) => {
         last_name: "",
         phone_number: phone,
         tx_ref,
-        callback_url: "http://localhost:5000/api/payment/verify",
-        return_url: `https://abcd1234.ngrok-free.app/payment-success?tx_ref=${tx_ref}`,
+        callback_url: "https://ecommerce-ib95q.sevalla.app/api/payment/verify",
+        return_url: `https://ecommerce-blue-beta-93.vercel.app/payment-success?tx_ref=${tx_ref}`,
         customization: {
           title: "Product Checkout",
           description: "Payment for products",
