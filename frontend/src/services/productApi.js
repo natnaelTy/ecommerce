@@ -6,6 +6,6 @@ const productApi = axios.create({
   withCredentials: true,
 });
 
-export const nPoint = "https://ecommerce-ib95q.sevalla.app/";
+export const nPoint = "https://ecommerce-ib95q.sevalla.app";
 
 export default productApi;
