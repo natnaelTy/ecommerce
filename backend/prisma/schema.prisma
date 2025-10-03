@@ -53,6 +53,8 @@ model Admin {
   updatedAt    DateTime  @updatedAt
   isActive     Boolean?  @default(true)
   lastLogin    DateTime?
+
+  @@map("admin")
 }
 
 model Products {
@@ -88,12 +90,16 @@ model Review {
   rating    Int
   comment   String
   createdAt DateTime @default(now())
+
+  @@map("review")
 }
 
 model Newarrival {
   id         Int       @id @default(autoincrement())
   productId  Int       @unique
   products   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("newarrival")
 }
 
 model WishList {
@@ -103,7 +109,9 @@ model WishList {
   product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int
 
-  @@unique([userId, productId]) // Prevent duplicate wishlist items for a user
+  @@unique([userId, productId]) 
+
+  @@map("wishList")
 }
 
 model Cart {
@@ -114,7 +122,9 @@ model Cart {
   productId Int
   quantity  Int      @default(1)
 
-  @@unique([userId, productId]) // Prevent duplicate cart items for a user
+  @@unique([userId, productId]) 
+
+  @@map("cart")
 }
 
 model Category {
@@ -122,6 +132,8 @@ model Category {
   name        String            @unique
   slug        String            @unique
   products    ProductCategory[]
+
+  @@map("category")
 }
 
 model ProductCategory {
@@ -134,6 +146,8 @@ model ProductCategory {
   @@id([productId, categoryId])
   @@index([categoryId])
   @@index([productId])
+
+  @@map("productCategory")
 }
 
 model Coupon {
@@ -143,6 +157,8 @@ model Coupon {
   type      String   
   expiresAt DateTime?
   active    Boolean  @default(true)
+
+  @@map("coupon")
 }
 
 model Order {
@@ -157,6 +173,8 @@ model Order {
   updatedAt DateTime    @updatedAt
   addressId  Int?    
   address    Address? @relation(fields: [addressId], references: [id])
+
+  @@map("order")
 }
 
 model Address {
@@ -169,6 +187,8 @@ model Address {
   postalCode String?
   phone     String?
   orders    Order[]
+
+  @@map("address")
 }
 
 model OrderItem {
@@ -179,6 +199,8 @@ model OrderItem {
   price     Float
   order     Order   @relation(fields: [orderId], references: [id])
   product   Products @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("orderItem")
 }
 
 model Payment {
@@ -192,6 +214,8 @@ model Payment {
   txRef     String?  @unique
   currency  String?
   email     String?
+
+  @@map("payment")
 }
 
 model Notification {
@@ -203,6 +227,8 @@ model Notification {
   type        String   
   isRead      Boolean  @default(false)
   createdAt   DateTime @default(now())
+
+  @@map("notification")
 }
 
 model ContactMessage {
@@ -212,4 +238,6 @@ model ContactMessage {
   message  String
   createdAt  DateTime @default(now())
   isRead    Boolean @default(false)
+
+  @@map("contactMessage")
 }
