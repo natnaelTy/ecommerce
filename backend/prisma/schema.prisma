@@ -16,6 +16,8 @@ datasource db {
 enum UserRole {
   ADMIN
   SUPER_ADMIN
+
+  @@map("userRole")
 }
 
 model User {
@@ -40,6 +42,8 @@ model User {
   notifications Notification[]
   review      Review[]
   address     Address[]
+
+  @@map("user")
 }
 
 model Admin {
