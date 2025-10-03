@@ -75,6 +75,8 @@ model Products {
   orderItems  OrderItem[]
   categories  ProductCategory[]
   review      Review[]
+
+  @@map("products")
 }
 
 model Review {
