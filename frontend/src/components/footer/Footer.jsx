@@ -74,9 +74,9 @@ const Footer = () => {
 
     <div className="bg-gray-100 py-1 w-full ">
         <div className="max-w-[1000px] w-full mx-auto flex items-center justify-between px-3">
-            <p className="text-slate-800 text-sm"> &copy; {new Date().getFullYear()} Mesay Furniture. All rights reserved.</p>
+            <p className="text-slate-800 text-xs md:text-sm"> &copy; {new Date().getFullYear()} Mesay Furniture. All rights reserved.</p>
             <div>
-                <img src="./images/chapapay.png" alt="methods" title="Chapa Payment" className="h-12"/>
+                <img src="./images/chapapay.png" alt="methods" title="Chapa Payment" className="h-9 md:h-12"/>
             </div>
         </div>
     </div>
