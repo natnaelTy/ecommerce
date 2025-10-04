@@ -367,9 +367,14 @@ export const changePassword = async (req, res) => {
 
 // Logout
 export const logout = (_, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,      
+    sameSite: "none",  
+  });
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
+
 
 // Token verification and get user details
 export const getMe = async (req, res) => {
