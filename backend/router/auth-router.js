@@ -14,7 +14,7 @@ import {
 } from "../controllers/auth.controller.js";
 import passport from "passport";
 import multer from "multer";
-import { authMiddleware } from "../middleware/verifyToken.js";
+
 
 
 const userRouter = express.Router();
