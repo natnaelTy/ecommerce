@@ -41,10 +41,10 @@ userRouter.post("/resetPassword/:token", resetPassword);
 
 userRouter.post("/logout", logout);
 
-userRouter.get("/me", authMiddleware, getMe);
+userRouter.get("/me", getMe);
 
-userRouter.put("/update-profile", upload.single("image"), authMiddleware, updateUserProfile);
+userRouter.put("/update-profile", upload.single("image"), updateUserProfile);
 
-userRouter.put("/change-password", authMiddleware, changePassword);
+userRouter.put("/change-password", changePassword);
 
 export default userRouter;
