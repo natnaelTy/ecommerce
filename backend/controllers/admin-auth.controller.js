@@ -158,9 +158,11 @@ export const updateAdminProfile = async (req, res) => {
     );
 
     if (!isPasswordValid) {
-      return res.status(401).json({ success: false, error: "Current password is incorrect" });
+      return res
+        .status(401)
+        .json({ success: false, error: "Current password is incorrect" });
     }
-    
+
     const dataToUpdate = {
       fullName,
       email,
@@ -187,8 +189,12 @@ export const updateAdminProfile = async (req, res) => {
 // logout
 export const logoutAdmin = async (req, res) => {
   try {
-    res.clearCookie("token");
-    res.json({ message: "Logout successful" });
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+    res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (error) {
     console.error("Error logging out admin:", error);
     res.status(500).json({ error: "Internal server error" });
