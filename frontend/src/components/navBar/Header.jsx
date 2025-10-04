@@ -17,7 +17,7 @@ export default function Header() {
   const { wishlistItems, cart } = useSelector((state) => state.product);
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const [showSearchInput, setShowSearchInput] = useState(false);
-
+const [showMenu, setShowMenu] = useState(false);
   useEffect(() => {
     if (user?.id && isAuthenticated) {
       dispatch(fetchWishlist(user.id));
@@ -38,7 +38,34 @@ export default function Header() {
           <span className="text-amber-500 ">Mesay </span>Furniture.
         </Link>
 
-        <Menu className="block md:hidden" />
+        <Menu onClick={() => setShowMenu(!showMenu)} className="block z-20 md:hidden" />
+
+       <div onClick={() => setShowMenu(false)} className={showMenu ? "bg-black md:hidden opacity-50 w-full min-h-screen absolute z-1 right-0 top-0" : "hidden"}></div>
+
+       <div className={`fixed top-0 left-0 z-10 h-full w-64 bg-white shadow-md p-2 md:hidden transition-transform duration-300 ${showMenu ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`} style={{ maxHeight: "100vh" }}>
+        <div
+          className="flex flex-col items-center gap-4 capitalize text-xs md:text-sm md:hidden absolute top-16 left-0 bg-white w-full h-auto pb-4"
+        >
+          <NavLink to={"/"} className="hoverLink">
+            Home
+          </NavLink>
+          <NavLink to={"/shop"} className="hoverLink">
+            Shop
+          </NavLink>
+          <NavLink to={"/about"} className="hoverLink">
+            About us
+          </NavLink>
+          <NavLink to={"/contact-us"} className="hoverLink">
+            Contact us
+          </NavLink>
+        </div>
+
+        <div className={isAuthenticated ? "hidden" : "flex items-center space-x-4 absolute top-50 right-10 text-sm"}>
+        <Link to={"/login"} className="bg-amber-500 hover:transparent border-1 border-amber-500 px-4 py-1.5 rounded-md text-white">Log In</Link>
+        <Link to={"/signup"} className="bg-white border-1 border-amber-500 px-4 py-1.5 rounded-md text-amber-500 hover:bg-amber-500 hover:text-white">Sign up</Link>
+        </div>
+        </div>
+
 
         <div
           className={
