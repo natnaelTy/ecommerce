@@ -43,7 +43,8 @@ const [showMenu, setShowMenu] = useState(false);
        <div onClick={() => setShowMenu(false)} className={showMenu ? "bg-black md:hidden opacity-50 w-full min-h-screen absolute z-1 right-0 top-0" : "hidden"}></div>
 
        <div className={`fixed top-0 left-0 z-10 h-full w-64 bg-white shadow-md p-2 md:hidden transition-transform duration-300 ${showMenu ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`} style={{ maxHeight: "100vh" }}>
-        <div
+        
+        <div onClick={() => setShowMenu(false)}
           className="flex flex-col items-center gap-4 capitalize text-xs md:text-sm md:hidden absolute top-16 left-0 bg-white w-full h-auto pb-4"
         >
           <NavLink to={"/"} className="hoverLink">
