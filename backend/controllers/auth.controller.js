@@ -214,7 +214,7 @@ export const forgotPassword = async (req, res) => {
     });
 
     // Send reset email
-    const resetUrl = `http://localhost:5173/resetpassword?token=${resetToken}`;
+    const resetUrl = `https://ecommerce-blue-beta-93.vercel.app/resetpassword?token=${resetToken}`;
     await sendEmail(
       email,
       "Password Reset Request",
@@ -480,8 +480,7 @@ export const googleCallback = (req, res, next) => {
       user.id,
       "USER"
     );
-    console.log("Generated Token:", token);
-    res.redirect(`https://e-commerce-2a4vk.sevalla.page?token=${token}`);
+    res.redirect(`https://ecommerce-blue-beta-93.vercel.app?token=${token}`);
   })(req, res, next);
 };
 
