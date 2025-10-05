@@ -15,7 +15,9 @@ export const createUser = createAsyncThunk(
   "user/createUser",
   async (validatedUser, { rejectWithValue }) => {
     try {
-      const response = await userApi.post("/signup", validatedUser);
+      const response = await userApi.post("/signup", validatedUser, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Signup failed");
@@ -28,7 +30,9 @@ export const verifyEmail = createAsyncThunk(
   "user/verifyEmail",
   async (code, { rejectWithValue }) => {
     try {
-      const response = await userApi.post("/verifyEmail", { code });
+      const response = await userApi.post("/verifyEmail", { code }, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -43,7 +47,9 @@ export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (validatedUser, { rejectWithValue }) => {
     try {
-      const response = await userApi.post("/login", validatedUser);
+      const response = await userApi.post("/login", validatedUser, {
+        withCredentials: true,
+      });
       if (response.status === 200) {
         window.location.href = "/";
       }
@@ -124,7 +130,7 @@ export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await userApi.get("/me");
+      const response = await userApi.get("/me", { withCredentials: true });
       return response.data.user;
     } catch (error) {
       return rejectWithValue(error.message);
