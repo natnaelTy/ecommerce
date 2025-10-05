@@ -14,7 +14,7 @@ import {
 } from "../controllers/auth.controller.js";
 import passport from "passport";
 import multer from "multer";
-import { verifyToken } from "../middleware/verifyToken.js";
+
 
 
 const userRouter = express.Router();
@@ -41,10 +41,10 @@ userRouter.post("/resetPassword/:token", resetPassword);
 
 userRouter.post("/logout", logout);
 
-userRouter.get("/me", verifyToken, getMe);
+userRouter.get("/me", getMe);
 
-userRouter.put("/update-profile", verifyToken, upload.single("image"), updateUserProfile);
+userRouter.put("/update-profile", upload.single("image"), updateUserProfile);
 
-userRouter.put("/change-password", verifyToken, changePassword);
+userRouter.put("/change-password", changePassword);
 
 export default userRouter;

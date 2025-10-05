@@ -181,6 +181,8 @@ export const login = async (req, res) => {
 
     const token = generateTokenSetCookie(res, user.id, "USER");
 
+    console.log("User logged in:", user);
+
     res
       .status(200)
       .json({ success: true, message: "Login successful", user, token });
@@ -405,6 +407,7 @@ export const getMe = async (req, res) => {
         .status(401)
         .json({ success: false, message: "User not found" });
     }
+    console.log("getMe user:", user);
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.error("Error in getMe:", error);
