@@ -16,7 +16,21 @@ dotenv.config();
 const app = express();
 app.use(passport.initialize());
 
-app.use(cors({origin: "https://ecommerce-blue-beta-93.vercel.app", credentials: true}));
+
+const allowedOrigins = [
+  "https://ecommerce-blue-beta-93.vercel.app",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
+
 
 app.use(express.json());
 app.use(cookieParser());
