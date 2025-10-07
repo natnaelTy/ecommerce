@@ -110,7 +110,7 @@ export default function AdminDashboard() {
             <ChartNoAxesCombined className="text-green-500 bg-green-100 rounded-md p-2 size-10 md:size-12" />
             <div className="flex flex-col items-start">
               <span className="text-xl font-semibold">
-               ({formatCurrencyShort(payments?.reduce((total, payment) => total + payment.amount, 0))})
+               {formatCurrencyShort(payments?.reduce((total, payment) => total + payment.amount, 0))}
               </span>
               <span className="text-gray-500 text-xs md:text-base">Total Revenue</span>
             </div>
