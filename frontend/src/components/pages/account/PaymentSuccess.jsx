@@ -10,7 +10,7 @@ export default function PaymentSuccess() {
 
   useEffect(() => {
     if (tx_ref) {
-      axios.get(`http://localhost:5000/api/payment/verify/${tx_ref}`)
+      axios.get(`https://ecommerce-ib95q.sevalla.app/api/payment/verify/${tx_ref}`)
         .then(res => console.log("Verified:", res.data))
         .catch(err => console.error("Verification failed", err));
     }
