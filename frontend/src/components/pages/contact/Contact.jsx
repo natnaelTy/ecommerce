@@ -20,7 +20,7 @@ export default function Contact() {
     e.preventDefault();
     setLoading(true);
     const response = await axios.post(
-      "http://localhost:5000/api/admin/send-message",
+      "https://ecommerce-ib95q.sevalla.app/api/admin/send-message",
       form
     );
     const data = await response.data;
