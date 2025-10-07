@@ -66,13 +66,7 @@ export default function Contact() {
         </div>
         {/* Random Map Embed */}
         <div className="mb-6 rounded overflow-hidden">
-          <iframe
-            title="Mesay Furniture Location"
-            src="https://www.openstreetmap.org/export/embed.html?bbox=38.7468%2C9.0054%2C38.7568%2C9.0154&amp;layer=mapnik"
-            className="w-full h-58 border-0"
-            allowFullScreen=""
-            loading="lazy"
-          ></iframe>
+          <iframe title="Mesay Furniture" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3805.0495103030757!2d38.487908!3d7.041415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x17b14f25389226c3%3A0xf4cfe481bf1e55c!2sMesay%20Furnitures!5e1!3m2!1sen!2set!4v1759849999614!5m2!1sen!2set" allowfullscreen="" loading="lazy" className="w-full h-58 border-0" ></iframe>
         </div>
         <h2 className="font-semibold text-2xl mt-10 mb-6">
           Send us a message!
