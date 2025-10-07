@@ -106,7 +106,7 @@ export const fetchPayments = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/payment/payments"
+        "https://ecommerce-ib95q.sevalla.app/api/payment/payments"
       );
       return response.data.allPayments;
     } catch (err) {
@@ -121,7 +121,7 @@ export const updatePayment = createAsyncThunk(
   async ({ orderId, status }, thunkAPI) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/payment/updatePayment/${orderId}`,
+        `https://ecommerce-ib95q.sevalla.app/api/payment/updatePayment/${orderId}`,
         { status }
       );
       return res.data;
