@@ -1,5 +1,6 @@
-import Header from "../components/navBar/Header";
-import Footer from "../components/footer/Footer";
+
+import Footer from "../clientLayout/footer/Footer";
+import Header from "../clientLayout/Header/Header";
 import { Outlet } from "react-router-dom";
 
 function ClientLayout() {
