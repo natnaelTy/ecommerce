@@ -12,13 +12,12 @@ import {
   updateUserProfile,
   changePassword
 } from "../controllers/auth.controller.js";
-import passport from "passport";
 import multer from "multer";
-
+import passportConfig from "../utils/passport.config.js";
 
 
 const userRouter = express.Router();
-userRouter.use(passport.initialize());
+userRouter.use(passportConfig.initialize());
 
 // multer for file uploads 
 const upload = multer({ dest: "uploads/" });

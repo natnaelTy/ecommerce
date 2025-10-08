@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from 'dotenv';
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import passport from "passport";
+import passportConfig from "./utils/passport.config.js";
 import productRoute from "./router/product-route.js";
 import prisma  from "./prisma/prismaClient.js";
 import notificationRouter from "./router/notificationRoutes.js";
@@ -14,7 +14,7 @@ import chatbotRouter from "./router/chatbot-router.js";
 dotenv.config();
 
 const app = express();
-app.use(passport.initialize());
+app.use(passportConfig.initialize());
 
 app.use(cors({origin: "https://ecommerce-blue-beta-93.vercel.app", credentials: true}));
 
