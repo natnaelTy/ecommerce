@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import prisma from "../prisma/prismaClient.js";
 
 
-passport.use(
+passportConfig.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
@@ -37,8 +37,8 @@ passport.use(
 );
 
 // optional but harmless for token-only flows
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
+passportConfig.serializeUser((user, done) => done(null, user.id));
+passportConfig.deserializeUser(async (id, done) => {
   try {
     const user = await prisma.user.findUnique({ where: { id } });
     done(null, user);
