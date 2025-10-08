@@ -379,14 +379,14 @@ export const logout = (_, res) => {
 
 // Token verification and get user details
 export const getMe = async (req, res) => {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.cookies.refreshToken;
   try {
     if (!token) {
       return res
         .status(401)
         .json({ success: false, message: "Not authenticated" });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || process.env.JWT_REFRESH_SECRET);
     if (!decoded.id) {
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
