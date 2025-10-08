@@ -1,8 +1,7 @@
 import prisma from "../prisma/prismaClient.js";
 import bcrypt from "bcryptjs";
-import { generateTokenSetCookie } from "../utils/generateTokenSetCookie.js";
+import { generateTokenSetCookie, saveRefreshTokenForUser, issueTokens, signAccessToken } from "../utils/generateTokenSetCookie.js";
 import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import {
@@ -415,75 +414,46 @@ export const getMe = async (req, res) => {
   }
 };
 
-// Google OAuth2
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.CALLBACKURL,
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        const email = profile.emails[0].value;
-        const fullName = profile.displayName;
-        const profilePhoto = profile.photos[0].value;
-        const emailVerified = profile.emails[0].verified;
 
-        let user = await prisma.user.findUnique({ where: { email } });
-
-        if (!user) {
-          const hashedPassword = await bcrypt.hash("", 10);
-          user = await prisma.user.create({
-            data: {
-              fullName,
-              email,
-              password: hashedPassword,
-              profileImage: profilePhoto,
-              isEmailVerified: emailVerified,
-            },
-          });
-        }
-
-        return done(null, user);
-      } catch (err) {
-        return done(err);
-      }
-    }
-  )
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await prisma.user.findUnique({ where: { id } });
-    done(null, user);
-  } catch (err) {
-    done(err, null);
-  }
-});
-
-// Google OAuth2 Login Route
+// Google OAuth2 login route
 export const googleLogin = passport.authenticate("google", {
   scope: ["profile", "email"],
+  accessType: "offline",
+  prompt: "consent",
 });
 
 // Google OAuth2 Callback
 export const googleCallback = (req, res, next) => {
-  passport.authenticate("google", (err, user) => {
+  passport.authenticate("google", { session: false }, (err, user) => {
     if (err) return next(err);
-    if (!user) return res.redirect("/login");
+    if (!user) return res.redirect(`https://ecommerce-blue-beta-93.vercel.app/login`);
 
-    console.log(user);
-    const token = generateTokenSetCookie(
-      res,
-      user.id,
-      "USER"
-    );
-    res.redirect(`https://ecommerce-blue-beta-93.vercel.app?token=${token}`);
+    const tokens = issueTokens(res, user.id, { role: "USER" });
+    const redirectBase = "https://ecommerce-blue-beta-93.vercel.app";
+    const redirectUrl = new URL(redirectBase);
+    redirectUrl.searchParams.set("token", tokens.accessToken);
+    return res.redirect(redirectUrl.toString());
   })(req, res, next);
 };
 
+
+// Refresh Token
+export const refreshToken = async (req, res) => {
+  const refresh = req.cookies.refreshToken;
+  if (!refresh) return res.status(401).json({ error: "No refresh token" });
+
+  try {
+    const payload = jwt.verify(refresh, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
+    const userId = payload.id;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user?.refreshToken && user.refreshToken !== refresh) {
+      return res.status(401).json({ error: "Invalid refresh token" });
+    }
+
+    const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "15m" });
+    res.json({ accessToken });
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid refresh token" });
+  }
+};
