@@ -1,5 +1,5 @@
 import prisma from "../prisma/prismaClient.js";
-import { uploadProfilePicture, uploadProductImage } from "../utils/cloudinary.js";
+import { uploadProductImage } from "../utils/cloudinary.js";
 
 
 // Get all users
