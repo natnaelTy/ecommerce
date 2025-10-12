@@ -27,7 +27,7 @@ model User {
   gender   String?
   profileImage String?
   birthday DateTime?
-  phoneNumber String @unique
+  phoneNumber String? @unique
   password String
   createdAt DateTime @default(now())
   isEmailVerified Boolean @default(false)
