@@ -16,10 +16,10 @@ dotenv.config();
 
 // signup
 export const signup = async (req, res) => {
-  const { email, fullName, password, phoneNumber, createdAt } = req.body;
+  const { email, fullName, password, phoneNumber } = req.body;
 
   try {
-    if (!email || !fullName || !password || !phoneNumber) {
+    if (!email || !fullName || !password) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -47,7 +47,6 @@ export const signup = async (req, res) => {
         email,
         password: hashedPassword,
         phoneNumber,
-        createdAt,
         verificationCode,
         verificationCodeExpiresAt: new Date(Date.now() + 3600000), // 1 hour
       },
@@ -63,7 +62,6 @@ export const signup = async (req, res) => {
       user: {
         fullName: newUser.fullName,
         email: newUser.email,
-        phoneNumber: newUser.phoneNumber,
         token,
       },
     });
