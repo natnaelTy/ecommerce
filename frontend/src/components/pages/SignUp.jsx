@@ -12,7 +12,6 @@ import { Toaster, toast } from "react-hot-toast";
 import { createUser } from "../../store/user/userSlice";
 import { Eye, EyeOff } from "lucide-react";
 
-axios.defaults.withCredentials = true;
 
 const SignUp = () => {
   const navigate = useNavigate();
