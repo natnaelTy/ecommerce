@@ -479,12 +479,6 @@ export const refreshToken = async (req, res) => {
       refresh,
       process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
     );
-    const userId = payload.id;
-
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (user?.refreshToken && user.refreshToken !== refresh) {
-      return res.status(401).json({ error: "Invalid refresh token" });
-    }
 
     const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
       expiresIn: "15m",
