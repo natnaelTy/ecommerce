@@ -46,36 +46,45 @@ export const signup = async (req, res) => {
       100000 + Math.random() * 900000
     ).toString();
 
-    const newUser = await prisma.user.create({
-      data: {
-        fullName,
-        email,
-        password: hashedPassword,
-        phoneNumber,
-        verificationCode,
-        verificationCodeExpiresAt: new Date(Date.now() + 3600000), // 1 hour
-      },
-    });
+    try {
+      const newUser = await prisma.user.create({
+        data: {
+          fullName,
+          email,
+          password: hashedPassword,
+          phoneNumber,
+          verificationCode,
+          verificationCodeExpiresAt: new Date(Date.now() + 3600000),
+        },
+      });
 
-    const token = generateTokenSetCookie(res, newUser.id, "USER");
-    console.log("Generated token:", token);
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Token generation failed" });
+      let token;
+      try {
+        token = generateTokenSetCookie(res, newUser.id, "USER");
+      } catch (err) {
+        console.error("Error generating token or setting cookie:", err);
+        return res.status(500).json({ error: "Token generation failed" });
+      }
+
+      try {
+        await sendVerificationCode(email, verificationCode);
+      } catch (err) {
+        console.error("Error sending verification code:", err);
+      }
+
+      res.status(201).json({
+        success: true,
+        message: "User created successfully",
+        user: {
+          fullName: newUser.fullName,
+          email: newUser.email,
+          token,
+        },
+      });
+    } catch (err) {
+      console.error("Signup failed:", err);
+      res.status(500).json({ error: "Server error" });
     }
-
-    await sendVerificationCode(email, verificationCode);
-
-    res.status(201).json({
-      success: true,
-      message: "User created successfully",
-      user: {
-        fullName: newUser.fullName,
-        email: newUser.email,
-        token,
-      },
-    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
