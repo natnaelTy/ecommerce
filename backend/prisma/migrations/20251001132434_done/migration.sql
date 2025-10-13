@@ -12,6 +12,10 @@ ALTER TABLE `products` DROP FOREIGN KEY `Products_newarrivalId_fkey`;
 -- DropIndex
 DROP INDEX `Products_newarrivalId_fkey` ON `products`;
 
+--Altertable
+ALTER TABLE `user`
+ADD COLUMN `refreshToken` VARCHAR(255) NULL;
+
 -- AlterTable
 ALTER TABLE `products` DROP COLUMN `newarrivalId`,
     DROP COLUMN `review`,
@@ -24,7 +28,6 @@ ALTER TABLE `products` DROP COLUMN `newarrivalId`,
 ALTER TABLE `user` ADD COLUMN `birthday` DATETIME(3) NULL,
     ADD COLUMN `gender` VARCHAR(191) NULL,
     ADD COLUMN `profileImage` VARCHAR(191) NULL;
-    ADD COLUMN `refreshToken` VARCHAR(255) NULL;
 
 -- CreateTable
 CREATE TABLE `Admin` (
