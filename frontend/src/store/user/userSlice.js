@@ -47,6 +47,7 @@ export const loginUser = createAsyncThunk(
       if (response.status === 200) {
         window.location.href = "/";
       }
+       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
