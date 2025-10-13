@@ -24,7 +24,7 @@ export const signup = async (req, res) => {
   const { email, fullName, password, phoneNumber } = req.body;
 
   try {
-    if (!email || !fullName || !password) {
+    if (!email || !fullName || !password || !phoneNumber) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
@@ -394,8 +394,15 @@ export const changePassword = async (req, res) => {
 export const logout = (_, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
