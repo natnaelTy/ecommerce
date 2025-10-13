@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const userApi = axios.create({ baseURL: "https://ecommerce-ib95q.sevalla.app/api/auth" });
+const userApi = axios.create({ baseURL: "https://ecommerce-ib95q.sevalla.app/api/auth", withCredentials: true});
 
-userApi.defaults.withCredentials = true;
 
 export default userApi;
