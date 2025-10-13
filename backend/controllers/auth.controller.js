@@ -1,6 +1,11 @@
 import prisma from "../prisma/prismaClient.js";
 import bcrypt from "bcryptjs";
-import { generateTokenSetCookie, saveRefreshTokenForUser, issueTokens, signAccessToken } from "../utils/generateTokenSetCookie.js";
+import {
+  generateTokenSetCookie,
+  saveRefreshTokenForUser,
+  issueTokens,
+  signAccessToken,
+} from "../utils/generateTokenSetCookie.js";
 import passport from "passport";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -53,6 +58,12 @@ export const signup = async (req, res) => {
     });
 
     const token = generateTokenSetCookie(res, newUser.id, "USER");
+    console.log("Generated token:", token);
+    if (!token) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Token generation failed" });
+    }
 
     await sendVerificationCode(email, verificationCode);
 
@@ -291,8 +302,8 @@ export const updateUserProfile = async (req, res) => {
   try {
     const { fullName, email, phoneNumber, gender, birthday } = req.body;
     const profileImage = req.file && req.file.path;
-     console.log(profileImage)
-     if (!profileImage) {
+    console.log(profileImage);
+    if (!profileImage) {
       return res.status(400).json({ error: "No file uploaded" });
     }
     // profile image, upload it to Cloudinary
@@ -343,21 +354,27 @@ export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    console.log(currentPassword, newPassword)
+    console.log(currentPassword, newPassword);
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid current password" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid current password" });
     }
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },
     });
-    res.status(200).json({ success: true, message: "Password changed successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server error" });
@@ -368,12 +385,11 @@ export const changePassword = async (req, res) => {
 export const logout = (_, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: true,      
-    sameSite: "none",  
+    secure: true,
+    sameSite: "none",
   });
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
-
 
 // Token verification and get user details
 export const getMe = async (req, res) => {
@@ -384,7 +400,10 @@ export const getMe = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Not authenticated" });
     }
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || process.env.JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || process.env.JWT_REFRESH_SECRET
+    );
     if (!decoded.id) {
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
@@ -412,7 +431,6 @@ export const getMe = async (req, res) => {
   }
 };
 
-
 // Google OAuth2 login route
 export const googleLogin = passport.authenticate("google", {
   scope: ["profile", "email"],
@@ -424,7 +442,8 @@ export const googleLogin = passport.authenticate("google", {
 export const googleCallback = (req, res, next) => {
   passport.authenticate("google", { session: false }, (err, user) => {
     if (err) return next(err);
-    if (!user) return res.redirect(`https://ecommerce-blue-beta-93.vercel.app/login`);
+    if (!user)
+      return res.redirect(`https://ecommerce-blue-beta-93.vercel.app/login`);
 
     const tokens = issueTokens(res, user.id, { role: "USER" });
     const redirectBase = "https://ecommerce-blue-beta-93.vercel.app";
@@ -434,14 +453,16 @@ export const googleCallback = (req, res, next) => {
   })(req, res, next);
 };
 
-
 // Refresh Token
 export const refreshToken = async (req, res) => {
   const refresh = req.cookies.refreshToken;
   if (!refresh) return res.status(401).json({ error: "No refresh token" });
 
   try {
-    const payload = jwt.verify(refresh, process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET);
+    const payload = jwt.verify(
+      refresh,
+      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
+    );
     const userId = payload.id;
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -449,7 +470,9 @@ export const refreshToken = async (req, res) => {
       return res.status(401).json({ error: "Invalid refresh token" });
     }
 
-    const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "15m" });
+    const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+      expiresIn: "15m",
+    });
     res.json({ accessToken });
   } catch (err) {
     return res.status(401).json({ error: "Invalid refresh token" });
