@@ -35,7 +35,7 @@ model User {
   resetPasswordCodeExpiresAt DateTime?
   verificationCode        String?
   verificationCodeExpiresAt DateTime?
-  
+  refreshToken               String?
   wishlists   WishList[]
   carts     Cart[]
   orders    Order[]
