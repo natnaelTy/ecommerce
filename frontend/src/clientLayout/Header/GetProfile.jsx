@@ -25,8 +25,8 @@ export default function GetProfile({ userId }) {
   }, [user, dispatch]);
 
   useEffect(() => {
-    dispatch(fetchUser(userId));
-  }, [userId, dispatch]);
+    dispatch(fetchUser());
+  }, [dispatch]);
 
   function handleLogout() {
     try {
