@@ -409,20 +409,17 @@ export const logout = (_, res) => {
 
 // Token verification and get user details
 export const getMe = async (req, res) => {
-  const token = req.cookies.token || req.cookies.refreshToken;
   try {
+    const token = req.cookies.token;
     if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "Not authenticated" });
+      return res.status(401).json({ success: false, message: "Not authenticated" });
     }
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || process.env.JWT_REFRESH_SECRET
-    );
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded.id) {
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
+
     const user = await prisma.user.findUnique({
       where: { id: decoded.id },
       select: {
@@ -434,15 +431,17 @@ export const getMe = async (req, res) => {
         isEmailVerified: true,
       },
     });
+
     if (!user) {
-      return res
-        .status(401)
-        .json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
     }
-    console.log("getMe user:", user);
+
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.error("Error in getMe:", error);
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ success: false, message: "Token expired" });
+    }
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -479,6 +478,12 @@ export const refreshToken = async (req, res) => {
       refresh,
       process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET
     );
+    const userId = payload.id;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (user?.refreshToken && user.refreshToken !== refresh) {
+      return res.status(401).json({ error: "Invalid refresh token" });
+    }
 
     const accessToken = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
       expiresIn: "15m",
