@@ -1,10 +1,10 @@
 import express from "express";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import passportConfig from "./utils/passport.config.js";
 import productRoute from "./router/product-route.js";
-import prisma  from "./prisma/prismaClient.js";
+import prisma from "./prisma/prismaClient.js";
 import notificationRouter from "./router/notificationRoutes.js";
 import adminRouter from "./router/admin-route.js";
 import paymentRouter from "./router/payment-route.js";
@@ -16,25 +16,23 @@ dotenv.config();
 const app = express();
 app.use(passportConfig.initialize());
 
-const allowedOrigins = [
-  "https://ecommerce-blue-beta-93.vercel.app", 
-  "https://ecommerce-ib95q.sevalla.app",      
-  "http://localhost:5173"              
-];
+import cors from "cors";
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    console.error("❌ Not allowed by CORS:", origin);
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-}));
+const allowedOrigins = "https://ecommerce-blue-beta-93.vercel.app";
 
-
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.error("❌ Not allowed by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -65,5 +63,4 @@ app.use("/api/admin", adminRouter);
 // payment routes
 app.use("/api/payment", paymentRouter);
 // chatbot routes
-app.use("/api", chatbotRouter)
-
+app.use("/api", chatbotRouter);
