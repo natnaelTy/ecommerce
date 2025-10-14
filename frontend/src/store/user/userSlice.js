@@ -50,7 +50,6 @@ export const loginUser = createAsyncThunk(
     }
   }
 );
-      
 
 // forgot password
 export const forgotPassword = createAsyncThunk(
@@ -123,7 +122,7 @@ export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await userApi.get("/me"); 
+      const response = await userApi.get("/me");
       return response.data.user;
     } catch (error) {
       return rejectWithValue(
@@ -133,11 +132,10 @@ export const fetchUser = createAsyncThunk(
   }
 );
 
-
 // logout
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await userApi.post("/logout");
-   localStorage.removeItem("authToken");
+  localStorage.removeItem("authToken");
   return null;
 });
 
@@ -188,6 +186,8 @@ export const userSlice = createSlice({
         state.isAuthenticated = true;
         state.loading = false;
         state.user = action.payload.user;
+        const token = action.payload?.accessToken || action.payload?.token;
+        if (token) localStorage.setItem("authToken", token);
       })
       .addCase(createUser.rejected, (state, action) => {
         state.error = action.payload;
@@ -205,6 +205,8 @@ export const userSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
+        const token = action.payload?.accessToken || action.payload?.token;
+        if (token) localStorage.setItem("authToken", token);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;
@@ -238,6 +240,7 @@ export const userSlice = createSlice({
         state.error = null;
         state.user = null;
         state.isAuthenticated = false;
+        localStorage.removeItem("authToken");
       })
       // update user profile
       .addCase(updateUserProfile.pending, (state) => {
