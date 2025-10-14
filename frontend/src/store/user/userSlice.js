@@ -44,17 +44,28 @@ export const verifyEmail = createAsyncThunk(
 // login user
 export const loginUser = createAsyncThunk(
   "user/loginUser",
-  async (validatedUser, { rejectWithValue }) => {
+  async (validatedUser, { getState, rejectWithValue }) => {
     try {
-      const response = await userApi.post("/login", validatedUser);
-      if (response.data.token)
+      const state = getState();
+      const token = state.user.token;
+
+      const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
+      const response = await userApi.post("/login", validatedUser, {
+        headers: isMobile && token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (response.data.token) {
         localStorage.setItem("authToken", response.data.token);
+      }
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
 );
+
 
 // forgot password
 export const forgotPassword = createAsyncThunk(
