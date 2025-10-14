@@ -26,7 +26,7 @@ const upload = multer({ dest: "uploads/" });
 // Routes for authentication
 userRouter.get("/google", googleLogin);
 
-userRouter.get("/google/login", googleCallback);
+userRouter.get("/google/callback", googleCallback);
 
 userRouter.post("/signup", signup);
 
