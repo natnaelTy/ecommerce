@@ -1,5 +1,5 @@
 import axios from "axios";
-import store from "../store";
+import { store }from "../store";
 
 const userApi = axios.create({
   baseURL: "https://ecommerce-ib95q.sevalla.app/api/auth",
