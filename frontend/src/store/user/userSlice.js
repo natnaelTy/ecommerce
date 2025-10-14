@@ -7,6 +7,7 @@ const initialState = {
   loading: false,
   error: null,
   isAuthenticated: false,
+  token: null,
   notifications: [],
 };
 
@@ -16,6 +17,8 @@ export const createUser = createAsyncThunk(
   async (validatedUser, { rejectWithValue }) => {
     try {
       const response = await userApi.post("/signup", validatedUser);
+      if (response.data.token)
+        localStorage.setItem("authToken", response.data.token);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Signup failed");
@@ -44,10 +47,9 @@ export const loginUser = createAsyncThunk(
   async (validatedUser, { rejectWithValue }) => {
     try {
       const response = await userApi.post("/login", validatedUser);
-      if (response.status === 200) {
-        window.location.href = "/";
-      }
-       return response.data;
+      if (response.data.token)
+        localStorage.setItem("authToken", response.data.token);
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
     }
@@ -125,10 +127,20 @@ export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await userApi.get("/me");
+      const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+      let response;
+
+      if (isMobile) {
+        response = await userApi.get("/me");
+      } else {
+        response = await userApi.get("/me", { withCredentials: true });
+      }
+
       return response.data.user;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(
+        error.response?.data?.message || "Not authenticated"
+      );
     }
   }
 );
@@ -136,6 +148,7 @@ export const fetchUser = createAsyncThunk(
 // logout
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await userApi.post("/logout");
+   localStorage.removeItem("authToken");
   return null;
 });
 
@@ -185,7 +198,7 @@ export const userSlice = createSlice({
         state.error = null;
         state.isAuthenticated = true;
         state.loading = false;
-        state.user = action.payload;
+        state.user = action.payload.user;
       })
       .addCase(createUser.rejected, (state, action) => {
         state.error = action.payload;
@@ -202,7 +215,7 @@ export const userSlice = createSlice({
         state.error = null;
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload;
+        state.user = action.payload.user;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;
@@ -218,7 +231,7 @@ export const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.error = null;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
         state.loading = false;
       })
@@ -291,7 +304,7 @@ export const userSlice = createSlice({
       .addCase(markNotificationAsRead.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
+      });
   },
 });
 
