@@ -7,7 +7,6 @@ const initialState = {
   loading: false,
   error: null,
   isAuthenticated: false,
-  token: null,
   notifications: [],
 };
 
@@ -52,9 +51,6 @@ export const loginUser = createAsyncThunk(
   }
 );
       
-
-
-
 
 // forgot password
 export const forgotPassword = createAsyncThunk(
@@ -127,15 +123,7 @@ export const fetchUser = createAsyncThunk(
   "user/fetchUser",
   async (_, { rejectWithValue }) => {
     try {
-      const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-      let response;
-
-      if (isMobile) {
-        response = await userApi.get("/me");
-      } else {
-        response = await userApi.get("/me", { withCredentials: true });
-      }
-
+      const response = await userApi.get("/me"); 
       return response.data.user;
     } catch (error) {
       return rejectWithValue(
@@ -144,6 +132,7 @@ export const fetchUser = createAsyncThunk(
     }
   }
 );
+
 
 // logout
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
@@ -231,7 +220,7 @@ export const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.error = null;
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.isAuthenticated = true;
         state.loading = false;
       })
