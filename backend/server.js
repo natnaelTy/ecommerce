@@ -16,7 +16,6 @@ dotenv.config();
 const app = express();
 app.use(passportConfig.initialize());
 
-import cors from "cors";
 
 const allowedOrigins = "https://ecommerce-blue-beta-93.vercel.app";
 
