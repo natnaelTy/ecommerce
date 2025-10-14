@@ -17,16 +17,23 @@ const app = express();
 app.use(passportConfig.initialize());
 
 const allowedOrigins = [
-  "https://ecommerce-blue-beta-93.vercel.app"
+  "https://ecommerce-blue-beta-93.vercel.app", 
+  "https://ecommerce-ib95q.sevalla.app",      
+  "http://localhost:5173"              
 ];
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    callback(new Error("Not allowed by CORS"));
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    console.error("❌ Not allowed by CORS:", origin);
+    return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true
+  credentials: true,
 }));
+
 
 
 app.use(express.json());
