@@ -1,5 +1,5 @@
 import express from "express";
-import { InitializePayment, VerifyPayment , getAllPayments, getPaymentByOrderId } from "../controllers/payment.controller.js";
+import { InitializePayment, VerifyPayment , getAllPayments, getPaymentByOrderId, getPaymentsByUserId } from "../controllers/payment.controller.js";
 
 const paymentRouter = express.Router();
 
@@ -11,6 +11,8 @@ paymentRouter.get("/verify/:tx_ref", VerifyPayment);
 paymentRouter.get("/payments", getAllPayments);
 // get payment by order id
 paymentRouter.get("/updatePayment/:orderId", getPaymentByOrderId);
+// get payments by user id
+paymentRouter.get("/user/:userId", getPaymentsByUserId);
 
 
 export default paymentRouter;
