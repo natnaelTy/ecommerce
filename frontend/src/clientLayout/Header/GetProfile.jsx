@@ -9,7 +9,7 @@ import {
   logoutUser,
 } from "../../store/user/userSlice";
 import { useEffect } from "react";
-import { Settings, User, Headset, LogOut, Bell, Box } from "lucide-react";
+import { Settings, User, Headset, LogOut, Bell, Box, Banknote  } from "lucide-react";
 
 export default function GetProfile({ userId }) {
   const { isAuthenticated, user, notifications } = useSelector(
@@ -99,8 +99,8 @@ export default function GetProfile({ userId }) {
         </li>
         <li className="lihover">
           {" "}
-          <Link className="liLink" to={"/help-center"}>
-            <Headset className="size-5" /> Help center{" "}
+          <Link className="liLink" to={"/payments"}>
+            <Banknote  className="size-5" /> Payments{" "}
           </Link>
         </li>
       </ul>
