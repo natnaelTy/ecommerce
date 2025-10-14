@@ -19,17 +19,21 @@ app.use(passportConfig.initialize());
 
 const allowedOrigins = "https://ecommerce-blue-beta-93.vercel.app";
 
+app.use((req, res, next) => {
+  console.log("REQ ORIGIN:", req.headers.origin);
+  console.log("REQ COOKIES:", req.headers.cookie);
+  next();
+});
+
 app.use(
   cors({
-    origin: function (origin, callback) {
+    origin: (origin, callback) => {
+
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-      console.error("❌ Not allowed by CORS:", origin);
-      return callback(new Error("Not allowed by CORS"));
+      return allowedOrigins.includes(origin) ? callback(null, true) : callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
