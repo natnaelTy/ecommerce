@@ -34,7 +34,7 @@ import Cancellation from "./components/pages/account/Cancellation";
 import Contact from "./components/pages/contact/Contact";
 import Messages from "./components/pages/adminSide/messages/Messages";
 import Chatbot from "./components/pages/ChatBot";
-
+import UserPayments from "./components/pages/account/UserPayments";
 
 function App() {
   return (
@@ -51,6 +51,7 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<CheckOut />} />
           <Route path="/orders" element={<UsersOrders />} />
+          <Route path="/payments" element={<UserPayments />} />
           <Route path="/cancellation" element={<Cancellation />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
