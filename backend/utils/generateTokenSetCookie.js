@@ -8,6 +8,8 @@ const ACCESS_EXPIRES = "15m";
 const REFRESH_EXPIRES = "30d";
 const REFRESH_COOKIE_NAME = "refreshToken";
 
+const isProd = process.env.NODE_ENV === "production";
+
 export const generateTokenSetCookie = (res, userId, role) => {
   const token = jwt.sign({ id: userId, role }, process.env.JWT_SECRET, {
     expiresIn: "7d",
@@ -15,11 +17,10 @@ export const generateTokenSetCookie = (res, userId, role) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    domain: ".sevalla.app",
+    secure: isProd, 
+    sameSite: isProd ? "None" : "Lax",
+    domain: isProd ? ".sevalla.app" : undefined, 
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: "/",
   });
 
   return token;
@@ -44,11 +45,10 @@ function signRefreshToken(payload) {
 function setRefreshCookie(res, token) {
   res.cookie(REFRESH_COOKIE_NAME, token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "None",
-    domain: ".sevalla.app",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-    path: "/",
+    secure: isProd,
+    sameSite: isProd ? "None" : "Lax",
+    domain: isProd ? ".sevalla.app" : undefined,
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 }
 
