@@ -38,6 +38,39 @@ export const loginUser = createAsyncThunk(
   }
 );
 
+// update user profile
+export const updateUserProfile = createAsyncThunk(
+  "user/updateUserProfile",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await userApi.put("/update-profile", userData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update profile"
+      );
+    }
+  }
+);
+
+// change password
+export const changePassword = createAsyncThunk(
+  "user/changePassword",
+  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await userApi.put("/change-password", {
+        currentPassword,
+        newPassword,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to change password"
+      );
+    }
+  }
+);
+
 // get user
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
