@@ -135,7 +135,6 @@ export const fetchUser = createAsyncThunk(
 // logout
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   await userApi.post("/logout");
-  localStorage.removeItem("authToken");
   return null;
 });
 
@@ -186,8 +185,6 @@ export const userSlice = createSlice({
         state.isAuthenticated = true;
         state.loading = false;
         state.user = action.payload.user;
-        const token = action.payload?.accessToken || action.payload?.token;
-        if (token) localStorage.setItem("authToken", token);
       })
       .addCase(createUser.rejected, (state, action) => {
         state.error = action.payload;
@@ -205,8 +202,6 @@ export const userSlice = createSlice({
         state.loading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
-        const token = action.payload?.accessToken || action.payload?.token;
-        if (token) localStorage.setItem("authToken", token);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;
@@ -225,6 +220,7 @@ export const userSlice = createSlice({
         state.user = action.payload;
         state.isAuthenticated = true;
         state.loading = false;
+
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.error = action.payload;
