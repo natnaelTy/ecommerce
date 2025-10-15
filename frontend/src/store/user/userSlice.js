@@ -26,6 +26,21 @@ export const createUser = createAsyncThunk(
   }
 );
 
+// verify email
+export const verifyEmail = createAsyncThunk(
+  "user/verifyEmail",
+  async (code, { rejectWithValue }) => {
+    try {
+      const response = await userApi.post("/verifyEmail", { code });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Email verification failed"
+      );
+    }
+  }
+);
+
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (validatedUser, { rejectWithValue }) => {
@@ -66,6 +81,39 @@ export const changePassword = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to change password"
+      );
+    }
+  }
+);
+
+// forgot password
+export const forgotPassword = createAsyncThunk(
+  "user/forgotPassword",
+  async (email, { rejectWithValue }) => {
+    try {
+      const response = await userApi.post("/forgotPassword", email);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to send reset code"
+      );
+    }
+  }
+);
+
+// reset password
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async ({ token, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await userApi.post(`/resetPassword/:${token}`, {
+        token,
+        newPassword,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Password reset failed"
       );
     }
   }
