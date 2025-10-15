@@ -26,8 +26,6 @@ export const createUser = createAsyncThunk(
   }
 );
 
-// ...existing thunks (login, fetchUser, etc.) ...
-
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (validatedUser, { rejectWithValue }) => {
@@ -64,7 +62,35 @@ export const logoutUser = createAsyncThunk("auth/logout", async () => {
   return null;
 });
 
-// ...existing code (other thunks) ...
+// Fetch notifications
+export const fetchNotifications = createAsyncThunk(
+  "user/fetchNotifications",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await notificationApi.get(`/${userId}`);
+      return res.data.notifications;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to fetch notifications"
+      );
+    }
+  }
+);
+
+// Mark as read
+export const markNotificationAsRead = createAsyncThunk(
+  "user/markNotificationAsRead",
+  async (id, { rejectWithValue }) => {
+    try {
+      await notificationApi.patch(`/${id}/read`);
+      return id;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to update notification"
+      );
+    }
+  }
+);
 
 export const userSlice = createSlice({
   name: "user",
