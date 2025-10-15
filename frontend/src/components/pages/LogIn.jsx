@@ -46,6 +46,7 @@ const LogIn = () => {
       setErrors({});
       await dispatch(loginUser(validatedUser)).unwrap();
       toast.success("You successfully logged to your account");
+      navigate("/");
     } catch (err) {
       // Zod error message
       if (err instanceof z.ZodError) {
