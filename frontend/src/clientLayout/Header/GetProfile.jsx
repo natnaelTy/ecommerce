@@ -1,6 +1,7 @@
+
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import {
@@ -11,22 +12,37 @@ import {
 import { useEffect } from "react";
 import { Settings, User, Headset, LogOut, Bell, Box, Banknote  } from "lucide-react";
 
+
 export default function GetProfile({ userId }) {
   const { isAuthenticated, user, notifications } = useSelector(
     (state) => state.user
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  // handle token in redirect url
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+    if (token) {
+      localStorage.setItem("authToken", token);
+
+      const cleanUrl = window.location.pathname + window.location.search.replace(/(\?|&)token=[^&]*/, "");
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      dispatch(fetchUser());
+    } else if (!isAuthenticated && localStorage.getItem("authToken")) {
+      // if state not populated but local token present, fetch user
+      dispatch(fetchUser());
+    }
+  }, [location.search, isAuthenticated, dispatch]);
 
   useEffect(() => {
     if (user?.id) {
       dispatch(fetchNotifications(user.id));
     }
-  }, [user, dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchUser());
-  }, [dispatch]);
+  }, [user?.id, dispatch]);
 
   function handleLogout() {
     try {
@@ -42,7 +58,15 @@ export default function GetProfile({ userId }) {
 
   return (
     <div className="fixed top-19 right-2 md:right-3 lg:right-65 z-10 bg-white shadow-md border-1 border-gray-100 w-62 text-base rounded-lg">
-      <div onClick={isAuthenticated ? null : () => navigate("/login") && toast.error("Please log in to access your profile")} className="p-3 flex items-center gap-3 cursor-pointer">
+      <div
+        onClick={() => {
+          if (!isAuthenticated) {
+            navigate("/login");
+            toast.error("Please log in to access your profile");
+          }
+        }}
+        className="p-3 flex items-center gap-3 cursor-pointer"
+      >
         <div className="w-10 h-10 rounded-full overflow-hidden">
           <img
             src={user?.profileImage ? user?.profileImage : "/images/pfp.jpg"}
@@ -63,13 +87,12 @@ export default function GetProfile({ userId }) {
       <hr className="border-gray-200" />
 
       <ul
-        onClick={
-          isAuthenticated
-            ? null
-            : () =>
-                navigate("/login") &&
-                toast.error("Please log in to access your profile")
-        }
+        onClick={() => {
+          if (!isAuthenticated) {
+            navigate("/login");
+            toast.error("Please log in to access your profile");
+          }
+        }}
         className="flex text-gray-700 flex-col items-start justify-center"
       >
         <li className="lihover">
