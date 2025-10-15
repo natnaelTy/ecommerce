@@ -217,7 +217,7 @@ export const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.error = null;
-        state.user = action.payload;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
         state.loading = false;
 
@@ -236,7 +236,6 @@ export const userSlice = createSlice({
         state.error = null;
         state.user = null;
         state.isAuthenticated = false;
-        localStorage.removeItem("authToken");
       })
       // update user profile
       .addCase(updateUserProfile.pending, (state) => {
