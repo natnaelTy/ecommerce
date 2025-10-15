@@ -3,15 +3,13 @@ import userApi from "../../services/userApi";
 import notificationApi from "../../services/notificationApi";
 
 
-// read token from localStorage 
-const savedToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
 
 const initialState = {
   user: null,
   loading: false,
   error: null,
-  isAuthenticated: !!savedToken,
-  token: savedToken,
+  isAuthenticated: false,
+  token: localStorage.getItem("authToken") || null,
   notifications: [],
 };
 
@@ -134,6 +132,7 @@ export const userSlice = createSlice({
         state.user = action.payload;
         state.isAuthenticated = true;
         state.loading = false;
+        state.token = state.token; 
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.error = action.payload;
