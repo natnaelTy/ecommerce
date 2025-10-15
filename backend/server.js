@@ -17,7 +17,7 @@ const app = express();
 app.use(passportConfig.initialize());
 
 
-const allowedOrigins = ["https://e-commerce-2a4vk.sevalla.page"];
+const allowedOrigins = ["https://ecommerce-blue-beta-93.vercel.app"];
 
 app.use(
   cors({
@@ -33,7 +33,7 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        console.log("❌ Blocked by CORS:", origin);
+        console.log("Blocked by CORS:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
