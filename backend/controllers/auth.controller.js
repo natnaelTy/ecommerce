@@ -460,13 +460,21 @@ export const googleCallback = (req, res, next) => {
   passport.authenticate("google", { session: false }, (err, user) => {
     if (err) return next(err);
     if (!user)
-      return res.redirect(`https://ecommerce-blue-beta-93.vercel.app/login`);
+      return res.redirect(`https://e-commerce-2a4vk.sevalla.page/login`);
 
     const tokens = issueTokens(res, user.id, { role: "USER" });
-    const redirectBase = "https://ecommerce-blue-beta-93.vercel.app";
-    const redirectUrl = new URL(redirectBase);
-    redirectUrl.searchParams.set("token", tokens.accessToken);
-    return res.redirect(redirectUrl.toString());
+
+      res.cookie("token", tokens.accessToken, {
+      httpOnly: true,
+      secure: true, 
+      sameSite: "none", 
+      maxAge: 1000 * 60 * 60 * 24 * 7, 
+      domain: ".sevalla.app",
+    });
+  
+    // redirect to frontend without token in URL
+    return res.redirect("https://e-commerce-2a4vk.sevalla.page");
+
   })(req, res, next);
 };
 
