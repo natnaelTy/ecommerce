@@ -407,17 +407,37 @@ export const logout = (_, res) => {
 
 // Token verification and get user details
 export const getMe = async (req, res) => {
-  try {
-    const token = req.cookies.token;
+    try {
+    let token = req.cookies?.token;
+
+    // fallback: Authorization header
+    if (!token) {
+      const authHeader = req.headers.authorization || req.headers.Authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+      } else if (req.query?.token) {
+        token = req.query.token;
+      }
+    }
+
     if (!token) {
       return res
         .status(401)
         .json({ success: false, message: "Not authenticated" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded.id) {
-      return res.status(401).json({ success: false, message: "Invalid token" });
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      if (err.name === "TokenExpiredError") {
+        return res
+          .status(401)
+          .json({ success: false, message: "Token expired" });
+      }
+      return res
+        .status(401)
+        .json({ success: false, message: "Invalid token" });
     }
 
     const user = await prisma.user.findUnique({
@@ -441,9 +461,6 @@ export const getMe = async (req, res) => {
     res.status(200).json({ success: true, user });
   } catch (error) {
     console.error("Error in getMe:", error);
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({ success: false, message: "Token expired" });
-    }
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
@@ -460,11 +477,11 @@ export const googleCallback = (req, res, next) => {
   passport.authenticate("google", { session: false }, (err, user) => {
     if (err) return next(err);
     if (!user)
-      return res.redirect(`https://e-commerce-2a4vk.sevalla.page/login`);
+      return res.redirect(`https://ecommerce-blue-beta-93.vercel.app/login`);
 
-    const tokens = issueTokens(res, user.id, { role: "USER" });
+    const tokens = generateTokenSetCookie(res, user.id, "USER");
 
-      res.cookie("token", tokens.accessToken, {
+      res.cookie("token", tokens, {
       httpOnly: true,
       secure: true, 
       sameSite: "none", 
@@ -473,7 +490,7 @@ export const googleCallback = (req, res, next) => {
     });
   
     // redirect to frontend without token in URL
-    return res.redirect("https://e-commerce-2a4vk.sevalla.page");
+    return res.redirect("https://ecommerce-blue-beta-93.vercel.app");
 
   })(req, res, next);
 };
