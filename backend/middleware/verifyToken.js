@@ -6,22 +6,21 @@ dotenv.config();
 
 export const verifyToken = (req, res, next) => {
 
-    const token = req.cookies.token;
-    try{
-        
-    if(!token){
-        return res.status(401).json({success: true, message: "Unauthorized, no token provided"});
-    }
-       const decoded = jwt.verify(token, process.env.JWT_SECRECT);
+  let token = req.cookies.token;
 
-       if(!decoded){
-        return res.status(401).json({success: false, message: "Unauthorized - invalid token"});
-       }
+  if (!token && req.headers.authorization) {
+    token = req.headers.authorization.split(" ")[1];
+  }
 
-       res.userId = decoded.userId;
-       next();
-    }catch(err){
-        console.log('Error in verification', err);
-        res.status(500).json({success: false, message: "server error"});
-    }
+  if (!token) {
+    return res.status(401).json({ success: false, message: "Not authenticated" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(403).json({ success: false, message: "Invalid token" });
+  }
 }
