@@ -17,7 +17,7 @@ const app = express();
 app.use(passportConfig.initialize());
 
 
-const allowedOrigins = ["https://e-commerce-2a4vk.sevalla.page", "http://localhost:5173"];
+const allowedOrigins = ["https://e-commerce-2a4vk.sevalla.page"];
 
 app.use(
   cors({
