@@ -2,15 +2,20 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import userApi from "../../services/userApi";
 import notificationApi from "../../services/notificationApi";
 
+
+// read token from localStorage 
+const savedToken = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
+
 const initialState = {
   user: null,
   loading: false,
   error: null,
-  isAuthenticated: false,
+  isAuthenticated: !!savedToken,
+  token: savedToken,
   notifications: [],
 };
 
-// create user (signup)
+
 export const createUser = createAsyncThunk(
   "user/createUser",
   async (validatedUser, { rejectWithValue }) => {
@@ -23,22 +28,8 @@ export const createUser = createAsyncThunk(
   }
 );
 
-// verify email
-export const verifyEmail = createAsyncThunk(
-  "user/verifyEmail",
-  async (code, { rejectWithValue }) => {
-    try {
-      const response = await userApi.post("/verifyEmail", { code });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Email verification failed"
-      );
-    }
-  }
-);
+// ...existing thunks (login, fetchUser, etc.) ...
 
-// login user
 export const loginUser = createAsyncThunk(
   "user/loginUser",
   async (validatedUser, { rejectWithValue }) => {
@@ -51,72 +42,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// forgot password
-export const forgotPassword = createAsyncThunk(
-  "user/forgotPassword",
-  async (email, { rejectWithValue }) => {
-    try {
-      const response = await userApi.post("/forgotPassword", email);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to send reset code"
-      );
-    }
-  }
-);
-
-// reset password
-export const resetPassword = createAsyncThunk(
-  "user/resetPassword",
-  async ({ token, newPassword }, { rejectWithValue }) => {
-    try {
-      const response = await userApi.post(`/resetPassword/:${token}`, {
-        token,
-        newPassword,
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Password reset failed"
-      );
-    }
-  }
-);
-
-// update user profile
-export const updateUserProfile = createAsyncThunk(
-  "user/updateUserProfile",
-  async (userData, { rejectWithValue }) => {
-    try {
-      const response = await userApi.put("/update-profile", userData);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to update profile"
-      );
-    }
-  }
-);
-
-// change password
-export const changePassword = createAsyncThunk(
-  "user/changePassword",
-  async ({ currentPassword, newPassword }, { rejectWithValue }) => {
-    try {
-      const response = await userApi.put("/change-password", {
-        currentPassword,
-        newPassword,
-      });
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to change password"
-      );
-    }
-  }
-);
-
 // get user
 export const fetchUser = createAsyncThunk(
   "user/fetchUser",
@@ -125,48 +50,23 @@ export const fetchUser = createAsyncThunk(
       const response = await userApi.get("/me");
       return response.data.user;
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Not authenticated"
-      );
+      return rejectWithValue(error.response?.data?.message || "Not authenticated");
     }
   }
 );
 
 // logout
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  await userApi.post("/logout");
+  try {
+    await userApi.post("/logout");
+    localStorage.removeItem("authToken");
+  } catch (e) {
+    console.error("Logout failed:", e);
+  }
   return null;
 });
 
-// Fetch notifications
-export const fetchNotifications = createAsyncThunk(
-  "user/fetchNotifications",
-  async (userId, { rejectWithValue }) => {
-    try {
-      const res = await notificationApi.get(`/${userId}`);
-      return res.data.notifications;
-    } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.error || "Failed to fetch notifications"
-      );
-    }
-  }
-);
-
-// Mark as read
-export const markNotificationAsRead = createAsyncThunk(
-  "user/markNotificationAsRead",
-  async (id, { rejectWithValue }) => {
-    try {
-      await notificationApi.patch(`/${id}/read`);
-      return id;
-    } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.error || "Failed to update notification"
-      );
-    }
-  }
-);
+// ...existing code (other thunks) ...
 
 export const userSlice = createSlice({
   name: "user",
@@ -184,14 +84,22 @@ export const userSlice = createSlice({
         state.error = null;
         state.isAuthenticated = true;
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.user || action.payload;
+        const token = action.payload?.accessToken || action.payload?.token;
+        if (token) {
+          state.token = token;
+          try {
+            localStorage.setItem("authToken", token);
+          } catch (e) {}
+          state.isAuthenticated = true;
+        }
       })
       .addCase(createUser.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
         state.isAuthenticated = false;
       })
-      //login user
+      // login user
       .addCase(loginUser.pending, (state) => {
         state.error = null;
         state.isAuthenticated = false;
@@ -201,7 +109,14 @@ export const userSlice = createSlice({
         state.error = null;
         state.loading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        state.user = action.payload.user || action.payload;
+        const token = action.payload?.accessToken || action.payload?.token;
+        if (token) {
+          state.token = token;
+          try {
+            localStorage.setItem("authToken", token);
+          } catch (e) {}
+        }
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.payload;
@@ -213,19 +128,21 @@ export const userSlice = createSlice({
       .addCase(fetchUser.pending, (state) => {
         state.error = null;
         state.loading = true;
-        state.isAuthenticated = false;
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.error = null;
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.isAuthenticated = true;
         state.loading = false;
-
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
         state.isAuthenticated = false;
+        state.token = null;
+        try {
+          localStorage.removeItem("authToken");
+        } catch (e) {}
       })
       // logout user
       .addCase(logoutUser.pending, (state) => {
@@ -236,6 +153,10 @@ export const userSlice = createSlice({
         state.error = null;
         state.user = null;
         state.isAuthenticated = false;
+        state.token = null;
+        try {
+          localStorage.removeItem("authToken");
+        } catch (e) {}
       })
       // update user profile
       .addCase(updateUserProfile.pending, (state) => {
