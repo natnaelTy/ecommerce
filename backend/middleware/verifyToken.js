@@ -4,13 +4,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+
 export const verifyToken = (req, res, next) => {
-
-  let token = req.cookies.token;
-
-  if (!token && req.headers.authorization) {
-    token = req.headers.authorization.split(" ")[1];
-  }
+  const token = req.cookies.token;
 
   if (!token) {
     return res.status(401).json({ success: false, message: "Not authenticated" });
@@ -23,4 +19,5 @@ export const verifyToken = (req, res, next) => {
   } catch (err) {
     return res.status(403).json({ success: false, message: "Invalid token" });
   }
-}
+};
+
