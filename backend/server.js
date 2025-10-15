@@ -17,12 +17,27 @@ const app = express();
 app.use(passportConfig.initialize());
 
 
-const allowedOrigins = ["https://e-commerce-2a4vk.sevalla.page/", "http://localhost:5173"];
+const allowedOrigins = ["https://e-commerce-2a4vk.sevalla.page", "http://localhost:5173"];
 
 app.use(
   cors({
-    origin: allowedOrigins,
-    credentials: true,
+    origin: (origin, callback) => {
+
+      if (!origin) return callback(null, true);
+
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        /\.sevalla\.app$/.test(origin) ||
+        /\.sevalla\.page$/.test(origin);
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        console.log("❌ Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
