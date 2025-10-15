@@ -17,9 +17,9 @@ export const generateTokenSetCookie = (res, userId, role) => {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: isProd, 
+    secure: isProd,
     sameSite: isProd ? "None" : "Lax",
-    domain: isProd ? ".sevalla.app" : undefined, 
+    domain: isProd ? ".sevalla.app" : undefined,
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
