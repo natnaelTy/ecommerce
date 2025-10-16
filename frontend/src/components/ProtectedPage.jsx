@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-
+import { Outlet } from "react-router-dom";
 
 export default function ProtectedPage({ redirectTo = "/login" }) {
   const { isAuthenticated } = useSelector((state) => state.user);
