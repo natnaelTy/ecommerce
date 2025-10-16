@@ -166,16 +166,12 @@ export const getPaymentByOrderId = async (req, res) => {
 export const getPaymentsByUserId = async (req, res) => {
   const { userId } = req.params;
   try {
-    const payments = await prisma.payment.findMany({
+    const payments = await prisma.order.findMany({
       where: { userId: parseInt(userId) },
       include: {
-        order: {
-          include: {
-            user: true,
-            orderItems: { include: { product: true } },
-          },
-        },
-      },
+        orderItems: { include: { product: true } },
+        payment: true,
+      }
     });
     res.json(payments);
   } catch (error) {
