@@ -12,7 +12,7 @@ paymentRouter.get("/payments", getAllPayments);
 // get payment by order id
 paymentRouter.get("/updatePayment/:orderId", getPaymentByOrderId);
 // get payments by user id
-paymentRouter.get("/user/:userId", getPaymentsByUserId);
+paymentRouter.get("/user/:userId/payments", getPaymentsByUserId);
 
 
 export default paymentRouter;
