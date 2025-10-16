@@ -5,6 +5,9 @@ import { formatCurrency } from "../../../utils/formatCurrency";
 import toast from "react-hot-toast";
 import { cancelOrder } from "../../../store/product/productSlice";
 import { Box } from "lucide-react";
+import Loading from "../../../utils/loading/Loading";
+
+
 
 export default function Orders() {
   const dispatch = useDispatch();
@@ -27,9 +30,18 @@ export default function Orders() {
       toast.error("Failed to cancel order");
     }
   };
+
+  if (loading) {
+    return <Loading/>
+  }
+
+  
   return (
-    <div className="max-w-[1000px] mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6"><Box className="inline-block bg-orange-100 text-orange-400 rounded-md p-2 size-10 mr-2"/>Your Orders</h1>
+    <div className="max-w-[1000px] mx-auto py-8 px-2">
+      <h1 className="text-xl font-bold mb-6">
+        <Box className="inline-block bg-orange-100 text-orange-400 rounded-md p-2 size-10 mr-2" />
+        Your Orders
+      </h1>
       {userOrders && userOrders.length > 0 ? (
         <div className="space-y-6">
           {userOrders.map((order) => (
@@ -38,27 +50,29 @@ export default function Orders() {
               className="border-1 border-gray-200 rounded-lg p-4 shadow-xs bg-white"
             >
               <div className="flex justify-between items-center mb-2">
-                <span className="font-semibold">Order #{order.id}</span>
-                <span className="text-sm text-gray-500">
+                <span className="text-sm font-semibold">Order #{order.id}</span>
+                <span className="text-xs text-gray-500">
                   {new Date(order.createdAt).toLocaleString("en-US", {
                     dateStyle: "medium",
                   })}
                 </span>
               </div>
               <div className="mb-2">
-                <span className="font-medium">Status:</span>{" "}
+                <span className="font-medium text-sm">Order status:</span>{" "}
                 <span
-                  className={`capitalize px-4 py-1 rounded-full ${
-                    order.status === "delivered" || order.status === "cancelled" ? "bg-red-300"
-                      : order.status === "confirmed" ? "bg-green-200"
-                      : "bg-yellow-200"
+                  className={`capitalize px-3 py-0.5 text-xs rounded-full ${
+                    order.status === "delivered" || order.status === "cancelled"
+                      ? "bg-red-300"
+                      : order.status === "confirmed"
+                      ? "bg-green-200"
+                      : "bg-amber-200"
                   }`}
                 >
                   {order.status}
                 </span>
               </div>
               <div>
-                <span className="font-medium">Items:</span>
+                <span className="font-medium text-sm">Items:</span>
                 <ul className="mt-1 list-disc space-y-4">
                   {order.orderItems &&
                     order.orderItems.map((item) => (
@@ -66,26 +80,29 @@ export default function Orders() {
                         <img
                           src={item.product?.image}
                           alt={item.product?.productName}
-                          className="w-10 h-10 object-cover rounded"
+                          className="w-9 h-9 object-cover rounded"
                         />
-                        <span>{item.product?.productName}</span>
-                        <span className="text-gray-500 text-sm">
+                        <span className="text-xs text-gray-600">
+                          {item.product?.productName}
+                        </span>
+                        <span className="text-gray-500 text-xs">
                           x {item.quantity}
                         </span>
-                            <button type="button"
+                        <button
+                          type="button"
                           onClick={() => handleCancelOrder(order.id)}
-                          className="text-red-500 hover:underline"
+                          className="text-red-500 text-xs font-semibold hover:underline"
                         >
-                          Cancel Order
+                          Cancel 
                         </button>
-                        <span className="ml-auto font-semibold">
+                        <span className="ml-auto font-semibold text-xs md:text-sm">
                           {formatCurrency(item.product?.price, "ETB", "en-ET")}
                         </span>
                       </li>
                     ))}
                 </ul>
               </div>
-              <div className="mt-2 flex justify-end">
+              <div className="mt-2 flex justify-end text-xs md:text-sm">
                 <span className="font-bold ">
                   Total:{" "}
                   <span className="text-green-600">
