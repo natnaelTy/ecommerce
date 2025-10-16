@@ -35,6 +35,8 @@ import Contact from "./components/pages/contact/Contact";
 import Messages from "./components/pages/adminSide/messages/Messages";
 import Chatbot from "./components/pages/ChatBot";
 import UserPayments from "./components/pages/account/UserPayments";
+import ProtectedPage from "./components/ProtectedPage";
+import PageNotFound from "./components/PageNotFound";
 
 function App() {
   return (
@@ -46,16 +48,23 @@ function App() {
           <Route path="/contact-us" element={<Contact />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/wishlist" element={<WishList />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<CheckOut />} />
-          <Route path="/orders" element={<UsersOrders />} />
-          <Route path="/payments" element={<UserPayments />} />
-          <Route path="/cancellation" element={<Cancellation />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+
+          <Route element={<ProtectedPage />}>
+            <Route path="/account" element={<Account />} />
+            <Route path="/wishlist" element={<WishList />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<CheckOut />} />
+            <Route path="/orders" element={<UsersOrders />} />
+
+            <Route path="/payments" element={<UserPayments />} />
+            <Route path="/cancellation" element={<Cancellation />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditions />}
+            />
+          </Route>
           <Route path="/chatbot" element={<Chatbot />} />
         </Route>
         <Route element={<AuthRoute />}>
@@ -65,6 +74,7 @@ function App() {
           <Route path="/resetpassword" element={<ResetPassword />} />
           <Route path="/verifyemail" element={<VerifyEmail />} />
           <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/*" element={<PageNotFound />} />
         </Route>
         <Route
           path="/admin/dashboard"
