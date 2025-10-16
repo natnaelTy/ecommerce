@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import userApi from "../../services/userApi";
 import notificationApi from "../../services/notificationApi";
-
+import axios from "axios";
 
 
 const initialState = {
@@ -9,6 +9,7 @@ const initialState = {
   loading: false,
   error: null,
   isAuthenticated: false,
+  payments: [],
   token: localStorage.getItem("authToken") || null,
   notifications: [],
 };
@@ -173,6 +174,21 @@ export const markNotificationAsRead = createAsyncThunk(
   }
 );
 
+// user payments history
+export const fetchUserPayments = createAsyncThunk(
+  "user/fetchUserPayments",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`https://ecommerce-ib95q.sevalla.app/api/payment/user/${userId}/payments`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to fetch user payments"
+      );
+    }
+  }
+);
+
 export const userSlice = createSlice({
   name: "user",
   initialState,
@@ -316,6 +332,19 @@ export const userSlice = createSlice({
         state.loading = false;
       })
       .addCase(markNotificationAsRead.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // fetch user payments
+      .addCase(fetchUserPayments.pending, (state) => {
+        state.error = null;
+        state.loading = true;
+      })
+      .addCase(fetchUserPayments.fulfilled, (state, action) => {
+        state.loading = false;
+        state.payments = action.payload;
+      })
+      .addCase(fetchUserPayments.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
