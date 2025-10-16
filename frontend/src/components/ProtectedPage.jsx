@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 
 
-export default function ProtectedPage({ children, redirectTo = "/login" }) {
-  const isAuthenticated = useSelector((state) => state.user?.isAuthenticated);
+export default function ProtectedPage({ redirectTo = "/login" }) {
+  const { isAuthenticated } = useSelector((state) => state.user);
   const token = typeof window !== "undefined" ? localStorage.getItem("authToken") : null;
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,5 +20,5 @@ export default function ProtectedPage({ children, redirectTo = "/login" }) {
     return toast.error("You need to be logged in to access this page.");
   }
 
-  return <>{children}</>;
+    return <Outlet />;
 }
