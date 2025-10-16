@@ -114,7 +114,7 @@ const Cart = () => {
             <tbody>
               {cartList && cartList.length > 0 ? (
                 cartList.map((item) => (
-                  <tr key={item?.id} className="border-b border-gray-200">
+                  <tr key={item.id} className="border-b border-gray-200">
                     {/* Product info */}
                     <td className="py-4">
                       <div className="flex items-center gap-4 flex-wrap">
