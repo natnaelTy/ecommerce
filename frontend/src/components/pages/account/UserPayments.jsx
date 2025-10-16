@@ -2,42 +2,39 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { formatCurrency } from "../../../utils/formatCurrency";
 import Loading from "../../../utils/loading/Loading";
-import axios from "axios";
+import { fetchUserPayments } from "../../../store/user/userSlice";
+import { useDispatch } from "react-redux";
+import { Banknote } from "lucide-react";
 
 export default function UserPayments() {
-  const { user } = useSelector((state) => state.user);
-  const [payments, setPayments] = useState([]);
+  const { user, loading, payments, error } = useSelector((state) => state.user);
   const [selected, setSelected] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const fetchPayments = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(`api/payments/user/${user.id}`);
-        setPayments(response.data);
-      } catch (error) {
-        console.error("Error fetching payments:", error);
-      }
-    };
-
-    fetchPayments();
-    setLoading(false);
-  }, [user.id]);
-
-    if (loading) {
-      return <Loading />;
+    if (user) {
+      dispatch(fetchUserPayments(user.id));
     }
-    return (
-      <div className="min-h-screen p-4 md:p-6 bg-gray-50">
+  }, [user, dispatch]);
+
+  const paymentsList = [...payments].reverse();
+
+  if (loading) {
+    return <Loading />;
+  }
+  return (
+    <div className="min-h-screen p-4 md:p-6 bg-gray-50">
       <div className="max-w-[1000px] mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">My Payments</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {" "}
+          <Banknote className="inline-block size-6 mr-2 text-green-600" />
+          Payment History
+        </h2>
 
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
         <ul className="space-y-3">
-          {payments.map((p) => (
+          {paymentsList.map((p) => (
             <li
               key={p.id || p.paymentId || `${p.orderId}-${p.amount}`}
               className="bg-white rounded-lg shadow-sm p-4 flex flex-col md:flex-row md:items-center md:justify-between"
@@ -45,28 +42,32 @@ export default function UserPayments() {
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <div className="text-sm text-gray-500">
-                    {new Date(
-                      p.createdAt || p.created_at || p.date
-                    ).toLocaleString()}
+                    {new Date(p.createdAt).toLocaleString("en-US", {
+                      dateStyle: "medium",
+                    })}
                   </div>
                   <div className="text-sm text-gray-400">•</div>
-                  <div className="text-sm font-medium">
-                    {p.method || p.paymentMethod || "N/A"}
+                  <div className="text-sm font-medium capitalize">
+                    {p.payment.method}
                   </div>
                 </div>
-                <div className="mt-2 text-lg font-semibold">
-                  {formatCurrency(p.amount || p.total || p.price)}
+                <div className="mt-2 text-lg text-green-600 font-semibold">
+                  {formatCurrency(
+                    p.amount || p.total || p.price,
+                    "ETB",
+                    "en-ET"
+                  )}
                 </div>
                 <div className="text-sm text-gray-500 mt-1">
                   Status:{" "}
                   <span
-                    className={`font-medium ${
-                      p.status === "paid" || p.status === "success"
-                        ? "text-green-600"
-                        : "text-yellow-600"
+                    className={`font-medium px-2 rounded-lg capitalize ${
+                      p.payment.status === "paid" 
+                        ? "text-green-500 bg-green-100"
+                        : "text-amber-500 bg-amber-100"
                     }`}
                   >
-                    {p.status || p.paymentStatus || "unknown"}
+                    {p.payment.status}
                   </span>
                 </div>
                 {p.orderId && (
@@ -78,7 +79,7 @@ export default function UserPayments() {
 
               <div className="mt-3 md:mt-0 md:ml-4 flex items-center gap-2">
                 <button
-                  className="px-3 py-1 bg-amber-700 text-white rounded text-sm hover:bg-amber-600"
+                  className="px-3 py-1 bg-black text-white rounded text-sm hover:bg-amber-600"
                   onClick={() => setSelected(p)}
                 >
                   View
@@ -118,12 +119,10 @@ export default function UserPayments() {
 
               <div className="mt-4 space-y-2 text-sm text-gray-700">
                 <div>
-                  <strong>Amount:</strong>{" "}
-                  {formatCurrency(selected.amount || selected.total)}
+                  <strong>Amount:</strong> {formatCurrency(selected.total)}
                 </div>
                 <div>
-                  <strong>Method:</strong>{" "}
-                  {selected.method || selected.paymentMethod}
+                  <strong>Method:</strong> {selected.payment.method}
                 </div>
                 <div>
                   <strong>Status:</strong>{" "}
@@ -131,18 +130,13 @@ export default function UserPayments() {
                 </div>
                 <div>
                   <strong>Date:</strong>{" "}
-                  {new Date(
-                    selected.createdAt || selected.date
-                  ).toLocaleString()}
+                  {new Date(selected.createdAt).toLocaleString("en-US", {
+                     dateStyle: "medium",
+                  })}
                 </div>
                 {selected.orderId && (
                   <div>
                     <strong>Order:</strong> {selected.orderId}
-                  </div>
-                )}
-                {selected.notes && (
-                  <div>
-                    <strong>Notes:</strong> {selected.notes}
                   </div>
                 )}
                 {selected.receiptUrl && (
