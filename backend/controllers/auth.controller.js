@@ -479,18 +479,9 @@ export const googleCallback = (req, res, next) => {
     if (!user)
       return res.redirect(`https://ecommerce-blue-beta-93.vercel.app/login`);
 
-    const tokens = generateTokenSetCookie(res, user.id, "USER");
+    const token = generateTokenSetCookie(res, user.id, "USER");
 
-      res.cookie("token", tokens, {
-      httpOnly: true,
-      secure: true, 
-      sameSite: "none", 
-      maxAge: 1000 * 60 * 60 * 24 * 7, 
-      domain: ".sevalla.app",
-    });
-  
-    // redirect to frontend without token in URL
-    return res.redirect("https://ecommerce-blue-beta-93.vercel.app");
+    return res.redirect(`https://ecommerce-blue-beta-93.vercel.app?token=${token}`);
 
   })(req, res, next);
 };
