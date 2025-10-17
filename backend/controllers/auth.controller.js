@@ -479,9 +479,13 @@ export const googleCallback = (req, res, next) => {
     if (!user)
       return res.redirect(`https://ecommerce-blue-beta-93.vercel.app/login`);
 
-    const token = generateTokenSetCookie(res, user.id, "USER");
+    const tokens = issueTokens(res, user.id, { role: "USER" });
 
-    return res.redirect(`https://ecommerce-blue-beta-93.vercel.app?token=${token}`);
+    const redirectBase = "https://ecommerce-blue-beta-93.vercel.app";
+    const redirectUrl = new URL(redirectBase);
+    redirectUrl.searchParams.set("token", tokens.accessToken);
+
+    return res.redirect(redirectUrl.toString());
 
   })(req, res, next);
 };
