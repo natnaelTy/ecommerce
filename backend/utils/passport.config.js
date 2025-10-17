@@ -28,7 +28,7 @@ passportConfig.use(
           });
         }
 
-        return done(null, user);
+        return done(null, user, { accessToken, refreshToken });
       } catch (err) {
         return done(err);
       }
