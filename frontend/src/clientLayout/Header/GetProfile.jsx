@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -10,8 +9,8 @@ import {
   logoutUser,
 } from "../../store/user/userSlice";
 import { useEffect } from "react";
-import { Settings, User, Headset, LogOut, Bell, Box, Banknote  } from "lucide-react";
-
+import { Settings, User, LogOut, Bell, Box, Banknote } from "lucide-react";
+import { setLocalAuthToken } from "../../services/userApi";
 
 export default function GetProfile({ userId }) {
   const { isAuthenticated, user, notifications } = useSelector(
@@ -20,11 +19,15 @@ export default function GetProfile({ userId }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-
+  const params = new URLSearchParams(location.search);
+  const token = params.get("token");
 
   useEffect(() => {
-     dispatch(fetchUser());
-  }, [dispatch]);
+    if (token) {
+      setLocalAuthToken(token);
+    }
+    dispatch(fetchUser());
+  }, [dispatch, token]);
 
   useEffect(() => {
     if (user?.id) {
@@ -46,9 +49,7 @@ export default function GetProfile({ userId }) {
 
   return (
     <div className="fixed top-19 right-2 md:right-3 lg:right-65 z-10 bg-white shadow-md border-1 border-gray-100 w-62 text-base rounded-lg">
-      <div
-        className="p-3 flex items-center gap-3 cursor-pointer"
-      >
+      <div className="p-3 flex items-center gap-3 cursor-pointer">
         <div className="w-10 h-10 rounded-full overflow-hidden">
           <img
             src={user?.profileImage ? user?.profileImage : "/images/pfp.jpg"}
@@ -68,9 +69,7 @@ export default function GetProfile({ userId }) {
 
       <hr className="border-gray-200" />
 
-      <ul
-        className="flex text-gray-700 flex-col items-start justify-center"
-      >
+      <ul className="flex text-gray-700 flex-col items-start justify-center">
         <li className="lihover">
           <Link className="liLink" to={"/account"}>
             <User className="size-5" /> My Account
@@ -99,7 +98,7 @@ export default function GetProfile({ userId }) {
         <li className="lihover">
           {" "}
           <Link className="liLink" to={"/payments"}>
-            <Banknote  className="size-5" /> Payments{" "}
+            <Banknote className="size-5" /> Payments{" "}
           </Link>
         </li>
       </ul>
